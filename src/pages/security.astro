@@ -17,7 +17,7 @@ import Page from "../layouts/Page.astro";
 
     <section class="sec-block">
       <h2>Workspace isolation</h2>
-      <p>One SQLite database per customer. One data-encryption key per customer, itself wrapped under a deployment master key — so a stolen database file decrypts nothing without both. Every request runs inside its workspace's context and the database layer <strong>fails closed</strong>: a request with no bound workspace gets an error, not somebody else's data.</p>
+      <p>One database per customer. One data-encryption key per customer, itself wrapped under a deployment master key — so a stolen database file decrypts nothing without both. Every request runs inside its workspace's context and the database layer <strong>fails closed</strong>: a request with no bound workspace gets an error, not somebody else's data.</p>
     </section>
 
     <section class="sec-block">
@@ -51,7 +51,7 @@ import Page from "../layouts/Page.astro";
 
     <section class="sec-block">
       <h2>Backups</h2>
-      <p>Nightly at 03:15 UTC. Consistent SQLite snapshots of every workspace and the control plane, integrity-checked, encrypted with AES-256, kept 14 days on the box and pushed to Cloudflare R2 off-box. <strong>The job decrypts and unpacks its own output before it reports success</strong>, so a backup that can't be restored fails loudly rather than sitting there looking fine. Restore tested end to end, including from R2 alone as though the server were gone, on 21 September 2026.</p>
+      <p>Nightly. Consistent snapshots of every workspace and the control plane, integrity-checked, encrypted with AES-256, kept 14 days on the box and pushed to Cloudflare R2 off-box. <strong>The job decrypts and unpacks its own output before it reports success</strong>, so a backup that can't be restored fails loudly rather than sitting there looking fine. Restore tested end to end, including from R2 alone as though the server were gone, on 21 September 2026.</p>
     </section>
 
     <section class="sec-block">
