@@ -8,3 +8,19 @@ CREATE TABLE IF NOT EXISTS hits (
   PRIMARY KEY (colo, bucket)
 );
 CREATE INDEX IF NOT EXISTS hits_bucket ON hits (bucket);
+
+-- Beta applications. Unique on email so a double submit updates rather than
+-- duplicates, and so the same person refreshing does not look like demand.
+CREATE TABLE IF NOT EXISTS beta_applications (
+  email     TEXT PRIMARY KEY,
+  created   INTEGER NOT NULL,
+  name      TEXT NOT NULL,
+  company   TEXT,
+  site      TEXT,
+  zones     TEXT NOT NULL,
+  today     TEXT,
+  anthropic TEXT,
+  colo      TEXT,
+  country   TEXT
+);
+CREATE INDEX IF NOT EXISTS beta_created ON beta_applications (created);

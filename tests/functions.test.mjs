@@ -1,5 +1,6 @@
 import { onRequest } from '../functions/_middleware.js';
 import { onRequestGet } from '../functions/api/globe.js';
+import { onRequestPost as betaPost } from '../functions/api/beta.js';
 
 let pass = 0, fail = 0;
 const ok = (n, c) => { c ? (pass++, console.log('  ok   ' + n)) : (fail++, console.log('  FAIL ' + n)); };
@@ -73,6 +74,53 @@ ok('D1 failure returns empty, not an error', res.status === 200 && Object.keys((
 
 res = await onRequestGet({ env: {} });
 ok('no binding returns empty', res.status === 200);
+
+console.log('api/beta');
+function betaDB() {
+  const rows = [];
+  return { rows, prepare: () => ({ bind: (...a) => ({ run: async () => { rows.push(a); return {}; } }) }) };
+}
+const fd = (o) => { const f = new FormData(); for (const k in o) f.append(k, o[k]); return f; };
+const post = (o, db, accept = 'application/json') =>
+  betaPost({
+    request: Object.assign(
+      new Request('https://zonesteward.com/api/beta', { method: 'POST', body: fd(o), headers: { accept } }),
+      { cf: { colo: 'MSP', country: 'US' } }
+    ),
+    env: { DB: db },
+  });
+const GOOD = { name: 'Pat', email: 'pat@agency.com', zones: '26-100', company: 'Agency', today: 'the dashboard' };
+
+let bdb = betaDB();
+let r = await post(GOOD, bdb);
+ok('accepts a complete application', r.status === 200 && (await r.json()).ok === true && bdb.rows.length === 1);
+ok('records the colo alongside it', bdb.rows[0].includes('MSP'));
+
+bdb = betaDB();
+r = await post({ ...GOOD, email: 'not-an-email' }, bdb);
+ok('rejects a bad email', r.status === 400 && bdb.rows.length === 0);
+
+bdb = betaDB();
+r = await post({ ...GOOD, name: '' }, bdb);
+ok('requires a name', r.status === 400 && bdb.rows.length === 0);
+
+bdb = betaDB();
+r = await post({ ...GOOD, zones: 'lots' }, bdb);
+ok('rejects an unknown zone band', r.status === 400 && bdb.rows.length === 0);
+
+bdb = betaDB();
+r = await post({ ...GOOD, company_url: 'http://spam' }, bdb);
+ok('honeypot: stored nothing but looks successful', r.status === 200 && bdb.rows.length === 0);
+
+bdb = betaDB();
+r = await post({ ...GOOD, today: 'x'.repeat(5000) }, bdb);
+ok('truncates an oversized field', bdb.rows[0].some((v) => typeof v === 'string' && v.length === 1200));
+
+r = await post(GOOD, betaDB(), 'text/html');
+ok('works without JS: HTML confirmation', (r.headers.get('content-type') || '').includes('text/html'));
+
+r = await post(GOOD, undefined);
+ok('no binding fails loudly rather than dropping a signup', r.status === 503);
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

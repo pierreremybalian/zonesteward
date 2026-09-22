@@ -151,11 +151,25 @@ npm run deploy
 Live at https://zonesteward.com (and zonesteward.pages.dev). To get deploy-on-push, connect the repo
 from the project's Settings once Cloudflare exposes it again.
 
+## Beta applications
+
+The form in the beta section posts to `functions/api/beta.js` and lands in the
+`beta_applications` table. It works with JavaScript disabled — a native form
+post gets a real HTML confirmation back — because a signup is the one thing
+here that must not be lost to a script that failed to load. Spam is caught with
+a honeypot field; the response to a caught bot is a normal-looking success, so
+it gets no signal to retry differently.
+
+```bash
+npm run apps     # read them
+```
+
+Unique on email, so a resubmit updates the row instead of inflating the count.
+
 ## Still open
 
 - The real OVH region for the origin marker — it is a Beauharnois placeholder
   in `src/components/Stage.astro`.
-- The beta form posts nowhere yet.
 `request.cf` is populated under `wrangler pages dev` too, with real values —
 verified locally as `colo: MSP`, ASN 209, so the pipeline can be exercised
 end to end without deploying.

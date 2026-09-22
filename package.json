@@ -9,7 +9,8 @@
     "db:local": "wrangler d1 execute zonesteward-globe --local --file=schema.sql",
     "db:remote": "wrangler d1 execute zonesteward-globe --remote --file=schema.sql",
     "test": "node tests/functions.test.mjs",
-    "deploy": "astro build && wrangler pages deploy dist --project-name zonesteward --branch main"
+    "deploy": "astro build && wrangler pages deploy dist --project-name zonesteward --branch main",
+    "apps": "wrangler d1 execute zonesteward-globe --remote --command \"SELECT datetime(created/1000,'unixepoch') AS when_, name, email, company, zones, anthropic, today FROM beta_applications ORDER BY created DESC\" -y"
   },
   "dependencies": {
     "astro": "^5.14.1"
