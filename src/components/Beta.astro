@@ -1,136 +1,18 @@
 ---
-/* The one CTA on the page that has to work. Posts natively without JS and is
-   enhanced with fetch when it's available.
-
-   No seat counter. There was a "5 OF 20 CLAIMED" indicator here, which was
-   invented — nobody had claimed anything. The project's own rules say no
-   invented metrics, and a fabricated scarcity cue on a pre-beta page is
-   exactly the kind of thing the product is selling against. */
-const zones = ["1–10", "11–25", "26–100", "100+"];
-const values = ["1-10", "11-25", "26-100", "100+"];
+/* No seat counter here. There was a "5 OF 20 CLAIMED" indicator once, which
+   was invented. The project's own rules say no invented metrics. */
 ---
 <section class="beta" id="beta">
-  <div class="wrap beta-grid">
+  <div class="wrap beta-in">
     <div>
       <span class="sc">Private beta</span>
       <h2 style="margin-top:14px">Twenty seats. Yours if it fits.</h2>
       <p class="lede" style="font-size:15.5px;margin-top:16px">
-        Free for the whole beta, then half price for your first year. You bring
-        your own Cloudflare token and Anthropic key, so model usage is billed to
-        you at cost and we never see your keys in the middle.
+        Free for the whole beta, then half price for your first year, locked.
+        Two minutes of questions about what you run and what goes wrong, and if
+        it's a fit you get a workspace.
       </p>
-      <ul class="fit">
-        <li>You run more than a handful of zones, for other people</li>
-        <li>You'll tell us when it's wrong, not just when it's good</li>
-        <li>You're comfortable being early — this is pre-1.0</li>
-      </ul>
     </div>
-
-    <form class="apply" id="apply" method="POST" action="/api/beta">
-      <div class="f2">
-        <p class="fld">
-          <label for="f-name">Name</label>
-          <input id="f-name" name="name" type="text" required autocomplete="name" maxlength="120" />
-        </p>
-        <p class="fld">
-          <label for="f-email">Work email</label>
-          <input id="f-email" name="email" type="email" required autocomplete="email" maxlength="200" />
-        </p>
-      </div>
-      <div class="f2">
-        <p class="fld">
-          <label for="f-company">Agency or company</label>
-          <input id="f-company" name="company" type="text" autocomplete="organization" maxlength="160" />
-        </p>
-        <p class="fld">
-          <label for="f-site">Your website</label>
-          <input id="f-site" name="site" type="text" inputmode="url" placeholder="optional" maxlength="200" />
-        </p>
-      </div>
-
-      <fieldset class="fld">
-        <legend>How many Cloudflare zones do you manage?</legend>
-        <div class="radios">
-          {zones.map((z, i) => (
-            <label class="radio">
-              <input type="radio" name="zones" value={values[i]} required />
-              <span>{z}</span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <p class="fld">
-        <label for="f-key">Do you have an Anthropic API key?</label>
-        <select id="f-key" name="anthropic">
-          <option value="yes">Yes</option>
-          <option value="not yet">Not yet, but I can get one</option>
-          <option value="what is that">No idea what that is</option>
-        </select>
-      </p>
-
-      <p class="fld">
-        <label for="f-today">What do you use today, and what goes wrong with it?</label>
-        <textarea id="f-today" name="today" rows="4" maxlength="1200"
-          placeholder="The dashboard, a spreadsheet, a colleague who knows Cloudflare…"></textarea>
-      </p>
-
-      <!-- honeypot: hidden from people, irresistible to bots -->
-      <p class="hp" aria-hidden="true">
-        <label for="f-curl">Company URL</label>
-        <input id="f-curl" name="company_url" type="text" tabindex="-1" autocomplete="off" />
-      </p>
-
-      <div class="submit">
-        <button type="submit" class="btn btn-primary btn-lg">Apply for beta →</button>
-        <span class="cta-note" id="apply-note">We read every one. No newsletter, no drip.</span>
-      </div>
-      <p class="apply-msg" id="apply-msg" role="status" aria-live="polite" hidden></p>
-    </form>
+    <a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a>
   </div>
 </section>
-
-<script is:inline>
-  (function () {
-    var f = document.getElementById("apply");
-    if (!f) return;
-    var msg = document.getElementById("apply-msg");
-    var note = document.getElementById("apply-note");
-    var btn = f.querySelector("button[type=submit]");
-
-    f.addEventListener("submit", function (e) {
-      if (!f.reportValidity()) return;
-      e.preventDefault();
-      btn.disabled = true;
-      var was = btn.textContent;
-      btn.textContent = "Sending…";
-      msg.hidden = true;
-
-      fetch("/api/beta", {
-        method: "POST",
-        body: new FormData(f),
-        headers: { accept: "application/json" },
-      })
-        .then(function (r) { return r.json().catch(function () { return { ok: r.ok }; }); })
-        .then(function (d) {
-          if (d && d.ok) {
-            f.querySelectorAll(".f2, fieldset, .fld, .submit").forEach(function (n) { n.hidden = true; });
-            msg.hidden = false;
-            msg.className = "apply-msg good";
-            msg.textContent =
-              "You're on the list. We read every one of these — if it's a fit you'll hear from us with a workspace.";
-          } else {
-            throw new Error((d && d.error) || "That didn't go through.");
-          }
-        })
-        .catch(function (err) {
-          btn.disabled = false;
-          btn.textContent = was;
-          msg.hidden = false;
-          msg.className = "apply-msg bad";
-          msg.textContent = err.message + " You can also just email us.";
-          if (note) note.hidden = true;
-        });
-    });
-  })();
-</script>

@@ -6,6 +6,6 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://zonesteward.com",
   output: "static",
-  build: { inlineStylesheets: "auto" },
+  build: { inlineStylesheets: "auto", format: "file" },
   devToolbar: { enabled: false },
 });

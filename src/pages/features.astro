@@ -1,0 +1,72 @@
+---
+import Page from "../layouts/Page.astro";
+const jobs = [
+  { h: "Ask", lede: "Questions in plain language, answered against Cloudflare's analytics API directly. The server injects the zone, so a question can never reach one outside your context.",
+    items: [
+      ["Arbitrary analytics", "traffic, status codes, geography, ASNs, paths, user agents — the model writes the GraphQL, you read the answer"],
+      ["Who is attacking this zone", "with severity and a verdict per source"],
+      ["Everything you've configured", "DNS, WAF rules, cache rules, rate limits, managed rulesets, access rules, zone settings, edge and platform config"],
+      ["Plan-aware degradation", "denied fields are dropped and retried, denied datasets isolated so one doesn't starve the rest, span caps clamped, sampling reversed so counts are real. Free zones degrade instead of failing"],
+      ["Conversations kept indefinitely", "nothing expires"],
+    ]},
+  { h: "See", lede: "Requests rendered live on a globe, from the client's geography to the Cloudflare colo that served them. Thirty-minute rolling window, ten-second poll.",
+    items: [
+      ["Render modes", "pulse, flow, heat, trace, hex-binned bars"],
+      ["All 157 points of presence", "as a layer, scaled against camera distance to stay legible at any zoom"],
+      ["Day/night terminator", "following the real sun"],
+      ["DVR", "pause, scrub, 24-hour replay"],
+      ["Fleet view", "every zone on one globe, colour-coded per site"],
+      ["Honest status semantics", "2xx served, 3xx redirected, 4xx–5xx rejected. A redirect is never counted as a hit"],
+    ]},
+  { h: "Investigate", lede: "Traffic classified into nine attack categories with a composite severity score per source — built to be right about what isn't an attack, not just what is.",
+    items: [
+      ["Nine categories", "WordPress brute force, CMS and plugin probing, secrets and config scanning, admin panel probing, path traversal, SQLi/XSS, shell and upload probes, credential stuffing, scanner tooling"],
+      ["False positives designed out", "static assets, uploads, /cdn-cgi/, well-known files, recognised crawlers including AI crawlers, research scanners like Censys and Shodan, and anything that was requested and served — all excluded, and listed with the reason rather than silently dropped"],
+      ["Per-attacker evidence", "status mix, paths served, methods, hosts, user agents, and whether the same source is hitting your other zones"],
+      ["Blast radius preview", "a proposed rule is run against your real traffic before it exists"],
+      ["Automatic mitigation, off by default", "managed challenge only, never block; single IPs only, never a range; requires a corroborating pattern, not just volume; refuses anything the origin served; capped hourly; auto-expiring; every decision logged and revertable"],
+    ]},
+  { h: "Operate", lede: "Every change through the same nine-step pipeline: propose, classify, preview, approve, drift-check, execute, read back, audit, revert.",
+    items: [
+      ["DNS", "create, update, delete — admin only, with apex and wildcard detection"],
+      ["WAF", "custom rules, skips, rate limiting, managed rulesets, Super Bot Fight Mode"],
+      ["Protections", "IP access rules, lockdowns, AI-bot blocking"],
+      ["Cache and rules", "cache rules, purge by URL / host / tag / everything; redirect, rewrite, header, configuration and origin rules"],
+      ["Zone settings and lifecycle", "SSL mode, minimum TLS, security level, HSTS; create, pause, activation checks"],
+      ["Bulk apply", "one change across a saved group of zones, with a separate acknowledgement above a threshold"],
+    ]},
+  { h: "Monitor", lede: "Detectors that watch, incidents that get investigated, and channels your team already uses.",
+    items: [
+      ["Detectors", "firewall block surge, bot score surge, cache-hit-ratio drop, latency anomaly, origin reachability, plus custom detectors composed in natural language"],
+      ["Incidents", "deduplicated, acknowledged, resolved, with an AI investigation of probable cause and a suggested fix — an investigator that may not propose DNS changes, deletes or WAF skips"],
+      ["Channels", "email, Slack, Microsoft Teams, webhook, SMS, PagerDuty; per-rule subscriptions, test sends, a delivery log"],
+      ["Live stream", "alerts pushed to the browser as they happen"],
+    ]},
+  { h: "Govern", lede: "Multiple clients, multiple tokens, multiple people — and a record of every one of them.",
+    items: [
+      ["Fleet roster", "every zone across every token, with its plan tier"],
+      ["Zone groups", "named collections for bulk work and for scoping what a client sees"],
+      ["Share links", "time-limited, revocable, honouring the role behind them — a client report without a client login"],
+      ["Roles", "owner, admin, user, viewer, enforced at three layers"],
+      ["Audit trail", "every attempt, successful or not"],
+      ["Cloudflare error log", "every refusal classified and attributed, so plan limits become measured rather than assumed"],
+    ]},
+];
+---
+<Page
+  title="Features — Zonesteward"
+  description="Ask, See, Investigate, Operate, Monitor, Govern. Everything Zonesteward does for a fleet of Cloudflare zones, organised by the job you're trying to do."
+  eyebrow="Features"
+  h1="Everything, by the job you came to do."
+  lede="Six jobs. Every tier gets all of them — no security feature is held back for a higher plan."
+  wide
+>
+  <div class="jobs">
+    {jobs.map((j) => (
+      <section class="job">
+        <div><h2>{j.h}</h2><p class="job-lede">{j.lede}</p></div>
+        <ul>{j.items.map(([b, t]) => <li><b>{b}.</b> {t}</li>)}</ul>
+      </section>
+    ))}
+  </div>
+</Page>

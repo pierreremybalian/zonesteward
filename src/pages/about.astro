@@ -1,0 +1,46 @@
+---
+import Page from "../layouts/Page.astro";
+---
+<Page
+  title="About — Zonesteward"
+  description="Built by one person running a fleet of Cloudflare zones for an agency, because the dashboard assumes you only have one."
+  eyebrow="About"
+  h1="Built by the person who needed it."
+>
+  <p class="dropcap">
+    I run Cloudflare for an agency. Dozens of client sites, across several
+    Cloudflare accounts, on a mix of Free and Pro plans, and a support queue
+    that doesn't care which zone the problem is in. The dashboard is very good
+    at one zone at a time, and I have never once had one zone at a time.
+  </p>
+  <p>
+    So I built the thing I wanted: somewhere I could ask <em>"who is attacking
+    us right now?"</em> and get an answer across every zone, see traffic on one
+    globe instead of forty tabs, and change a WAF rule on a client's production
+    site without the sick feeling that comes from having no preview and no way
+    back.
+  </p>
+  <p>
+    The part I'm proudest of is the part that says no. The model can only
+    propose. It has no write tool to be talked out of. Every change goes
+    through a human, gets checked against reality at execution time, gets read
+    back from Cloudflare, and can be undone with a click. That's not a feature
+    layered on afterwards — the architecture wouldn't work any other way.
+  </p>
+  <h2>Where it is</h2>
+  <p>
+    In production, running my own fleet daily, and being opened to a private
+    beta of twenty agencies and MSPs who have the same problem. It is
+    founder-built and founder-run. There is no team page because there is no
+    team yet, and I'd rather tell you that than pretend.
+  </p>
+  <p>
+    The <a href="/security">security page</a> lists what's finished and what
+    isn't. The <a href="/blog">writing</a> is where I explain the decisions.
+  </p>
+  <h2>Get in touch</h2>
+  <p>
+    <a href="mailto:hello@zonesteward.com">hello@zonesteward.com</a>. I read all of it.
+  </p>
+  <p style="margin-top:44px"><a href="/apply" class="btn btn-primary">Apply for beta →</a></p>
+</Page>

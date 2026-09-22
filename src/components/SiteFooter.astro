@@ -1,12 +1,15 @@
 ---
-const links = ["How it works", "Security", "Pricing", "Docs", "Privacy", "Terms"];
-const hrefs = ["#gate", "#", "#pricing", "#", "#", "#"];
+const links = [
+  ["/how-it-works", "How it works"], ["/security", "Security"], ["/features", "Features"],
+  ["/pricing", "Pricing"], ["/docs", "Docs"], ["/blog", "Writing"], ["/about", "About"],
+  ["/privacy", "Privacy"], ["/terms", "Terms"],
+];
 ---
 <footer>
   <div class="wrap">
     <div class="f-top">
       <a href="/" class="mark" style="font-size:19px">Zone<i>steward</i></a>
-      <div class="f-links">{links.map((l, i) => <a href={hrefs[i]}>{l}</a>)}</div>
+      <div class="f-links">{links.map(([h, l]) => <a href={h}>{l}</a>)}</div>
     </div>
     <p class="colophon">
       Built by one person who runs a fleet of Cloudflare zones for an agency,

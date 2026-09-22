@@ -1,10 +1,12 @@
 ---
 const nav = [
-  { href: "#gate", label: "How it works" },
-  { href: "#", label: "Security" },
-  { href: "#pricing", label: "Pricing" },
-  { href: "#", label: "Docs" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/security", label: "Security" },
+  { href: "/features", label: "Features" },
+  { href: "/pricing", label: "Pricing" },
+  { href: "/docs", label: "Docs" },
 ];
+const APP = "https://cf-operator.balian.dev";
 ---
 <header>
   <div class="wrap">
@@ -12,8 +14,8 @@ const nav = [
       <a href="/" class="mark">Zone<i>steward</i></a>
       <nav>{nav.map((n) => <a href={n.href}>{n.label}</a>)}</nav>
       <div class="end">
-        <a href="#" class="btn btn-ghost btn-sm">Sign in</a>
-        <a href="#beta" class="btn btn-primary btn-sm">Apply for beta</a>
+        <a href={APP} class="btn btn-ghost btn-sm" rel="nofollow">Sign in</a>
+        <a href="/apply" class="btn btn-primary btn-sm">Apply for beta</a>
       </div>
     </div>
     <div class="strap">

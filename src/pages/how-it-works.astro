@@ -1,0 +1,63 @@
+---
+import Page from "../layouts/Page.astro";
+const steps = [
+  ["Propose", "You ask in plain language, or the investigator finds something. The model drafts a change — it cannot make one. Every function that can write to Cloudflare lives in the execution core and is reachable only after a human approves."],
+  ["Classify impact", "Low, medium or high, decided on the server from the actual payload. A whole-site lockdown, an apex DNS deletion, an SSL downgrade or a change fanned across many zones is high, and high needs an explicit acknowledgement, not a click."],
+  ["Preview blast radius", "For a firewall rule, its expression is translated into analytics filters and run against your real last 24 hours, so you see how many requests it would have matched — by country, ASN, path and user agent — before it exists."],
+  ["Approve", "The card shows the zone, the exact change, its impact, and what it would have done. Reject is always beside Approve. Viewers cannot approve; DNS and bulk changes are admin-only, enforced at three separate layers."],
+  ["Drift check", "The value the proposal was written against is re-read from Cloudflare at execution time. If reality moved since you looked, the change is refused rather than applied to a state nobody reviewed."],
+  ["Execute", "The server makes the call with a token chosen for that zone — the one with the most rights for the job — and falls through to the next on a 403 instead of giving up."],
+  ["Read back", "\"Applied\" is not the API saying OK. The server asks Cloudflare what the setting is now and confirms it matches what you approved."],
+  ["Audit", "Every attempt, successful or not, is recorded with actor, payload, Cloudflare's response, IP and user agent — together with the exact instructions to undo it."],
+  ["Revert", "One click, from the recorded before-state, through the same pipeline. A change is never a one-way door."],
+];
+---
+<Page
+  title="How it works — Zonesteward"
+  description="Propose, classify, preview, approve, drift-check, execute, read back, audit, revert. Every Cloudflare change, every time."
+  eyebrow="How it works"
+  h1="Nothing writes without you."
+  lede="Nine steps between a sentence typed into chat and a change on Cloudflare. The model does the first one. You do the fourth. The server does the rest and proves it."
+>
+  <ol class="pipe">
+    {steps.map(([b, p]) => <li><div><b>{b}</b><p>{p}</p></div></li>)}
+  </ol>
+
+  <h2>Why this is structural, not policy</h2>
+  <p>
+    Most AI tooling keeps the model from doing damage with instructions: a system
+    prompt that says "ask before you act", a guardrail model, a confirmation
+    dialog the model itself renders. Those are policies, and a policy can be
+    talked out of — by a user, or by text the model reads while investigating
+    an attack.
+  </p>
+  <p>
+    Zonesteward doesn't give the model a write tool to be talked out of.
+    <strong>Every function that mutates Cloudflare is reachable from the
+    execution core alone</strong>, which runs only after the approval endpoint
+    receives a human decision. There is no code path from a chat tool call to a
+    Cloudflare write. Prompt injection through a request path, a user agent, a
+    DNS record or a WAF rule name cannot cause a change, because the thing it
+    would need to call is not there to be called.
+  </p>
+  <p>
+    The alert investigator is constrained further: it may not propose DNS
+    changes, updates, deletes, or WAF <code>skip</code> rules. An injected
+    investigation cannot suggest disabling your own protection.
+  </p>
+
+  <h2>What you can change</h2>
+  <p>
+    DNS records. WAF custom rules, rate limits, managed rulesets and Super Bot
+    Fight Mode. IP access rules, lockdowns and AI-bot blocking. Cache rules and
+    purges. Redirects, rewrites, header rules, configuration and origin rules.
+    Zone settings — SSL mode, minimum TLS, security level, HSTS. Health checks
+    and waiting rooms. And any of it fanned across a saved group of zones with a
+    separate acknowledgement above a threshold.
+  </p>
+  <p>
+    Every one of them goes through the nine steps above. There is no fast lane.
+  </p>
+
+  <p class="callout"><a href="/security">The security page</a> covers how credentials are held, how workspaces are isolated, and what we haven't finished yet.</p>
+</Page>

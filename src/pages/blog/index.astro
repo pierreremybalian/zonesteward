@@ -1,0 +1,23 @@
+---
+import Page from "../../layouts/Page.astro";
+import { getCollection } from "astro:content";
+const posts = (await getCollection("blog")).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+---
+<Page
+  title="Writing — Zonesteward"
+  description="Real answers to the questions agencies running Cloudflare actually search for."
+  eyebrow="Writing"
+  h1="Notes from running a fleet."
+  lede="Real answers to real questions — the error messages, the firewall log, and the decisions behind the product."
+>
+  <ul class="posts">
+    {posts.map((p) => (
+      <li>
+        <span class="meta">{fmt(p.data.date)} · {p.data.minutes} min</span>
+        <h2><a href={`/blog/${p.id}`}>{p.data.title}</a></h2>
+        <p>{p.data.description}</p>
+      </li>
+    ))}
+  </ul>
+</Page>

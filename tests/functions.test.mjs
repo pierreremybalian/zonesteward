@@ -89,7 +89,7 @@ const post = (o, db, accept = 'application/json') =>
     ),
     env: { DB: db },
   });
-const GOOD = { name: 'Pat', email: 'pat@agency.com', zones: '26-100', company: 'Agency', today: 'the dashboard' };
+const GOOD = { name: 'Pat', email: 'pat@agency.com', zones: '26-100', traffic: '10-100M', company: 'Agency', today: 'the dashboard' };
 
 let bdb = betaDB();
 let r = await post(GOOD, bdb);
@@ -115,6 +115,17 @@ ok('honeypot: stored nothing but looks successful', r.status === 200 && bdb.rows
 bdb = betaDB();
 r = await post({ ...GOOD, today: 'x'.repeat(5000) }, bdb);
 ok('truncates an oversized field', bdb.rows[0].some((v) => typeof v === 'string' && v.length === 1200));
+
+bdb = betaDB();
+r = await post({ ...GOOD, traffic: '' }, bdb);
+ok('requires a traffic band', r.status === 400 && bdb.rows.length === 0);
+
+bdb = betaDB();
+{
+  const f = fd(GOOD); f.append('plans', 'pro'); f.append('plans', 'free'); f.append('plans', 'platinum'); f.append('focus', 'dns');
+  r = await betaPost({ request: Object.assign(new Request('https://zonesteward.com/api/beta', { method: 'POST', body: f, headers: { accept: 'application/json' } }), { cf: {} }), env: { DB: bdb } });
+}
+ok('joins checkbox groups and drops unknown values', bdb.rows[0].includes('pro,free') && !bdb.rows[0].some((v) => String(v).includes('platinum')) && bdb.rows[0].includes('dns'));
 
 r = await post(GOOD, betaDB(), 'text/html');
 ok('works without JS: HTML confirmation', (r.headers.get('content-type') || '').includes('text/html'));

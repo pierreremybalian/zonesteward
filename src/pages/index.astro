@@ -9,11 +9,29 @@ import Ask from "../components/Ask.astro";
 import Pricing from "../components/Pricing.astro";
 import Beta from "../components/Beta.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import ApplyModal from "../components/ApplyModal.astro";
+
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "Organization", name: "Zonesteward", url: "https://zonesteward.com", logo: "https://zonesteward.com/og.jpg" },
+    {
+      "@type": "SoftwareApplication", name: "Zonesteward", applicationCategory: "DeveloperApplication",
+      operatingSystem: "Web", url: "https://zonesteward.com",
+      description: "Cloudflare fleet operations for agencies: ask in plain language, see every zone on one globe, approve changes that verify themselves.",
+      offers: [
+        { "@type": "Offer", name: "Studio", price: "49", priceCurrency: "USD", description: "Up to 25 zones, 3 members. From general availability." },
+        { "@type": "Offer", name: "Agency", price: "149", priceCurrency: "USD", description: "Up to 100 zones, 10 members. From general availability." },
+      ],
+    },
+  ],
+};
 ---
 <Base
   title="Zonesteward — A steward for your Cloudflare fleet"
   description="Ask your Cloudflare fleet a question in plain language. Approve the fix. Nothing writes without you."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
   <Masthead />
   <main>
     <Hero />
@@ -25,4 +43,6 @@ import SiteFooter from "../components/SiteFooter.astro";
     <Beta />
   </main>
   <SiteFooter />
+  <ApplyModal />
+  <script is:inline src="/g/apply.js"></script>
 </Base>

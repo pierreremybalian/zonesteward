@@ -1,0 +1,33 @@
+---
+import Base from "../layouts/Base.astro";
+import ApplyForm from "../components/ApplyForm.astro";
+---
+<Base
+  title="Apply for the Zonesteward beta"
+  description="Twenty seats, free for the whole beta. Tell us what you run and what goes wrong with it."
+>
+  <div class="apply-page">
+    <div class="apply-dlg-in">
+      <aside class="apply-side">
+        <a href="/" class="mark">Zone<i>steward</i></a>
+        <span class="sc" style="margin-top:38px;display:block">Private beta · 20 seats</span>
+        <h1 style="font-size:clamp(2rem,4vw,2.6rem);margin-top:12px">Twenty seats.<br />Yours if it fits.</h1>
+        <p class="lede" style="font-size:15.5px;margin-top:18px;max-width:38ch">
+          Free for the whole beta, then half price for your first year. We're
+          picking for fit, not volume — a small fleet with a real problem beats a
+          big one with none.
+        </p>
+        <ul class="fit">
+          <li>You run zones for other people</li>
+          <li>You'll tell us when it's wrong</li>
+          <li>You're comfortable being early</li>
+        </ul>
+        <p style="margin-top:34px;font-size:13.5px"><a href="/" style="color:var(--accent)">← Back to the site</a></p>
+      </aside>
+      <div class="apply-main">
+        <ApplyForm id="apply-page" />
+      </div>
+    </div>
+  </div>
+  <script is:inline src="/g/apply.js"></script>
+</Base>

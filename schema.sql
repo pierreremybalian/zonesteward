@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS beta_applications (
   company   TEXT,
   site      TEXT,
   zones     TEXT NOT NULL,
+  traffic   TEXT NOT NULL,
+  plans     TEXT,               -- comma-joined: free,pro,business,enterprise
+  focus     TEXT,               -- comma-joined: security,dns,performance,investigation,reporting
+  role      TEXT,
   today     TEXT,
   anthropic TEXT,
   colo      TEXT,

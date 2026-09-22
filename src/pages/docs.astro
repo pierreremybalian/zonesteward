@@ -1,0 +1,83 @@
+---
+import Page from "../layouts/Page.astro";
+---
+<Page
+  title="Getting started — Zonesteward docs"
+  description="Connect a Cloudflare token with exactly the permissions you're comfortable with, pick your zones, ask a question, approve a change."
+  eyebrow="Docs"
+  h1="Getting started."
+  lede="Four steps, ten minutes. Start read-only if you want to; you can grant more later without reconnecting."
+>
+  <h2>1. Connect a Cloudflare token</h2>
+  <p>
+    Cloudflare has no OAuth for third-party apps, so you create an API token
+    yourself. Zonesteward's connection wizard builds a <strong>pre-filled
+    token-creation link</strong> with exactly the permission groups it needs, in
+    three tiers:
+  </p>
+  <ul>
+    <li><strong>Core</strong> — read zones, analytics, DNS and firewall settings. Enough to ask questions and see the globe. Nothing can be changed.</li>
+    <li><strong>Operate</strong> — adds write on firewall, cache and zone settings, so approved changes can execute.</li>
+    <li><strong>Extended</strong> — adds DNS write, origin and token introspection.</li>
+  </ul>
+  <p>
+    Paste the token back and the wizard introspects it and tells you precisely
+    what it can and can't do. Permissions are <em>never</em> discovered by
+    attempting a write. If you grant more later, re-check in Settings → Tokens
+    and it takes effect without reconnecting.
+  </p>
+  <p class="callout">Use a dedicated token per Cloudflare account, scoped to the zones you want visible. Tokens are encrypted at rest and never leave the server. <a href="/security">How they're held.</a></p>
+
+  <h2>2. Pick your zones</h2>
+  <p>
+    Every zone the token can see appears in the fleet roster with its plan tier.
+    Group them — by client, by environment, however you think about them.
+    Groups drive bulk changes and share-link scoping later.
+  </p>
+  <p>
+    Cloudflare gates parts of its analytics API by plan. Free zones can't return
+    per-colo data, some datasets are Pro and above, and retention is shorter.
+    Zonesteward treats all of that as expected and degrades per zone rather than
+    failing the batch; the fleet audit in Settings → Developer shows you exactly
+    what each zone can and can't answer.
+  </p>
+
+  <h2>3. Ask something</h2>
+  <p>Start with the question you'd ask a colleague:</p>
+  <ul>
+    <li><em>Who is attacking us right now?</em></li>
+    <li><em>Why is example.com slow from Germany this week?</em></li>
+    <li><em>Which zones are still on TLS 1.0?</em></li>
+    <li><em>Show me every 5xx in the last hour, by path.</em></li>
+  </ul>
+  <p>
+    The model writes the GraphQL; the server scopes it to your active zone or
+    group. Answers drop into the conversation with their evidence, so the next
+    question starts from data.
+  </p>
+
+  <h2>4. Approve a change</h2>
+  <p>
+    Ask for a change — <em>"challenge that IP on every client zone"</em> — and
+    you get an approval card: the zone, the exact change, its impact level, and
+    for firewall rules how many of your last 24 hours' requests it would have
+    matched. Approve or reject. The server checks nothing moved since you
+    looked, executes, reads the result back from Cloudflare, and records how to
+    undo it. <a href="/how-it-works">The whole pipeline.</a>
+  </p>
+
+  <h2>Bring your own Anthropic key</h2>
+  <p>
+    Zonesteward calls Anthropic's API under your key, so usage is billed to you
+    at Anthropic's rates and never marked up. Create one at
+    console.anthropic.com and paste it in Settings. It's stored the same way
+    Cloudflare tokens are.
+  </p>
+
+  <h2>Need more?</h2>
+  <p>
+    Fuller docs are coming as the beta shapes them. Until then,
+    <a href="mailto:hello@zonesteward.com">email</a> — in beta you're talking to
+    the person who wrote the code.
+  </p>
+</Page>

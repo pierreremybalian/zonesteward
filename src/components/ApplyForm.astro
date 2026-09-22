@@ -1,0 +1,131 @@
+---
+/* The application itself. Rendered twice: inside the full-screen <dialog> on
+   the home page, and as the standalone /apply page that the dialog falls back
+   to without JavaScript. Three steps — who you are, what you run, whether it
+   fits — driven by the script at the bottom; with JS off, all three simply
+   show at once and the form posts natively. */
+interface Props { id?: string; }
+const { id = "apply" } = Astro.props;
+
+const zones = [["1-10", "1–10"], ["11-25", "11–25"], ["26-100", "26–100"], ["100+", "100+"]];
+const traffic = [
+  ["<1M", "Under 1M requests / month"], ["1-10M", "1–10M"], ["10-100M", "10–100M"],
+  ["100M+", "100M+"], ["unsure", "Not sure"],
+];
+const plans = [["free", "Free"], ["pro", "Pro"], ["business", "Business"], ["enterprise", "Enterprise"]];
+const focus = [
+  ["security", "WAF, firewall, bots"], ["dns", "DNS"], ["performance", "Cache & performance"],
+  ["investigation", "Analytics & incident digging"], ["reporting", "Client reporting"],
+];
+const roles = [
+  ["me", "Just me"], ["team", "A small team"], ["ops", "A dedicated ops person"], ["client", "The client does"],
+];
+---
+<form class="apply" id={id} method="POST" action="/api/beta" novalidate>
+  <ol class="steps" aria-label="Progress">
+    <li data-step-tab="1" aria-current="step"><span class="n">01</span>You</li>
+    <li data-step-tab="2"><span class="n">02</span>Your fleet</li>
+    <li data-step-tab="3"><span class="n">03</span>Fit</li>
+  </ol>
+
+  <!-- 01 · You -->
+  <fieldset class="step" data-step="1">
+    <legend class="step-title">Who should we write back to?</legend>
+    <div class="f2">
+      <p class="fld">
+        <label for={`${id}-name`}>Name</label>
+        <input id={`${id}-name`} name="name" type="text" required autocomplete="name" maxlength="120" />
+      </p>
+      <p class="fld">
+        <label for={`${id}-email`}>Work email</label>
+        <input id={`${id}-email`} name="email" type="email" required autocomplete="email" maxlength="200" />
+      </p>
+    </div>
+    <div class="f2">
+      <p class="fld">
+        <label for={`${id}-company`}>Agency or company</label>
+        <input id={`${id}-company`} name="company" type="text" autocomplete="organization" maxlength="160" />
+      </p>
+      <p class="fld">
+        <label for={`${id}-site`}>Website <span class="opt">optional</span></label>
+        <input id={`${id}-site`} name="site" type="text" inputmode="url" maxlength="200" placeholder="agency.com" />
+      </p>
+    </div>
+  </fieldset>
+
+  <!-- 02 · Your fleet -->
+  <fieldset class="step" data-step="2" hidden>
+    <legend class="step-title">What are you running?</legend>
+
+    <fieldset class="fld">
+      <legend>How many Cloudflare zones do you manage?</legend>
+      <div class="radios">
+        {zones.map(([v, l]) => <label class="radio"><input type="radio" name="zones" value={v} required /><span>{l}</span></label>)}
+      </div>
+    </fieldset>
+
+    <fieldset class="fld">
+      <legend>Traffic across all of them, roughly</legend>
+      <div class="radios">
+        {traffic.map(([v, l]) => <label class="radio"><input type="radio" name="traffic" value={v} required /><span>{l}</span></label>)}
+      </div>
+    </fieldset>
+
+    <fieldset class="fld">
+      <legend>Which plans are they on? <span class="opt">pick any</span></legend>
+      <div class="radios">
+        {plans.map(([v, l]) => <label class="radio"><input type="checkbox" name="plans" value={v} /><span>{l}</span></label>)}
+      </div>
+      <p class="hint">Some things Cloudflare only exposes on paid plans. Knowing the mix tells us what you'll actually see.</p>
+    </fieldset>
+
+    <fieldset class="fld">
+      <legend>Where do you spend your Cloudflare time? <span class="opt">pick any</span></legend>
+      <div class="radios">
+        {focus.map(([v, l]) => <label class="radio"><input type="checkbox" name="focus" value={v} /><span>{l}</span></label>)}
+      </div>
+    </fieldset>
+
+    <fieldset class="fld">
+      <legend>Who looks after it today?</legend>
+      <div class="radios">
+        {roles.map(([v, l]) => <label class="radio"><input type="radio" name="role" value={v} /><span>{l}</span></label>)}
+      </div>
+    </fieldset>
+  </fieldset>
+
+  <!-- 03 · Fit -->
+  <fieldset class="step" data-step="3" hidden>
+    <legend class="step-title">Is it a fit?</legend>
+
+    <p class="fld">
+      <label for={`${id}-key`}>Do you have an Anthropic API key?</label>
+      <select id={`${id}-key`} name="anthropic">
+        <option value="yes">Yes</option>
+        <option value="not yet">Not yet, but I can get one</option>
+        <option value="what is that">No idea what that is</option>
+      </select>
+      <span class="hint">You bring your own key, so model usage is billed to you at cost. We don't mark it up and we never hold it.</span>
+    </p>
+
+    <p class="fld">
+      <label for={`${id}-today`}>What goes wrong today?</label>
+      <textarea id={`${id}-today`} name="today" rows="5" maxlength="1200"
+        placeholder="The thing you dread. Forty tabs. A WAF change at five o'clock with no way back. A client asking why their site is slow in Europe."></textarea>
+    </p>
+
+    <!-- honeypot: invisible to people, irresistible to bots -->
+    <p class="hp" aria-hidden="true">
+      <label for={`${id}-curl`}>Company URL</label>
+      <input id={`${id}-curl`} name="company_url" type="text" tabindex="-1" autocomplete="off" />
+    </p>
+  </fieldset>
+
+  <div class="step-nav">
+    <button type="button" class="btn btn-ghost" data-prev hidden>← Back</button>
+    <span class="cta-note" data-note>Takes about two minutes.</span>
+    <button type="button" class="btn btn-primary" data-next>Continue →</button>
+    <button type="submit" class="btn btn-primary btn-lg" data-submit hidden>Apply for beta →</button>
+  </div>
+  <p class="apply-msg" role="status" aria-live="polite" hidden></p>
+</form>

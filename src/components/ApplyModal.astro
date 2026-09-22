@@ -1,0 +1,62 @@
+---
+/* Full-screen application. Every "Apply for beta" link on the page points at
+   /apply, which is a real page; this script intercepts those clicks and opens
+   the same form in a <dialog> instead. Native <dialog> gives us focus trapping,
+   Escape, and the backdrop for free. Without JS the links simply navigate. */
+import ApplyForm from "./ApplyForm.astro";
+---
+<dialog class="apply-dlg" id="apply-dlg" aria-labelledby="apply-dlg-title">
+  <div class="apply-dlg-in">
+    <aside class="apply-side">
+      <a href="/" class="mark">Zone<i>steward</i></a>
+      <span class="sc" style="margin-top:38px;display:block">Private beta · 20 seats</span>
+      <h2 id="apply-dlg-title" style="margin-top:12px">Twenty seats.<br />Yours if it fits.</h2>
+      <p class="lede" style="font-size:15.5px;margin-top:18px;max-width:38ch">
+        Free for the whole beta, then half price for your first year. We're
+        picking for fit, not volume — a small fleet with a real problem beats a
+        big one with none.
+      </p>
+      <ul class="fit">
+        <li>You run zones for other people</li>
+        <li>You'll tell us when it's wrong</li>
+        <li>You're comfortable being early</li>
+      </ul>
+    </aside>
+    <div class="apply-main">
+      <button type="button" class="apply-close" data-close aria-label="Close">×</button>
+      <ApplyForm id="apply-modal" />
+    </div>
+  </div>
+</dialog>
+
+<script is:inline>
+  (function () {
+    var dlg = document.getElementById("apply-dlg");
+    if (!dlg || typeof dlg.showModal !== "function") return;
+
+    function open(e) {
+      if (e) e.preventDefault();
+      dlg.showModal();
+      document.documentElement.classList.add("dlg-open");
+      var first = dlg.querySelector('input:not([type=hidden]):not([tabindex="-1"])');
+      if (first) setTimeout(function () { first.focus(); }, 30);
+    }
+    function close() {
+      dlg.close();
+    }
+    dlg.addEventListener("close", function () {
+      document.documentElement.classList.remove("dlg-open");
+    });
+
+    document.querySelectorAll('a[href="/apply"], a[href="#apply"]').forEach(function (a) {
+      a.addEventListener("click", open);
+    });
+    dlg.querySelector("[data-close]").addEventListener("click", close);
+    // click on the backdrop closes; click inside the sheet does not
+    dlg.addEventListener("click", function (e) {
+      if (e.target === dlg) close();
+    });
+
+    if (location.hash === "#apply") open();
+  })();
+</script>

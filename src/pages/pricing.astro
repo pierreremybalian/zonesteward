@@ -1,0 +1,55 @@
+---
+import Page from "../layouts/Page.astro";
+const tiers = [
+  { plan: "Studio", zones: "up to 25 zones", amt: "$49", per: "/mo", members: "3 members" },
+  { plan: "Agency", zones: "up to 100 zones", amt: "$149", per: "/mo", members: "10 members" },
+  { plan: "Fleet", zones: "100+ zones", amt: "Talk", per: " to us", members: "unlimited members" },
+];
+const faq = [
+  ["Why per zone?", "Because that's how your work scales. A zone is a site you're responsible for, and the value of a fleet view grows with the fleet. Members are generous on every tier so you're never rationing seats."],
+  ["What counts as a zone?", "A zone as Cloudflare defines it: one domain in one Cloudflare account. Subdomains under it don't count separately. Zones you've paused still count if they're connected."],
+  ["What happens at the end of the beta?", "You'll get at least 30 days' notice. Beta testers get 50% off their first year at whatever tier fits, locked in. Nothing is charged until you pick a plan; if you don't, your workspace goes read-only, not deleted."],
+  ["Do you mark up AI usage?", "No. You bring your own Anthropic key and Anthropic bills you directly at their rates. We never see your key in the middle. A busy agency month is typically a few dollars."],
+  ["Can I export my data?", "Yes — conversations, audit trail and configuration as JSON, on request during beta and self-serve at GA. Your Cloudflare tokens are never exported; delete them from Cloudflare when you leave."],
+  ["What if I cancel?", "Your workspace is deleted after 30 days and its encrypted database with it. Revoke the API token on Cloudflare's side too — you should do that with any tool you stop using."],
+  ["Is every feature really in every tier?", "Yes. Withholding a security feature from the cheap plan is a bad look, and add-on stacking is the thing agencies hate most about management tooling. Tiers differ by zones and members, nothing else."],
+];
+const jsonld = {
+  "@context": "https://schema.org", "@type": "FAQPage",
+  mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+};
+---
+<Page
+  title="Pricing — Zonesteward"
+  description="Studio $49/mo to 25 zones, Agency $149/mo to 100, Fleet beyond. Every tier includes everything. Free during the beta, then half price for your first year."
+  eyebrow="Rates"
+  h1="Priced per workspace, by zones."
+  lede="Every tier includes everything. Free for the whole beta, then 50% off your first year, locked. Prices below apply from general availability."
+  wide
+  jsonld={jsonld}
+>
+  <table class="rate">
+    <thead><tr><th>Plan</th><th>From general availability</th><th>Included</th></tr></thead>
+    <tbody>
+      {tiers.map((t) => (
+        <tr>
+          <td><span class="plan">{t.plan}</span><span class="zn">{t.zones}</span></td>
+          <td><span class="amt">{t.amt}<small>{t.per}</small></span></td>
+          <td class="desc">{t.members}. Chat, globe, investigation, approvals, audit, alerts, share links. All of it.</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="note">
+    <b>You bring your own keys.</b> A Cloudflare API token scoped to what you want us to see, and an Anthropic API key. Model usage is billed to you by Anthropic at cost. We do not mark it up, and we never hold your Anthropic key in the middle.
+  </p>
+
+  <div class="faq">
+    {faq.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}
+  </div>
+
+  <div class="cta" style="margin-top:56px">
+    <a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a>
+    <span class="cta-note">Twenty seats. Two minutes of questions.</span>
+  </div>
+</Page>

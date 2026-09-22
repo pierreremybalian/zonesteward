@@ -1,0 +1,45 @@
+---
+import Base from "../../layouts/Base.astro";
+import Masthead from "../../components/Masthead.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import ApplyModal from "../../components/ApplyModal.astro";
+import { getCollection, render } from "astro:content";
+import "../../styles/pages.css";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((p) => ({ params: { id: p.id }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = (d: Date) => d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+const jsonld = {
+  "@context": "https://schema.org", "@type": "Article",
+  headline: post.data.title, description: post.data.description,
+  datePublished: post.data.date.toISOString(),
+  author: { "@type": "Organization", name: "Zonesteward" },
+  publisher: { "@type": "Organization", name: "Zonesteward", logo: { "@type": "ImageObject", url: "https://zonesteward.com/og.jpg" } },
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).toString(),
+};
+---
+<Base title={post.data.title} description={post.data.description}>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
+  <Masthead />
+  <main>
+    <header class="post-head">
+      <div class="wrap">
+        <span class="sc"><a href="/blog">Writing</a> · {fmt(post.data.date)} · {post.data.minutes} min</span>
+        <h1 style="margin-top:14px">{post.data.title}</h1>
+        <p class="lede" style="margin-top:18px">{post.data.description}</p>
+      </div>
+    </header>
+    <article class="prose">
+      <Content />
+      <hr />
+      <p class="callout">Zonesteward does this across every zone you manage, with every change gated behind approval. <a href="/apply">Twenty beta seats.</a></p>
+    </article>
+  </main>
+  <SiteFooter />
+  <ApplyModal />
+  <script is:inline src="/g/apply.js"></script>
+</Base>

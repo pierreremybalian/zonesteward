@@ -1,0 +1,34 @@
+---
+/* Inner-page layout: masthead, a header band, the page, footer, and the
+   application modal so "Apply for beta" opens in place from every page. */
+import Base from "./Base.astro";
+import Masthead from "../components/Masthead.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import ApplyModal from "../components/ApplyModal.astro";
+import "../styles/pages.css";
+
+interface Props {
+  title: string; description: string; eyebrow?: string; h1: string; lede?: string;
+  wide?: boolean; jsonld?: Record<string, unknown>;
+}
+const { title, description, eyebrow, h1, lede, wide = false, jsonld } = Astro.props;
+---
+<Base title={title} description={description}>
+  {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
+  <Masthead />
+  <main>
+    <header class="page-head">
+      <div class="wrap">
+        {eyebrow && <span class="sc">{eyebrow}</span>}
+        <h1 style={eyebrow ? "margin-top:12px" : ""}>{h1}</h1>
+        {lede && <p class="lede">{lede}</p>}
+      </div>
+    </header>
+    <div class={wide ? "wide" : "prose"}>
+      <slot />
+    </div>
+  </main>
+  <SiteFooter />
+  <ApplyModal />
+  <script is:inline src="/g/apply.js"></script>
+</Base>

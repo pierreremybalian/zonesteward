@@ -1,0 +1,36 @@
+---
+import Page from "../layouts/Page.astro";
+---
+<Page
+  title="Terms — Zonesteward"
+  description="Terms of service for the Zonesteward private beta."
+  eyebrow="Terms"
+  h1="Terms of service."
+  lede="Beta terms. Short on purpose; they'll grow up with the product."
+>
+  <p class="meta">Zonesteward private beta · last updated 22 September 2026</p>
+
+  <h2>The beta</h2>
+  <p>Zonesteward is pre-release software offered free of charge to accepted beta participants. It is provided as-is. It may change, break, or be withdrawn, and we'll do our best to warn you first. Pricing published on this site applies from general availability and not before; nothing is charged during the beta.</p>
+
+  <h2>Your accounts and credentials</h2>
+  <p>You bring your own Cloudflare API tokens and Anthropic API key. You're responsible for scoping them appropriately and for the charges Anthropic bills you. Use a dedicated token; revoke it on Cloudflare's side if you stop using the product. We encrypt what you give us and never return it to a browser, as described on the <a href="/security">security page</a>.</p>
+
+  <h2>What you approve is yours</h2>
+  <p>The product never changes Cloudflare without a human in your workspace approving it. Every approved change is recorded and revertable, but <strong>you are responsible for the changes you approve</strong> and for their effect on your and your clients' sites. Preview and impact classification are aids, not guarantees.</p>
+
+  <h2>Acceptable use</h2>
+  <p>Use it on zones you're authorised to manage. Don't use it to attack, probe or interfere with systems that aren't yours, and don't try to break the workspace boundary. Doing so ends your access.</p>
+
+  <h2>What we ask in return</h2>
+  <p>Honest feedback when something is wrong. Not a second job — a message when you hit something. That's the price of the beta.</p>
+
+  <h2>Liability</h2>
+  <p>To the extent the law allows, we're not liable for indirect or consequential loss arising from the beta, and our total liability is limited to the amount you've paid us, which during the beta is nothing. Nothing here limits liability that can't legally be limited.</p>
+
+  <h2>Ending it</h2>
+  <p>You can leave whenever you like. We can end a participant's beta access with notice, or immediately for misuse. On either, your workspace goes read-only for 30 days so you can export, then it and its database are deleted.</p>
+
+  <h2>Contact</h2>
+  <p><a href="mailto:hello@zonesteward.com">hello@zonesteward.com</a></p>
+</Page>

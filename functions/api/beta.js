@@ -7,7 +7,16 @@
  * be lost to a script that failed to load.
  */
 const ZONES = new Set(["1-10", "11-25", "26-100", "100+"]);
+const TRAFFIC = new Set(["<1M", "1-10M", "10-100M", "100M+", "unsure"]);
+const PLANS = new Set(["free", "pro", "business", "enterprise"]);
+const FOCUS = new Set(["security", "dns", "performance", "investigation", "reporting"]);
+const ROLE = new Set(["me", "team", "ops", "client"]);
 const KEY = new Set(["yes", "not yet", "what is that"]);
+
+/* checkbox groups arrive as repeated keys; keep only known values, joined */
+const multi = (form, key, allowed) =>
+  [...new Set(form.getAll(key).map((v) => clean(v, 30)).filter((v) => allowed.has(v)))].join(",");
+const oneOf = (v, allowed) => (allowed.has(v) ? v : "");
 
 const clean = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 /* Deliberately loose. Rejecting odd-but-valid addresses loses real applicants,
@@ -54,6 +63,8 @@ export async function onRequestPost(context) {
   if (!name) return fail("Please give us a name to use.", 400);
   if (!emailish(email)) return fail("That email address doesn't look right.", 400);
   if (!ZONES.has(zones)) return fail("Please tell us roughly how many zones you run.", 400);
+  const traffic = clean(form.get("traffic"), 20);
+  if (!TRAFFIC.has(traffic)) return fail("Please give us a rough sense of traffic — 'not sure' is fine.", 400);
 
   const anthropic = clean(form.get("anthropic"), 20);
   const row = {
@@ -63,6 +74,10 @@ export async function onRequestPost(context) {
     company: clean(form.get("company"), 160),
     site: clean(form.get("site"), 200),
     zones,
+    traffic,
+    plans: multi(form, "plans", PLANS),
+    focus: multi(form, "focus", FOCUS),
+    role: oneOf(clean(form.get("role"), 20), ROLE),
     today: clean(form.get("today"), 1200),
     anthropic: KEY.has(anthropic) ? anthropic : "",
     colo: (request.cf && request.cf.colo) || "",
@@ -73,10 +88,13 @@ export async function onRequestPost(context) {
 
   try {
     await env.DB.prepare(
-      "INSERT INTO beta_applications (email, created, name, company, site, zones, today, anthropic, colo, country) " +
-        "VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10) " +
-        "ON CONFLICT (email) DO UPDATE SET created=?2, name=?3, company=?4, site=?5, zones=?6, today=?7, anthropic=?8"
-    ).bind(row.email, row.created, row.name, row.company, row.site, row.zones, row.today, row.anthropic, row.colo, row.country).run();
+      "INSERT INTO beta_applications " +
+        "(email, created, name, company, site, zones, traffic, plans, focus, role, today, anthropic, colo, country) " +
+        "VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14) " +
+        "ON CONFLICT (email) DO UPDATE SET created=?2, name=?3, company=?4, site=?5, zones=?6, " +
+        "traffic=?7, plans=?8, focus=?9, role=?10, today=?11, anthropic=?12"
+    ).bind(row.email, row.created, row.name, row.company, row.site, row.zones, row.traffic, row.plans,
+           row.focus, row.role, row.today, row.anthropic, row.colo, row.country).run();
   } catch {
     return fail("Something broke on our side. Try again, or email us.", 500);
   }

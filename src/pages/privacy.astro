@@ -1,0 +1,45 @@
+---
+import Page from "../layouts/Page.astro";
+---
+<Page
+  title="Privacy — Zonesteward"
+  description="What Zonesteward collects, why, who it's shared with, and how to get it deleted."
+  eyebrow="Privacy"
+  h1="Privacy policy."
+  lede="Plain language, because the point of a privacy policy is that you can read it."
+>
+  <p class="meta">Zonesteward · last updated 22 September 2026</p>
+
+  <h2>Who we are</h2>
+  <p>Zonesteward is a Cloudflare fleet-operations tool. It is currently in private beta. Contact for anything on this page: <a href="mailto:privacy@zonesteward.com">privacy@zonesteward.com</a>.</p>
+
+  <h2>This website</h2>
+  <p>zonesteward.com runs no third-party analytics, no advertising pixels, and no tracking cookies. The live globe on the homepage counts which Cloudflare data centre served each page view — a three-letter city code and an hour bucket, nothing else. No IP address, no user agent, nothing that identifies you is stored.</p>
+  <p>If you apply for the beta, we store what you type into the form: your name, work email, company, website, the answers to the qualifying questions, and the Cloudflare data centre and country the submission came from. We use it to decide whether the beta is a fit and to write back to you. We will not add you to a newsletter. Ask and it's deleted.</p>
+
+  <h2>The product</h2>
+  <p>When you sign in with Google, Microsoft or GitHub we receive your <strong>email address, name and profile picture</strong>, solely to identify you, decide whether you've been invited, and show who did what inside your workspace. We request no other scopes and read nothing else from those accounts.</p>
+  <p>Inside a workspace the product stores:</p>
+  <ul>
+    <li>Your email, name, role and sign-in sessions.</li>
+    <li>Your conversations with the assistant and the changes you proposed, approved or rejected. An audit log records who changed what, when, and from which IP address.</li>
+    <li>Cloudflare API tokens and any notification-provider credentials your administrators add, encrypted at rest with a key unique to your workspace. Decrypted values never leave the server.</li>
+    <li>Cloudflare analytics, fetched on demand and cached briefly. They describe your websites' traffic, not you.</li>
+  </ul>
+
+  <h2>Who it's shared with</h2>
+  <ul>
+    <li><strong>Anthropic</strong> — questions you type and the analytics needed to answer them, sent under your own API key.</li>
+    <li><strong>Cloudflare</strong> — your zones' API, called to read analytics and apply changes you approve.</li>
+    <li><strong>OVHcloud</strong> — where the product's server runs.</li>
+    <li><strong>Resend</strong> — sign-in links and invitations.</li>
+    <li>Alert channels you configure yourself — email, Slack, Teams, SMS, PagerDuty, webhooks — using your credentials.</li>
+  </ul>
+  <p>We do not sell data and we do not use it for advertising.</p>
+
+  <h2>Retention and your rights</h2>
+  <p>Accounts and their data are removed when a workspace administrator revokes access. A cancelled workspace and its database are deleted after 30 days. You can ask for your account, your conversations or your beta application to be deleted at any time. Audit records of configuration changes are kept for operational accountability while a workspace exists. You can request an export of your data during the beta by email.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes materially we'll say so here with a new date, and tell workspace owners by email.</p>
+</Page>
