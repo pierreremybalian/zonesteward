@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS beta_applications (
   today     TEXT,
   anthropic TEXT,
   colo      TEXT,
-  country   TEXT
+  country   TEXT,
+  status    TEXT NOT NULL DEFAULT 'new',   -- new | approved | rejected
+  decided   INTEGER
 );
 CREATE INDEX IF NOT EXISTS beta_created ON beta_applications (created);

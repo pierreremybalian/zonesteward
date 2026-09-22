@@ -161,10 +161,33 @@ a honeypot field; the response to a caught bot is a normal-looking success, so
 it gets no signal to retry differently.
 
 ```bash
-npm run apps     # read them
+npm run apps     # read them, with status
 ```
 
 Unique on email, so a resubmit updates the row instead of inflating the count.
+
+### What happens on submit
+
+1. The row is saved. The response goes out.
+2. *After* the response, two emails go via Resend from `MAIL_FROM`
+   (`beta@balian.dev` — `balian.dev` is a verified Resend domain; `zonesteward.com`
+   is not yet): a receipt to the applicant, and the full application to
+   `NOTIFY_TO` with **Approve** and **Reject** links.
+3. The links are `GET /api/decide?e=<email>&d=approve|reject&s=<hmac>`, signed
+   with `DECISION_SECRET` over `email|decision`, single-use by virtue of the
+   status column. Approve emails the applicant that a workspace and invitation
+   are coming and emails *you* the exact `cfop tenant create …` command;
+   reject sends a kind no. A decided application cannot be re-decided.
+4. Provisioning itself is deliberately **not** done from this site. The
+   operator fails closed and should not grow a public carve-out so a marketing
+   Function can create tenants.
+
+Mail failing never fails a submission: `sendMail` never throws, and
+notification runs in `waitUntil`.
+
+Pages secrets: `RESEND_API_KEY`, `MAIL_FROM`, `NOTIFY_TO`, `SITE_URL`,
+`DECISION_SECRET`. Without `RESEND_API_KEY` everything works and nothing is
+sent.
 
 ## Still open
 

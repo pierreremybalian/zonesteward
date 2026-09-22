@@ -1,6 +1,8 @@
 import { onRequest } from '../functions/_middleware.js';
 import { onRequestGet } from '../functions/api/globe.js';
 import { onRequestPost as betaPost } from '../functions/api/beta.js';
+import { onRequestGet as decideGet } from '../functions/api/decide.js';
+import { sign, verify } from '../functions/_lib/sign.js';
 
 let pass = 0, fail = 0;
 const ok = (n, c) => { c ? (pass++, console.log('  ok   ' + n)) : (fail++, console.log('  FAIL ' + n)); };
@@ -87,7 +89,7 @@ const post = (o, db, accept = 'application/json') =>
       new Request('https://zonesteward.com/api/beta', { method: 'POST', body: fd(o), headers: { accept } }),
       { cf: { colo: 'MSP', country: 'US' } }
     ),
-    env: { DB: db },
+    env: { DB: db }, waitUntil: () => {},
   });
 const GOOD = { name: 'Pat', email: 'pat@agency.com', zones: '26-100', traffic: '10-100M', company: 'Agency', today: 'the dashboard' };
 
@@ -123,7 +125,7 @@ ok('requires a traffic band', r.status === 400 && bdb.rows.length === 0);
 bdb = betaDB();
 {
   const f = fd(GOOD); f.append('plans', 'pro'); f.append('plans', 'free'); f.append('plans', 'platinum'); f.append('focus', 'dns');
-  r = await betaPost({ request: Object.assign(new Request('https://zonesteward.com/api/beta', { method: 'POST', body: f, headers: { accept: 'application/json' } }), { cf: {} }), env: { DB: bdb } });
+  r = await betaPost({ request: Object.assign(new Request('https://zonesteward.com/api/beta', { method: 'POST', body: f, headers: { accept: 'application/json' } }), { cf: {} }), env: { DB: bdb }, waitUntil: () => {} });
 }
 ok('joins checkbox groups and drops unknown values', bdb.rows[0].includes('pro,free') && !bdb.rows[0].some((v) => String(v).includes('platinum')) && bdb.rows[0].includes('dns'));
 
@@ -137,6 +139,68 @@ r = await post(GOOD, betaDB(), 'text/html');
 
 r = await post(GOOD, undefined);
 ok('no binding fails loudly rather than dropping a signup', r.status === 503);
+
+console.log('notifications');
+{
+  const sent = [];
+  const env = {
+    DB: betaDB(), NOTIFY_TO: 'me@example.com', DECISION_SECRET: 's3cret', RESEND_API_KEY: 'k', SITE_URL: 'https://z.test',
+    __fetch: async (_u, init) => { sent.push(JSON.parse(init.body)); return { ok: true, json: async () => ({ id: 'x' }) }; },
+  };
+  const tasks = [];
+  const r = await betaPost({
+    request: Object.assign(new Request('https://z.test/api/beta', { method: 'POST', body: fd(GOOD), headers: { accept: 'application/json' } }), { cf: { colo: 'MSP', country: 'US' } }),
+    env, waitUntil: (p) => tasks.push(p),
+  });
+  await Promise.all(tasks);
+  ok('application still 200 while mail goes out after the response', r.status === 200);
+  ok('emails you and the applicant', sent.length === 2 && sent.some((m) => m.to[0] === 'me@example.com') && sent.some((m) => m.to[0] === 'pat@agency.com'));
+  const mine = sent.find((m) => m.to[0] === 'me@example.com');
+  const sig = await sign('s3cret', 'pat@agency.com', 'approve');
+  ok('your email carries signed approve and reject links', mine.html.includes(`d=approve&amp;s=${sig}`) && mine.text.includes(`d=approve&s=${sig}`) && mine.html.includes('d=reject&amp;s='));
+  ok('applicant email echoes their answers', sent.find((m) => m.to[0] === 'pat@agency.com').html.includes('26–100'));
+}
+{
+  const env = { DB: betaDB(), NOTIFY_TO: 'me@example.com', DECISION_SECRET: 's3cret' };  // no RESEND key
+  const tasks = [];
+  const r = await betaPost({
+    request: Object.assign(new Request('https://z.test/api/beta', { method: 'POST', body: fd(GOOD), headers: { accept: 'application/json' } }), { cf: {} }),
+    env, waitUntil: (p) => tasks.push(p),
+  });
+  let threw = false; try { await Promise.all(tasks); } catch { threw = true; }
+  ok('no mail configured: application saved, nothing throws', r.status === 200 && !threw);
+}
+
+console.log('api/decide');
+ok('sign/verify round-trips', await verify('s', 'a@b.c', 'approve', await sign('s', 'a@b.c', 'approve')));
+ok('verify rejects a different decision', !(await verify('s', 'a@b.c', 'reject', await sign('s', 'a@b.c', 'approve'))));
+function decideDB(row) {
+  const updates = [];
+  return { updates, prepare: (sql) => ({ bind: (...a) => ({
+    first: async () => (sql.startsWith('SELECT') ? row : null),
+    run: async () => { updates.push(a); return {}; },
+  }) }) };
+}
+const ROW = { email: 'pat@agency.com', name: 'Pat Example', company: 'Agency', zones: '26-100', traffic: '10-100M', status: 'new' };
+const decide = (q, db, extra = {}) => decideGet({ request: new Request('https://z.test/api/decide?' + q), env: { DB: db, DECISION_SECRET: 's3cret', NOTIFY_TO: 'me@example.com', SITE_URL: 'https://z.test', ...extra } });
+{
+  const db = decideDB(ROW);
+  const r = await decide(`e=pat@agency.com&d=approve&s=${'0'.repeat(64)}`, db);
+  ok('bad signature is refused and changes nothing', r.status === 403 && db.updates.length === 0);
+}
+{
+  const db = decideDB(ROW); const sent = [];
+  const sig = await sign('s3cret', 'pat@agency.com', 'approve');
+  const r = await decide(`e=pat@agency.com&d=approve&s=${sig}`, db, { RESEND_API_KEY: 'k', __fetch: async (_u, i) => { sent.push(JSON.parse(i.body)); return { ok: true, json: async () => ({}) }; } });
+  ok('approve records the decision', r.status === 200 && db.updates.length === 1 && db.updates[0][1] === 'approved');
+  ok('approve emails the applicant and sends you the provisioning command', sent.length === 2 && sent.some((m) => m.html.includes('cfop tenant create agency')));
+}
+{
+  const db = decideDB({ ...ROW, status: 'approved', decided: Date.now() });
+  const sig = await sign('s3cret', 'pat@agency.com', 'reject');
+  const r = await decide(`e=pat@agency.com&d=reject&s=${sig}`, db);
+  ok('a decided application cannot be re-decided', r.status === 200 && db.updates.length === 0 && (await r.text()).includes('Already approved'));
+}
 
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

@@ -6,6 +6,9 @@
  * not dependent on it — a signup is the one thing on this site that must never
  * be lost to a script that failed to load.
  */
+import { sign } from "../_lib/sign.js";
+import { sendMail, shell, rows, button } from "../_lib/mail.js";
+
 const ZONES = new Set(["1-10", "11-25", "26-100", "100+"]);
 const TRAFFIC = new Set(["<1M", "1-10M", "10-100M", "100M+", "unsure"]);
 const PLANS = new Set(["free", "pro", "business", "enterprise"]);
@@ -91,7 +94,7 @@ function page(title, body, status) {
 }
 
 export async function onRequestPost(context) {
-  const { request, env } = context;
+  const { request, env, waitUntil } = context;
   const wantsJson = (request.headers.get("accept") || "").includes("application/json");
   const fail = (msg, code) =>
     wantsJson
@@ -154,5 +157,50 @@ export async function onRequestPost(context) {
     return fail("Something broke on our side. Try again, or email us.", 500);
   }
 
+  // Notify after responding: the applicant never waits on Resend, and a mail
+  // failure never turns a saved application into an error.
+  waitUntil(notify(env, row).catch(() => {}));
+
   return wantsJson ? Response.json({ ok: true }) : receiptPage(row);
+}
+
+async function notify(env, row) {
+  const site = env.SITE_URL || "https://zonesteward.com";
+  const pairs = [
+    ["Name", row.name], ["Email", row.email], ["Company", row.company], ["Website", row.site],
+    ["Zones", label("zones", row.zones)], ["Monthly requests", label("traffic", row.traffic)],
+    ["Plans", label("plans", row.plans)], ["Time goes on", label("focus", row.focus)],
+    ["Managed by", label("role", row.role)], ["Anthropic key", label("anthropic", row.anthropic)],
+    ["What goes wrong", row.today], ["From", [row.colo, row.country].filter(Boolean).join(" · ")],
+  ];
+  const jobs = [];
+
+  if (env.NOTIFY_TO && env.DECISION_SECRET) {
+    const [ok, no] = await Promise.all([sign(env.DECISION_SECRET, row.email, "approve"), sign(env.DECISION_SECRET, row.email, "reject")]);
+    const link = (d, s) => `${site}/api/decide?e=${encodeURIComponent(row.email)}&d=${d}&s=${s}`;
+    jobs.push(sendMail(env, {
+      to: env.NOTIFY_TO, replyTo: row.email,
+      subject: `Beta application: ${row.name} · ${row.company || row.email} · ${label("zones", row.zones)} zones`,
+      html: shell({
+        eyebrow: "New beta application", title: `${esc(row.name)}${row.company ? `, ${esc(row.company)}` : ""}`,
+        body: rows(pairs) +
+          `<p style="margin:26px 0 0">${button(link("approve", ok), "Approve →")} &nbsp; ${button(link("reject", no), "Reject", false)}</p>
+<p style="margin-top:14px;font-size:13px;color:#6f6c60">Approve emails them that a workspace is coming and sends you the provisioning command. Reject sends a kind no. Either link works once.</p>`,
+      }),
+      text: pairs.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n") + `\n\nApprove: ${link("approve", ok)}\nReject: ${link("reject", no)}`,
+    }));
+  }
+
+  jobs.push(sendMail(env, {
+    to: row.email, replyTo: env.NOTIFY_TO,
+    subject: "We have your Zonesteward beta application",
+    html: shell({
+      eyebrow: "Application received", title: "You're on the list.",
+      body: `<p>Here's what you told us. We read every one of these ourselves, usually within a few days, and you'll hear back either way at this address.</p>` + rows(pairs.slice(0, 11)),
+      foot: `Need to change something? Just reply to this email.`,
+    }),
+    text: "We have your Zonesteward beta application. We read every one ourselves and you'll hear back either way.\n\n" + pairs.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n"),
+  }));
+
+  await Promise.all(jobs);
 }
