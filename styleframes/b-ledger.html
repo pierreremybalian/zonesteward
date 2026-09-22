@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zonesteward — A steward for your Cloudflare fleet</title>
+<meta name="description" content="Ask your Cloudflare fleet a question in plain language. Approve the fix. Nothing writes without you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#faf9f6; --paper-2:#f3f1ec; --ink:#16150f; --ink-2:#3d3b33;
+  --muted:#6f6c60; --rule:#ddd9cf; --rule-2:#c7c2b4;
+  --accent:#c2410c;                /* burnt orange: Cloudflare's hue, print weight */
+  --crit:#a52a2a; --ok:#1f6f43;
+  --max:1120px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;overflow-x:clip;scroll-behavior:smooth}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:Geist,ui-sans-serif,system-ui,sans-serif;
+  font-size:16.5px;line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+.serif{font-family:Newsreader,Georgia,serif}
+.mono{font-family:"Geist Mono",ui-monospace,monospace}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 26px}
+.sc{
+  font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);
+}
+.rule{height:1px;background:var(--rule);border:0}
+
+/* ── masthead ───────────────────────────────────────────────── */
+header{border-bottom:1px solid var(--ink);background:var(--paper)}
+.masthead{display:flex;align-items:baseline;gap:30px;padding:20px 0 16px}
+.mark{font-family:Newsreader,serif;font-size:23px;font-weight:400;letter-spacing:-.01em}
+.mark i{font-style:italic;color:var(--accent)}
+.masthead nav{display:none;gap:24px;font-size:14px;color:var(--ink-2)}
+.masthead nav a:hover{color:var(--accent)}
+.masthead .end{margin-left:auto;display:flex;align-items:center;gap:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;font-size:14px;font-weight:500;border-radius:2px;border:1px solid transparent}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-primary:hover{background:#000}
+.btn-ghost{border-color:var(--rule-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-sm{padding:7px 14px;font-size:13px}
+.strap{display:flex;gap:26px;padding:8px 0;border-top:1px solid var(--rule);font-size:11.5px;color:var(--muted);font-family:"Geist Mono",monospace;letter-spacing:.06em}
+.strap span:last-child{margin-left:auto}
+@media(min-width:900px){.masthead nav{display:flex}}
+@media(max-width:600px){.strap span:nth-child(2){display:none}}
+
+/* ── hero ───────────────────────────────────────────────────── */
+.hero{padding:70px 0 0}
+.kicker{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+h1{
+  font-family:Newsreader,serif;font-weight:300;
+  font-size:clamp(2.6rem,7vw,4.6rem);line-height:1.02;letter-spacing:-.022em;max-width:15ch;
+}
+h1 i{font-style:italic;color:var(--accent)}
+.lede{
+  margin-top:26px;max-width:54ch;font-size:clamp(1.02rem,1.7vw,1.2rem);
+  color:var(--ink-2);font-weight:300;
+}
+.lede b{font-weight:500;color:var(--ink)}
+.cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:34px}
+.cta-note{font-size:13.5px;color:var(--muted)}
+
+/* plate: framed product figure, like a plate in a report */
+.plate{margin-top:60px;border:1px solid var(--rule-2);background:#fff;padding:10px}
+.plate-in{background:#0d0d0f;border-radius:2px;overflow:hidden;position:relative}
+figcaption{
+  display:flex;gap:14px;padding:10px 2px 0;font-family:"Geist Mono",monospace;
+  font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;
+}
+figcaption b{color:var(--ink-2);font-weight:500}
+figcaption span:last-child{margin-left:auto}
+
+/* globe inside the plate */
+.globe-stage{position:relative;width:min(420px,72vw);aspect-ratio:1;margin:48px auto}
+.sphere{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#1d1d22 0%,#131316 46%,#0b0b0d 100%);box-shadow:inset -40px -30px 90px rgba(0,0,0,.6)}
+.atmo{position:absolute;inset:-9px;border-radius:50%;border:1px solid rgba(246,130,31,.18)}
+.pops{position:absolute;inset:0}
+.pop{position:absolute;border-radius:50%;animation:breathe 3.6s var(--delay,0s) ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+.plate-label{position:absolute;left:18px;top:16px;font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#7d7d88}
+
+/* ── standfirst / thesis ────────────────────────────────────── */
+.thesis{padding:80px 0;border-top:1px solid var(--rule);margin-top:76px}
+.thesis-in{display:grid;gap:30px}
+@media(min-width:880px){.thesis-in{grid-template-columns:180px minmax(0,1fr);gap:56px}}
+.thesis p{font-family:Newsreader,serif;font-size:clamp(1.25rem,2.4vw,1.6rem);line-height:1.45;font-weight:300;color:var(--ink);max-width:40ch}
+.thesis p em{font-style:italic;color:var(--accent)}
+
+/* ── sections ───────────────────────────────────────────────── */
+section{padding:78px 0}
+.sec-head{display:grid;gap:14px;margin-bottom:46px;max-width:62ch}
+h2{font-family:Newsreader,serif;font-weight:400;font-size:clamp(1.7rem,3.6vw,2.4rem);line-height:1.16;letter-spacing:-.02em}
+.sec-head p{color:var(--ink-2);font-weight:300}
+
+/* numbered columns */
+.cols{display:grid;gap:34px}
+@media(min-width:800px){.cols{grid-template-columns:repeat(3,1fr);gap:40px}}
+.col{border-top:2px solid var(--ink);padding-top:16px}
+.col .n{font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.16em;color:var(--accent)}
+.col h3{font-family:Newsreader,serif;font-size:1.22rem;font-weight:400;margin:10px 0 8px}
+.col p{font-size:14.8px;color:var(--ink-2);font-weight:300}
+
+/* the gate */
+.gate{background:var(--paper-2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.gate-grid{display:grid;gap:44px}
+@media(min-width:960px){.gate-grid{grid-template-columns:minmax(0,1fr) minmax(0,430px);gap:64px;align-items:center}}
+.card{background:#fff;border:1px solid var(--rule-2);padding:24px;position:relative;box-shadow:0 1px 0 var(--rule-2),0 18px 40px -34px rgba(0,0,0,.4)}
+.card .kick{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card h3{font-family:Newsreader,serif;font-size:1.45rem;font-weight:400;margin-top:8px}
+.card .sub{margin-top:6px;font-size:14px;color:var(--ink-2);font-weight:300}
+.card .sub code{font-family:"Geist Mono",monospace;font-size:13px;color:var(--ink)}
+.impact{position:absolute;right:22px;top:22px;font-family:"Geist Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8a5a00;background:#fdf3dc;border:1px solid #e7cf94;padding:4px 9px}
+.card-foot{display:flex;align-items:center;gap:14px;margin-top:26px;padding-top:16px;border-top:1px solid var(--rule)}
+.verified{font-size:14px;color:var(--ok);font-weight:500}
+.revert{font-size:13.5px;color:var(--muted);text-decoration:underline;text-underline-offset:4px}
+.card-foot .sp{margin-left:auto;display:flex;gap:9px}
+.chip-btn{font-size:12.5px;padding:6px 13px;border:1px solid var(--rule-2);color:var(--muted)}
+.chip-btn.solid{background:var(--ink);color:var(--paper);border-color:var(--ink);opacity:.4}
+.ladder{list-style:none;counter-reset:s;display:grid;gap:0;margin-top:6px}
+.ladder li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.ladder li:first-child{border-top:1px solid var(--rule)}
+.ladder li::before{content:counter(s,decimal-leading-zero);font-family:"Geist Mono",monospace;font-size:11px;color:var(--accent);padding-top:5px}
+.ladder b{font-family:Newsreader,serif;font-size:1.1rem;font-weight:500;display:block;margin-bottom:4px}
+.ladder p{font-size:14.5px;color:var(--ink-2);font-weight:300}
+
+/* attacker plate */
+.att{background:#0d0d0f;color:#e8e8ea;padding:26px 24px;font-family:Geist,sans-serif}
+.att-top{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+.sev{width:46px;height:46px;display:grid;place-items:center;font-size:18px;font-weight:600;color:#ff8b8e;background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.42);border-radius:8px;flex:0 0 auto}
+.att-ip{font-family:"Geist Mono",monospace;font-size:18px}
+.att-cc{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#7d7d88}
+.att-state{margin-left:auto;font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:#ff8b8e}
+.verdict{margin-top:15px;font-size:14.5px;color:#c9c9ce;font-weight:300}
+.paths{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.path{font-family:"Geist Mono",monospace;font-size:12px;padding:5px 10px;border:1px solid #2c2c33;color:#9a9aa4;border-radius:4px}
+.path.hit{color:#ffb374;border-color:rgba(246,130,31,.4)}
+
+/* pricing table, set like a table */
+.rate{width:100%;border-collapse:collapse;margin-top:8px}
+.rate th,.rate td{text-align:left;padding:20px 18px;border-bottom:1px solid var(--rule);vertical-align:top}
+.rate thead th{border-bottom:2px solid var(--ink);font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:400;padding-bottom:10px}
+.rate .plan{font-family:Newsreader,serif;font-size:1.28rem;font-weight:400}
+.rate .zn{font-family:"Geist Mono",monospace;font-size:12px;color:var(--muted);display:block;margin-top:3px}
+.rate .amt{font-family:Newsreader,serif;font-size:1.9rem;font-weight:300;white-space:nowrap}
+.rate .amt small{font-family:Geist,sans-serif;font-size:13px;color:var(--muted)}
+.rate td.desc{font-size:14.2px;color:var(--ink-2);font-weight:300}
+.note{margin-top:26px;padding:20px 22px;background:var(--paper-2);border-left:2px solid var(--accent);font-size:14.5px;color:var(--ink-2);font-weight:300;max-width:70ch}
+.note b{color:var(--ink);font-weight:500}
+
+/* beta */
+.beta{border-top:1px solid var(--ink)}
+.beta-in{display:grid;gap:30px;align-items:end}
+@media(min-width:860px){.beta-in{grid-template-columns:minmax(0,1fr) auto;gap:56px}}
+.seats{display:flex;align-items:center;gap:6px;margin-top:22px}
+.seat{width:16px;height:4px;background:var(--rule-2)}
+.seat.open{background:var(--accent)}
+.seats span{font-family:"Geist Mono",monospace;font-size:11px;color:var(--muted);margin-left:10px;letter-spacing:.1em}
+
+/* footer */
+footer{border-top:1px solid var(--rule);padding:44px 0 62px;font-size:13.8px;color:var(--muted)}
+.f-top{display:flex;flex-wrap:wrap;gap:24px}
+.f-links{display:flex;flex-wrap:wrap;gap:22px;margin-left:auto}
+.f-links a:hover{color:var(--accent)}
+.colophon{margin-top:30px;padding-top:20px;border-top:1px solid var(--rule);max-width:64ch;font-weight:300;line-height:1.7}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="masthead">
+      <a href="#" class="mark">Zone<i>steward</i></a>
+      <nav>
+        <a href="#gate">How it works</a>
+        <a href="#security">Security</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#">Docs</a>
+      </nav>
+      <div class="end">
+        <a href="#" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="#beta" class="btn btn-primary btn-sm">Apply for beta</a>
+      </div>
+    </div>
+    <div class="strap">
+      <span>Private beta · 20 seats</span>
+      <span>Cloudflare fleet operations</span>
+      <span>Est. 2026</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker"><i class="dot"></i><span class="sc">For agencies running more zones than people</span></div>
+    <h1>A steward for your <i>Cloudflare fleet.</i></h1>
+    <p class="lede">
+      Ask a question in plain language. See the answer across every zone you
+      manage. Approve the fix, and let the server prove it landed.
+      <b>Nothing writes without you.</b>
+    </p>
+    <div class="cta">
+      <a href="#beta" class="btn btn-primary">Apply for beta</a>
+      <a href="#gate" class="btn btn-ghost">How it works</a>
+      <span class="cta-note">Free during beta. Bring your own keys.</span>
+    </div>
+
+    <figure class="plate">
+      <div class="plate-in">
+        <span class="plate-label">Live · 30-minute window</span>
+        <div class="globe-stage">
+          <div class="atmo"></div><div class="sphere"></div>
+          <div class="pops" id="globe"></div>
+        </div>
+      </div>
+      <figcaption>
+        <span><b>Plate I.</b> The fleet view</span>
+        <span id="cap">157 Cloudflare points of presence</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="thesis">
+  <div class="wrap thesis-in">
+    <span class="sc">The thesis</span>
+    <p>
+      An assistant with credentials to forty production sites should not be
+      trusted to use them. Ours proposes; <em>you</em> decide; the server
+      verifies. That constraint is not a setting. It is the architecture.
+    </p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The problem</span>
+      <h2>Cloudflare's dashboard assumes one zone and one expert.</h2>
+      <p>You have neither. You have forty zones across six clients and a support queue.</p>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <span class="n">01</span>
+        <h3>No single view</h3>
+        <p>One dashboard per zone. To learn who is under attack you open forty
+           tabs, or you don't look at all.</p>
+      </div>
+      <div class="col">
+        <span class="n">02</span>
+        <h3>Answers take an afternoon</h3>
+        <p>"Why is this site slow in Europe?" has a GraphQL query behind it that
+           nobody on the team is going to write.</p>
+      </div>
+      <div class="col">
+        <span class="n">03</span>
+        <h3>Changes are frightening</h3>
+        <p>A WAF rule on a client's production site, typed at five o'clock, with
+           no preview of what it blocks and no way back.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gate" id="gate">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The gate</span>
+      <h2>Structurally unable to touch your zones.</h2>
+      <p>Not a policy, not a system prompt. Every function that can change
+         Cloudflare is reachable from the execution core alone, so a prompt
+         injected through a request path or a user agent cannot cause a write.</p>
+    </div>
+    <div class="gate-grid">
+      <ol class="ladder">
+        <li><div><b>Impact classified before you see it</b>
+          <p>Low, medium or high. A site-wide lockdown or an apex DNS deletion
+             needs an explicit acknowledgement, not a click.</p></div></li>
+        <li><div><b>Blast radius against real traffic</b>
+          <p>The proposed rule is evaluated against your last 24 hours before it
+             exists, so you know what it would have blocked.</p></div></li>
+        <li><div><b>Read back from Cloudflare</b>
+          <p>"Applied" means the server asked Cloudflare what the setting is now
+             and received the answer it expected.</p></div></li>
+        <li><div><b>Reversible, with the payload stored</b>
+          <p>Every change lands in the audit trail together with the instructions
+             to undo it.</p></div></li>
+      </ol>
+      <div>
+        <div class="card">
+          <span class="kick">Proposed · rocket55dev.com</span>
+          <span class="impact">impact · medium</span>
+          <h3>Create IP access rule</h3>
+          <p class="sub">Challenge <code>34.165.86.164</code> — attacker: secrets &amp; config scan</p>
+          <div class="card-foot">
+            <span class="verified">Verified ✓</span>
+            <a href="#" class="revert">Revert</a>
+            <span class="sp"><span class="chip-btn">Reject</span><span class="chip-btn solid">Approve</span></span>
+          </div>
+        </div>
+        <figcaption style="padding-top:12px"><span><b>Plate II.</b> The approval card</span></figcaption>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">Investigate</span>
+      <h2>Ask the question you'd actually ask.</h2>
+      <p>Nine attack categories, a composite severity score, and a classifier
+         tuned hard against false positives, so a theme fetching its own assets
+         is never called a CMS probe.</p>
+    </div>
+    <figure class="plate">
+      <div class="plate-in att">
+        <div class="att-top">
+          <span class="sev">79</span>
+          <span class="att-ip">34.165.86.164</span>
+          <span class="att-cc">US · AS396982</span>
+          <span class="att-state">not mitigated</span>
+        </div>
+        <p class="verdict">Scanning for exposed credential and config files —
+           39 distinct paths — 100% rejected.</p>
+        <div class="paths">
+          <span class="path hit">/.env</span>
+          <span class="path hit">/.git/config</span>
+          <span class="path">/wp-config.php.bak</span>
+          <span class="path">+36 more</span>
+        </div>
+      </div>
+      <figcaption>
+        <span><b>Plate III.</b> One ranked source, with its evidence</span>
+        <span>Security tab</span>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">Rates</span>
+      <h2>Priced per workspace, by zones.</h2>
+      <p>Every tier includes everything. No security feature is held back for a
+         higher plan, and there is nothing to add on.</p>
+    </div>
+    <table class="rate">
+      <thead>
+        <tr><th>Plan</th><th>From general availability</th><th>Included</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="plan">Studio</span><span class="zn">up to 25 zones</span></td>
+          <td><span class="amt">$49<small>/mo</small></span></td>
+          <td class="desc">3 members. Chat, globe, investigation, approvals, audit, alerts.</td>
+        </tr>
+        <tr>
+          <td><span class="plan">Agency</span><span class="zn">up to 100 zones</span></td>
+          <td><span class="amt">$149<small>/mo</small></span></td>
+          <td class="desc">10 members. Everything in Studio, plus client share links.</td>
+        </tr>
+        <tr>
+          <td><span class="plan">Fleet</span><span class="zn">100+ zones</span></td>
+          <td><span class="amt">Talk<small> to us</small></span></td>
+          <td class="desc">Unlimited members. Everything, plus priority support.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="note">
+      <b>Free during the beta</b>, then 50% off your first year, locked. You bring
+      your own Cloudflare token and Anthropic key, so model usage is billed to you
+      by Anthropic at cost. We do not mark it up.
+    </p>
+  </div>
+</section>
+
+<section class="beta" id="beta">
+  <div class="wrap beta-in">
+    <div>
+      <span class="sc">Private beta</span>
+      <h2 style="margin-top:14px">Twenty seats. Yours if it fits.</h2>
+      <p class="lede" style="font-size:15.5px;margin-top:16px">
+        Tell us how many zones you run and what you use today. If it's a fit you
+        get a workspace, and we get your honest opinion.
+      </p>
+      <div class="seats">
+        <i class="seat open"></i><i class="seat open"></i><i class="seat open"></i>
+        <i class="seat open"></i><i class="seat open"></i><i class="seat"></i>
+        <i class="seat"></i><i class="seat"></i><i class="seat"></i><i class="seat"></i>
+        <span>5 OF 20 CLAIMED</span>
+      </div>
+    </div>
+    <a href="#" class="btn btn-primary" style="padding:14px 24px">Apply for beta →</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-top">
+      <a href="#" class="mark" style="font-size:19px">Zone<i>steward</i></a>
+      <div class="f-links">
+        <a href="#gate">How it works</a><a href="#security">Security</a>
+        <a href="#pricing">Pricing</a><a href="#">Docs</a>
+        <a href="#">Privacy</a><a href="#">Terms</a>
+      </div>
+    </div>
+    <p class="colophon">
+      Built by one person who runs a fleet of Cloudflare zones for an agency,
+      because the dashboard assumes you only have one. Set in Newsreader and
+      Geist. Not affiliated with Cloudflare, Inc.
+    </p>
+  </div>
+</footer>
+
+<script src="shared/globe.js"></script>
+<script>
+  const el = document.getElementById("globe");
+  const n = drawGlobe(el, { dot: 3.2, colour: "#F6821F" });
+  document.getElementById("cap").textContent =
+    `${POPS.length} Cloudflare points of presence · ${n} in view`;
+  addEventListener("resize", () => { el.innerHTML = ""; drawGlobe(el, { dot: 3.2 }); });
+</script>
+</body>
+</html>

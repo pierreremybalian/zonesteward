@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zonesteward — A steward for your Cloudflare fleet</title>
+<meta name="description" content="Ask your Cloudflare fleet a question in plain language. Approve the fix. Nothing writes without you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared/ledger.css">
+<style>
+/* B2 BROADSHEET — the editorial argument pushed all the way.
+   A rule-ruled masthead, one enormous headline, a standfirst with a drop cap,
+   and sidenotes in the margin where a journal would put them. Asymmetric.
+   Most distinctive; also the most confident. */
+
+:root{ --gutter:230px }
+
+header{border-bottom:3px double var(--ink)}
+.masthead{padding:26px 0 18px;align-items:flex-end}
+.mark{font-size:30px}
+.strap{border-top:1px solid var(--ink);font-size:11px}
+
+/* hero: headline spans full measure, globe is a wide banner beneath */
+.hero{padding:74px 0 0}
+.hero h1{font-size:clamp(2.9rem,9vw,6rem);max-width:12ch;line-height:.98;letter-spacing:-.028em}
+.standfirst{
+  margin-top:34px;display:grid;gap:26px;padding-bottom:40px;border-bottom:1px solid var(--rule);
+}
+@media(min-width:900px){.standfirst{grid-template-columns:var(--gutter) minmax(0,1fr);gap:48px}}
+.standfirst .side{font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);line-height:1.9}
+.standfirst .side b{display:block;color:var(--ink);font-weight:500;letter-spacing:.14em}
+.standfirst .body{font-family:Newsreader,serif;font-size:clamp(1.22rem,2.2vw,1.55rem);line-height:1.5;font-weight:300;color:var(--ink);max-width:44ch}
+.standfirst .body::first-letter{
+  float:left;font-size:3.5em;line-height:.82;padding:.06em .1em 0 0;
+  font-weight:400;color:var(--accent);
+}
+.standfirst .body b{font-weight:500}
+
+/* full-bleed banner plate */
+.banner{margin-top:56px;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--dark);position:relative;overflow:hidden}
+.banner .globe-stage{width:min(330px,62vw);padding:44px 0}
+.banner .ticker{
+  position:absolute;left:0;right:0;bottom:0;display:flex;gap:0;
+  border-top:1px solid var(--dark-line);font-family:"Geist Mono",monospace;
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dark-dim);
+}
+.banner .ticker span{padding:9px 18px;border-right:1px solid var(--dark-line)}
+@media(max-width:620px){.banner .ticker span:nth-child(n+3){display:none}}
+
+/* body sections use the same gutter, so the page has one spine */
+.ruled{display:grid;gap:26px;padding:64px 0;border-bottom:1px solid var(--rule)}
+@media(min-width:900px){.ruled{grid-template-columns:var(--gutter) minmax(0,1fr);gap:48px}}
+.ruled > .side{position:sticky;top:26px;align-self:start}
+.ruled > .side .sc{display:block;margin-bottom:10px}
+.ruled > .side p{font-size:13px;color:var(--muted);font-weight:300;line-height:1.6;max-width:26ch}
+.ruled h2{max-width:20ch}
+.ruled .measure{max-width:64ch}
+.ruled .measure > p{margin-top:16px;color:var(--ink-2);font-weight:300}
+
+/* two-column body text, like a journal */
+.twocol{column-count:1;column-gap:44px;margin-top:22px}
+@media(min-width:1000px){.twocol{column-count:2}}
+.twocol p{margin-bottom:15px;font-size:15.2px;color:var(--ink-2);font-weight:300;break-inside:avoid}
+.twocol p b{color:var(--ink);font-weight:500}
+
+/* marginalia */
+.note-m{
+  border-left:2px solid var(--accent);padding:4px 0 4px 14px;margin:24px 0;
+  font-size:13.5px;color:var(--muted);font-weight:300;font-style:italic;max-width:30ch;
+}
+
+.plate{margin-top:30px}
+.plate .globe-stage{width:min(340px,66vw);padding:34px 0}
+
+/* pricing sits in the same spine */
+.rate{margin-top:6px}
+
+.beta{padding:70px 0;border-bottom:0}
+.beta-in{display:grid;gap:30px;align-items:end}
+@media(min-width:860px){.beta-in{grid-template-columns:minmax(0,1fr) auto;gap:56px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="masthead">
+      <a href="#" class="mark">Zone<i>steward</i></a>
+      <nav><a href="#gate">How it works</a><a href="#">Security</a><a href="#pricing">Pricing</a><a href="#">Docs</a></nav>
+      <div class="end">
+        <a href="#" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="#beta" class="btn btn-primary btn-sm">Apply for beta</a>
+      </div>
+    </div>
+    <div class="strap">
+      <span>No. 1 · Private beta</span><span>Cloudflare fleet operations</span><span>Twenty seats</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <h1>A steward for your <i>Cloudflare fleet.</i></h1>
+    <div class="standfirst">
+      <div class="side">
+        <b>For</b>Agencies &amp; MSPs<br>running more zones<br>than people
+      </div>
+      <div class="body">
+        Ask a question in plain language. See the answer across every zone you
+        manage. Approve the fix, and let the server prove it landed.
+        <b>Nothing writes without you.</b>
+        <div class="cta">
+          <a href="#beta" class="btn btn-primary">Apply for beta</a>
+          <a href="#gate" class="btn btn-ghost">How it works</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner">
+    <div class="globe-stage"><div class="atmo"></div><div class="sphere"></div><div class="pops" id="globe"></div></div>
+    <div class="ticker">
+      <span id="cap">157 points of presence</span>
+      <span>30-minute window</span>
+      <span>47 zones</span>
+      <span>read-only until approved</span>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <div class="ruled">
+    <div class="side">
+      <span class="sc">The problem</span>
+      <p>Written for the person who has forty tabs open and no idea which one is
+         on fire.</p>
+    </div>
+    <div class="measure">
+      <h2>Cloudflare's dashboard assumes one zone and one expert.</h2>
+      <div class="twocol">
+        <p><b>You have neither.</b> You have forty zones across six clients, a support
+           queue, and one afternoon a week where nobody is asking you for anything.</p>
+        <p>There is one dashboard per zone. To learn who is under attack you open
+           forty tabs, or, more honestly, you don't look at all until a client
+           emails you.</p>
+        <p>"Why is this site slow in Europe?" is a reasonable question with a
+           GraphQL query behind it that nobody on the team is going to write.</p>
+        <p>And a WAF rule typed at five o'clock on a client's production site,
+           with no preview of what it blocks and no way back, is the kind of thing
+           you put off until Monday.</p>
+      </div>
+      <p class="note-m">The tool was built because its author had all four of
+         these problems on the same Tuesday.</p>
+    </div>
+  </div>
+
+  <div class="ruled" id="gate">
+    <div class="side">
+      <span class="sc">The gate</span>
+      <p>The part that is architecture rather than policy.</p>
+    </div>
+    <div class="measure">
+      <h2>Structurally unable to touch your zones.</h2>
+      <p>Not a setting, not a system prompt. Every function that can change
+         Cloudflare is reachable from the execution core alone, so a prompt
+         injected through a request path or a user agent cannot cause a write.</p>
+      <div class="plate" style="margin-top:30px">
+        <div class="card" style="box-shadow:none">
+          <span class="kick">Proposed · rocket55dev.com</span>
+          <span class="impact">impact · medium</span>
+          <h3>Create IP access rule</h3>
+          <p class="sub">Challenge <code>34.165.86.164</code> — attacker: secrets &amp; config scan</p>
+          <div class="card-foot">
+            <span class="verified">Verified ✓</span><a href="#" class="revert">Revert</a>
+            <span class="sp"><span class="chip-btn">Reject</span><span class="chip-btn solid">Approve</span></span>
+          </div>
+        </div>
+        <figcaption><span><b>Plate I.</b> The approval card</span></figcaption>
+      </div>
+      <ol class="ladder" style="margin-top:34px">
+        <li><div><b>Impact classified before you see it</b>
+          <p>Low, medium or high. A site-wide lockdown or an apex DNS deletion needs an explicit acknowledgement, not a click.</p></div></li>
+        <li><div><b>Blast radius against real traffic</b>
+          <p>The proposed rule is evaluated against your last 24 hours before it exists, so you know what it would have blocked.</p></div></li>
+        <li><div><b>Read back from Cloudflare</b>
+          <p>"Applied" means the server asked Cloudflare what the setting is now and received the answer it expected.</p></div></li>
+        <li><div><b>Reversible, with the payload stored</b>
+          <p>Every change lands in the audit trail together with the instructions to undo it.</p></div></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="ruled">
+    <div class="side">
+      <span class="sc">Investigate</span>
+      <p>Nine attack categories, tuned hard against false positives.</p>
+    </div>
+    <div class="measure">
+      <h2>Ask the question you'd actually ask.</h2>
+      <p>A theme fetching its own assets is never called a CMS probe, and a
+         research scanner making one request is not an attacker. The classifier
+         exists so the severity score means something.</p>
+      <figure class="plate">
+        <div class="plate-in att">
+          <div class="att-top">
+            <span class="sev">79</span><span class="att-ip">34.165.86.164</span>
+            <span class="att-cc">US · AS396982</span><span class="att-state">not mitigated</span>
+          </div>
+          <p class="verdict">Scanning for exposed credential and config files — 39 distinct paths — 100% rejected.</p>
+          <div class="paths"><span class="path hit">/.env</span><span class="path hit">/.git/config</span><span class="path">/wp-config.php.bak</span><span class="path">+36 more</span></div>
+        </div>
+        <figcaption><span><b>Plate II.</b> One ranked source, with evidence</span><span>Security</span></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="ruled" id="pricing">
+    <div class="side">
+      <span class="sc">Rates</span>
+      <p>Published, because everyone else in this category says "contact sales".</p>
+    </div>
+    <div class="measure">
+      <h2>Priced per workspace, by zones.</h2>
+      <table class="rate">
+        <thead><tr><th>Plan</th><th>From GA</th><th>Included</th></tr></thead>
+        <tbody>
+          <tr><td><span class="plan">Studio</span><span class="zn">up to 25 zones</span></td>
+              <td><span class="amt">$49<small>/mo</small></span></td>
+              <td class="desc">3 members. Everything included.</td></tr>
+          <tr><td><span class="plan">Agency</span><span class="zn">up to 100 zones</span></td>
+              <td><span class="amt">$149<small>/mo</small></span></td>
+              <td class="desc">10 members. Plus client share links.</td></tr>
+          <tr><td><span class="plan">Fleet</span><span class="zn">100+ zones</span></td>
+              <td><span class="amt">Talk<small> to us</small></span></td>
+              <td class="desc">Unlimited members. Priority support.</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        <b>Free during the beta</b>, then 50% off your first year, locked. You
+        bring your own Cloudflare token and Anthropic key, so model usage is
+        billed to you by Anthropic at cost. We do not mark it up.
+      </p>
+    </div>
+  </div>
+
+  <div class="ruled beta" id="beta">
+    <div class="side"><span class="sc">Private beta</span><p>Twenty seats, then it closes.</p></div>
+    <div class="measure beta-in">
+      <div>
+        <h2 style="max-width:16ch">Twenty seats. Yours if it fits.</h2>
+        <p class="lede" style="font-size:15.5px;margin-top:16px">
+          Tell us how many zones you run and what you use today. If it's a fit you
+          get a workspace, and we get your honest opinion.
+        </p>
+        <div class="seats">
+          <i class="seat open"></i><i class="seat open"></i><i class="seat open"></i><i class="seat open"></i>
+          <i class="seat open"></i><i class="seat"></i><i class="seat"></i><i class="seat"></i><i class="seat"></i><i class="seat"></i>
+          <span>5 OF 20 CLAIMED</span>
+        </div>
+      </div>
+      <a href="#" class="btn btn-primary btn-lg">Apply →</a>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-top">
+      <a href="#" class="mark" style="font-size:19px">Zone<i>steward</i></a>
+      <div class="f-links"><a href="#gate">How it works</a><a href="#">Security</a><a href="#pricing">Pricing</a><a href="#">Docs</a><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+    <p class="colophon">
+      Built by one person who runs a fleet of Cloudflare zones for an agency,
+      because the dashboard assumes you only have one. Set in Newsreader and
+      Geist. Not affiliated with Cloudflare, Inc.
+    </p>
+  </div>
+</footer>
+
+<div class="vbadge">B2 · Broadsheet <a href="index.html">all variants</a></div>
+
+<script src="shared/globe.js"></script>
+<script>
+  const el = document.getElementById("globe");
+  const draw = () => { el.innerHTML=""; const n = drawGlobe(el,{dot:2.7});
+    document.getElementById("cap").textContent = `${POPS.length} points of presence · ${n} in view`; };
+  draw(); addEventListener("resize", draw);
+</script>
+</body>
+</html>

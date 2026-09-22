@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zonesteward — Cloudflare fleet operations with an approval gate</title>
+<meta name="description" content="Ask your Cloudflare fleet a question. Approve the fix. Nothing writes without you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfbfa; --bg-2:#f2f2f0; --line:#e2e2df; --line-2:#cfcfca;
+  --ink:#121213; --ink-2:#3f3f44; --muted:#6e6e76;
+  --term:#101014; --term-2:#17171c; --term-line:#26262e; --term-fg:#e6e6ea; --term-dim:#8b8b95;
+  --accent:#b8480a;            /* AA on paper */
+  --accent-t:#F6821F;          /* the brand orange, on dark only */
+  --ok:#1a7f4b; --ok-t:#3dd68c; --crit-t:#ff8b8e;
+  --max:1140px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;overflow-x:clip;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Geist,ui-sans-serif,system-ui,sans-serif;font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.mono{font-family:"Geist Mono",ui-monospace,monospace;font-variant-ligatures:none}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.tag{font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ── nav ─────────────────────────────────────────────────────── */
+header{position:sticky;top:0;z-index:50;background:rgba(251,251,250,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:30px;height:58px}
+.mark{font-family:"Geist Mono",monospace;font-size:14.5px;font-weight:500;letter-spacing:-.01em;display:flex;align-items:center;gap:2px}
+.mark .br{color:var(--accent)}
+.nav nav{display:none;gap:24px;font-size:14px;color:var(--ink-2)}
+.nav nav a:hover{color:var(--ink)}
+.nav .end{margin-left:auto;display:flex;align-items:center;gap:16px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;font-size:14px;font-weight:500;border-radius:6px;border:1px solid transparent}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:#000}
+.btn-ghost{border-color:var(--line-2);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--muted);background:var(--bg-2)}
+.btn-sm{padding:7px 13px;font-size:13px}
+@media(min-width:900px){.nav nav{display:flex}}
+
+/* ── hero ────────────────────────────────────────────────────── */
+.hero{padding:64px 0 0}
+.hero-grid{display:grid;gap:40px;align-items:start}
+@media(min-width:1000px){.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,540px);gap:56px;align-items:center}}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:#fff;border-radius:999px;padding:5px 13px 5px 9px;font-size:12.5px;color:var(--muted);margin-bottom:24px}
+.pill b{color:var(--ink);font-weight:500}
+.pill .d{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+h1{font-size:clamp(2.3rem,5.6vw,3.55rem);line-height:1.06;font-weight:500;letter-spacing:-.033em;max-width:17ch}
+h1 span{color:var(--muted)}
+.lede{margin-top:20px;font-size:clamp(1rem,1.7vw,1.13rem);color:var(--ink-2);max-width:50ch;font-weight:300}
+.lede b{color:var(--ink);font-weight:500}
+.cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:30px}
+.cta-note{font-size:13px;color:var(--muted)}
+
+/* ── terminal: the signature element ─────────────────────────── */
+.term{background:var(--term);border-radius:10px;overflow:hidden;border:1px solid var(--term-line);box-shadow:0 30px 60px -32px rgba(0,0,0,.45)}
+.term-bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--term-2);border-bottom:1px solid var(--term-line)}
+.term-bar i{width:9px;height:9px;border-radius:50%;background:#33333c;display:block}
+.term-bar .title{font-family:"Geist Mono",monospace;font-size:11.5px;color:var(--term-dim);margin-left:8px}
+.term-bar .title b{color:#b9b9c2;font-weight:400}
+.term-body{padding:18px 18px 20px;font-family:"Geist Mono",monospace;font-size:13px;line-height:1.72;color:var(--term-fg);overflow-x:auto}
+.term-body .p{color:var(--accent-t)}
+.term-body .c{color:var(--term-dim)}
+.term-body .g{color:var(--ok-t)}
+.term-body .r{color:var(--crit-t)}
+.term-body .y{color:#eda100}
+.term-body .w{color:#fff}
+.term-body .caret{display:inline-block;width:7px;height:15px;background:var(--accent-t);vertical-align:-2px;animation:blink 1.1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.term-body .caret{animation:none}}
+.term-foot{border-top:1px solid var(--term-line);padding:9px 14px;font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--term-dim);display:flex;gap:16px}
+.term-foot span:last-child{margin-left:auto}
+
+/* ── strip ───────────────────────────────────────────────────── */
+.strip{margin-top:60px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;gap:1px;background:var(--line)}
+@media(min-width:760px){.strip{grid-template-columns:repeat(4,1fr)}}
+.strip > div{background:var(--bg);padding:20px 22px}
+.strip .k{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.strip .v{margin-top:6px;font-size:14.5px;font-weight:500}
+
+/* ── sections ────────────────────────────────────────────────── */
+section{padding:80px 0}
+.sec-head{max-width:60ch;margin-bottom:42px}
+h2{font-size:clamp(1.6rem,3.3vw,2.15rem);line-height:1.16;font-weight:500;letter-spacing:-.025em;margin-top:12px}
+.sec-head p{margin-top:13px;color:var(--ink-2);font-weight:300}
+.alt{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+/* split: code left, UI right */
+.split{display:grid;gap:34px}
+@media(min-width:980px){.split{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center}}
+
+/* approval card, rendered light so it reads as the product UI */
+.card{background:#fff;border:1px solid var(--line-2);border-radius:11px;padding:22px;position:relative;box-shadow:0 14px 34px -26px rgba(0,0,0,.45)}
+.card .kick{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.card h3{margin-top:8px;font-size:19px;font-weight:500;letter-spacing:-.01em}
+.card .sub{margin-top:6px;font-size:13.5px;color:var(--ink-2);font-weight:300}
+.card .sub code{font-family:"Geist Mono",monospace;font-size:12.5px;color:var(--ink)}
+.impact{position:absolute;right:20px;top:20px;font-family:"Geist Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8a5a00;background:#fdf4de;border:1px solid #e9d296;padding:4px 9px;border-radius:999px}
+.card-foot{display:flex;align-items:center;gap:13px;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.verified{font-size:13.5px;color:var(--ok);font-weight:500}
+.revert{font-size:13px;color:var(--muted);text-decoration:underline;text-underline-offset:4px}
+.card-foot .sp{margin-left:auto;display:flex;gap:8px}
+.chip-btn{font-size:12.5px;padding:6px 12px;border-radius:6px;border:1px solid var(--line-2);color:var(--muted)}
+.chip-btn.solid{background:var(--ink);color:#fff;border-color:var(--ink);opacity:.38}
+.pipe{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.pipe span{font-family:"Geist Mono",monospace;font-size:11.5px;color:var(--ink-2);background:#fff;border:1px solid var(--line-2);border-radius:5px;padding:5px 10px}
+
+/* facts list */
+.facts{list-style:none;display:grid;gap:0}
+.facts li{display:grid;grid-template-columns:26px 1fr;gap:14px;padding:18px 0;border-bottom:1px solid var(--line)}
+.facts li:first-child{border-top:1px solid var(--line)}
+.facts .n{font-family:"Geist Mono",monospace;font-size:11px;color:var(--accent);padding-top:4px}
+.facts b{display:block;font-weight:500;margin-bottom:3px}
+.facts p{font-size:14.4px;color:var(--ink-2);font-weight:300}
+
+/* globe inset */
+.globe-card{background:var(--term);border:1px solid var(--term-line);border-radius:10px;padding:22px;position:relative;overflow:hidden}
+.globe-stage{position:relative;width:min(360px,70vw);aspect-ratio:1;margin:8px auto 2px}
+.sphere{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#1d1d23 0%,#131317 46%,#0b0b0e 100%);box-shadow:inset -36px -26px 80px rgba(0,0,0,.6)}
+.atmo{position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(246,130,31,.18)}
+.pops{position:absolute;inset:0}
+.pop{position:absolute;border-radius:50%;animation:breathe 3.5s var(--delay,0s) ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+@media(prefers-reduced-motion:reduce){.pop{animation:none}}
+.globe-card .cap{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--term-dim);text-align:center;margin-top:10px}
+
+/* pricing */
+.tiers{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media(min-width:800px){.tiers{grid-template-columns:repeat(3,1fr)}}
+.tier{background:#fff;padding:28px 24px}
+.tier.mid{background:var(--bg-2)}
+.tier .name{font-size:15px;font-weight:500}
+.tier .zones{font-family:"Geist Mono",monospace;font-size:11.5px;color:var(--muted);display:block;margin-top:4px}
+.tier .price{margin-top:20px;font-size:32px;font-weight:500;letter-spacing:-.03em}
+.tier .price small{font-size:13.5px;color:var(--muted);font-weight:400;letter-spacing:0}
+.tier .when{margin-top:6px;font-size:12.5px;color:var(--muted)}
+.tier ul{list-style:none;margin-top:20px;display:grid;gap:8px;font-size:13.5px;color:var(--ink-2);font-weight:300}
+.tier li::before{content:"›";color:var(--accent);margin-right:9px}
+.note{margin-top:20px;border:1px solid var(--line-2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:16px 20px;font-size:14px;color:var(--ink-2);font-weight:300;max-width:72ch}
+.note b{color:var(--ink);font-weight:500}
+
+/* beta */
+.beta-in{display:grid;gap:26px;align-items:center}
+@media(min-width:840px){.beta-in{grid-template-columns:minmax(0,1fr) auto;gap:48px}}
+.seats{display:flex;align-items:center;gap:6px;margin-top:18px}
+.seat{width:15px;height:5px;border-radius:2px;background:var(--line-2)}
+.seat.open{background:var(--accent)}
+.seats span{font-family:"Geist Mono",monospace;font-size:11px;color:var(--muted);margin-left:9px;letter-spacing:.09em}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:42px 0 58px;font-size:13.5px;color:var(--muted)}
+.f-top{display:flex;flex-wrap:wrap;gap:24px}
+.f-links{display:flex;flex-wrap:wrap;gap:22px;margin-left:auto}
+.f-links a:hover{color:var(--ink)}
+.f-note{margin-top:28px;padding-top:20px;border-top:1px solid var(--line);max-width:64ch;font-weight:300;line-height:1.68}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="mark">zonesteward<span class="br">_</span></a>
+    <nav>
+      <a href="#gate">How it works</a><a href="#security">Security</a>
+      <a href="#pricing">Pricing</a><a href="#">Docs</a>
+    </nav>
+    <div class="end">
+      <a href="#" class="btn btn-ghost btn-sm">Sign in</a>
+      <a href="#beta" class="btn btn-primary btn-sm">Apply for beta</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="pill"><i class="d"></i> Private beta · <b>20 seats</b></span>
+      <h1>Cloudflare fleet operations, <span>with a gate in front.</span></h1>
+      <p class="lede">
+        Ask in plain language. Get the answer with the query behind it. Approve
+        the fix and watch the server prove it landed.
+        <b>Nothing writes without you.</b>
+      </p>
+      <div class="cta">
+        <a href="#beta" class="btn btn-primary">Apply for beta</a>
+        <a href="#gate" class="btn btn-ghost">How it works</a>
+        <span class="cta-note">Free during beta. Bring your own keys.</span>
+      </div>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">
+        <i></i><i></i><i></i>
+        <span class="title">zonesteward · <b>acme agency</b> · 47 zones</span>
+      </div>
+      <div class="term-body"><span class="p">›</span> who is attacking us right now?
+
+<span class="c">scanning 47 zones · firewall events · last 6h</span>
+
+  <span class="r">79</span>  <span class="w">34.165.86.164</span>  <span class="c">US · AS396982</span>   <span class="r">not mitigated</span>
+      Scanning for exposed credential and config
+      files. 39 distinct paths, 100% rejected.
+      <span class="y">/.env</span>  <span class="y">/.git/config</span>  <span class="c">/wp-config.php.bak</span>
+
+  <span class="y">41</span>  <span class="w">92.118.39.14</span>   <span class="c">NL · AS209588</span>   <span class="g">challenged</span>
+      Login brute force on two zones. Rate limited
+      by an existing rule.
+
+<span class="c">proposed:</span> challenge 34.165.86.164 <span class="c">(impact: medium)</span>
+<span class="c">awaiting your approval</span> <span class="caret"></span></div>
+      <div class="term-foot">
+        <span>47 zones</span><span>6 tokens</span><span>read-only until approved</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="strip">
+      <div><span class="k">The model can</span><span class="v">Propose only</span></div>
+      <div><span class="k">Every change</span><span class="v">Verified by read-back</span></div>
+      <div><span class="k">Per customer</span><span class="v">Its own database &amp; key</span></div>
+      <div><span class="k">Every change</span><span class="v">Revertable</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="gate">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">The gate</span>
+      <h2>Structurally unable to touch your zones.</h2>
+      <p>Not a policy, not a system prompt. Every function that can change
+         Cloudflare is reachable from the execution core alone, so a prompt
+         injected through a request path or a user agent cannot cause a write.</p>
+    </div>
+    <div class="split">
+      <div>
+        <div class="card">
+          <span class="kick">Proposed · rocket55dev.com</span>
+          <span class="impact">impact · medium</span>
+          <h3>Create IP access rule</h3>
+          <p class="sub">Challenge <code>34.165.86.164</code> — attacker: secrets &amp; config scan</p>
+          <div class="card-foot">
+            <span class="verified">Verified ✓</span>
+            <a href="#" class="revert">Revert</a>
+            <span class="sp"><span class="chip-btn">Reject</span><span class="chip-btn solid">Approve</span></span>
+          </div>
+        </div>
+        <div class="pipe">
+          <span>propose</span><span>classify</span><span>approve</span>
+          <span>drift-check</span><span>execute</span><span>read back</span>
+          <span>audit</span><span>revert</span>
+        </div>
+      </div>
+      <ul class="facts">
+        <li><span class="n">01</span><div><b>Impact classified before you see it</b>
+          <p>Low, medium or high. A site-wide lockdown or an apex DNS deletion
+             needs an explicit acknowledgement, not a click.</p></div></li>
+        <li><span class="n">02</span><div><b>Blast radius against real traffic</b>
+          <p>The proposed rule is evaluated against your last 24 hours before it
+             exists, so you know what it would have blocked.</p></div></li>
+        <li><span class="n">03</span><div><b>Read back from Cloudflare</b>
+          <p>"Applied" means the server asked Cloudflare what the setting is now
+             and got the answer it expected.</p></div></li>
+        <li><span class="n">04</span><div><b>Reversible, with the payload stored</b>
+          <p>Every change lands in the audit trail together with the instructions
+             to undo it.</p></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">See</span>
+      <h2>Every request, from the client to the colo that served it.</h2>
+      <p>A live 30-minute window across the whole fleet, with all 157 Cloudflare
+         points of presence drawn underneath.</p>
+    </div>
+    <div class="split">
+      <div class="globe-card">
+        <div class="globe-stage">
+          <div class="atmo"></div><div class="sphere"></div>
+          <div class="pops" id="globe"></div>
+        </div>
+        <div class="cap" id="cap">Live · 157 points of presence</div>
+      </div>
+      <div>
+        <div class="term">
+          <div class="term-bar"><i></i><i></i><i></i><span class="title">cfop · workspace admin</span></div>
+          <div class="term-body"><span class="c">$</span> cfop tenant list
+
+SLUG      ZONES  TOKENS  AI 30d   LAST
+<span class="w">acme</span>         47       6  <span class="g">$22.16</span>   2m ago
+<span class="w">northgate</span>    12       2   <span class="g">$4.03</span>   1h ago
+<span class="w">harbourco</span>     8       1   <span class="g">$1.88</span>   3h ago
+
+<span class="c">$</span> cfop backup
+<span class="c">03:15:02</span> local ok <span class="c">(3 databases, verified)</span>
+<span class="c">03:15:03</span> remote ok <span class="g">r2:zs-backups</span></div>
+        </div>
+        <p class="lede" style="margin-top:20px;font-size:14.8px">
+          Everything in the interface is in the CLI too, because the person who
+          built it runs a fleet from a terminal.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="tag">Pricing</span>
+      <h2>Priced per workspace, by zones.</h2>
+      <p>Every tier includes everything. No security feature is held back for a
+         higher plan, and there are no add-ons to stack.</p>
+    </div>
+    <div class="tiers">
+      <div class="tier">
+        <span class="name">Studio</span><span class="zones">up to 25 zones</span>
+        <div class="price">$49<small>/mo</small></div>
+        <div class="when">from general availability</div>
+        <ul><li>3 members</li><li>Everything included</li><li>Email support</li></ul>
+      </div>
+      <div class="tier mid">
+        <span class="name">Agency</span><span class="zones">up to 100 zones</span>
+        <div class="price">$149<small>/mo</small></div>
+        <div class="when">from general availability</div>
+        <ul><li>10 members</li><li>Everything included</li><li>Client share links</li></ul>
+      </div>
+      <div class="tier">
+        <span class="name">Fleet</span><span class="zones">100+ zones</span>
+        <div class="price">Talk<small> to us</small></div>
+        <div class="when">from general availability</div>
+        <ul><li>Unlimited members</li><li>Everything included</li><li>Priority support</li></ul>
+      </div>
+    </div>
+    <p class="note">
+      <b>Free during the beta</b>, then 50% off your first year, locked. You bring
+      your own Cloudflare token and Anthropic key, so model usage is billed to you
+      by Anthropic at cost. We don't mark it up.
+    </p>
+  </div>
+</section>
+
+<section class="alt" id="beta">
+  <div class="wrap beta-in">
+    <div>
+      <span class="tag">Private beta</span>
+      <h2 style="margin-top:12px">Twenty seats. Yours if it fits.</h2>
+      <p class="lede" style="font-size:15px">
+        Tell us how many zones you run and what you use today. If it's a fit you
+        get a workspace, and we get your honest opinion.
+      </p>
+      <div class="seats">
+        <i class="seat open"></i><i class="seat open"></i><i class="seat open"></i>
+        <i class="seat open"></i><i class="seat open"></i><i class="seat"></i>
+        <i class="seat"></i><i class="seat"></i><i class="seat"></i><i class="seat"></i>
+        <span>5 OF 20 CLAIMED</span>
+      </div>
+    </div>
+    <a href="#" class="btn btn-primary" style="padding:13px 22px">Apply for beta →</a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-top">
+      <a href="#" class="mark">zonesteward<span class="br">_</span></a>
+      <div class="f-links">
+        <a href="#gate">How it works</a><a href="#security">Security</a>
+        <a href="#pricing">Pricing</a><a href="#">Docs</a>
+        <a href="#">Privacy</a><a href="#">Terms</a>
+      </div>
+    </div>
+    <p class="f-note">
+      Built by one person who runs a fleet of Cloudflare zones for an agency,
+      because the dashboard assumes you only have one. Not affiliated with
+      Cloudflare, Inc.
+    </p>
+  </div>
+</footer>
+
+<script src="shared/globe.js"></script>
+<script>
+  const el = document.getElementById("globe");
+  const n = drawGlobe(el, { dot: 3, colour: "#F6821F" });
+  document.getElementById("cap").textContent =
+    `Live · ${POPS.length} points of presence · ${n} in view`;
+  addEventListener("resize", () => { el.innerHTML = ""; drawGlobe(el, { dot: 3 }); });
+</script>
+</body>
+</html>

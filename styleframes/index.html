@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zonesteward — styleframes</title>
+<meta name="description" content="Design directions for the Zonesteward marketing site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;1,6..72,300&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0d;--panel:#141417;--panel-2:#191920;--line:#26262c;--fg:#f2f2f4;--muted:#9a9aa4;--dim:#82828c;--accent:#F6821F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font-family:Geist,system-ui,sans-serif;line-height:1.6;padding:44px 24px 90px}
+.wrap{max-width:1080px;margin:0 auto}
+h1{font-size:26px;font-weight:500;letter-spacing:-.02em}
+.sub{color:var(--muted);margin-top:8px;font-weight:300;max-width:66ch}
+.round{margin-top:44px}
+.round-head{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:22px}
+.round-head h2{font-size:16px;font-weight:500}
+.round-head .tag{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.round-head .tag.live{color:var(--accent)}
+.round-head .note{margin-left:auto;font-size:13px;color:var(--dim)}
+.grid{display:grid;gap:16px}
+@media(min-width:880px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:border-color .15s}
+.card:hover{border-color:#3a3a43}
+.card.past{opacity:.55}
+.swatch{height:84px;display:flex;align-items:flex-end;padding:11px;gap:6px}
+.chip{width:24px;height:24px;border-radius:5px;border:1px solid rgba(0,0,0,.12)}
+.body{padding:17px 17px 19px;flex:1;display:flex;flex-direction:column}
+.k{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+h3{font-size:17px;font-weight:500;margin:7px 0 9px;font-family:Newsreader,serif}
+p{font-size:13.8px;color:var(--muted);font-weight:300}
+.meta{margin-top:14px;font-size:12.4px;color:var(--dim);display:grid;gap:4px}
+.meta b{color:var(--muted);font-weight:400}
+.open{margin-top:auto;padding-top:16px}
+.open a{display:inline-flex;align-items:center;justify-content:center;gap:7px;background:var(--fg);color:#0a0a0a;border-radius:7px;padding:9px 14px;font-size:13.5px;font-weight:500;text-decoration:none;width:100%}
+.open a:hover{background:#fff}
+.card.past .open a{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.note-box{margin-top:40px;border-top:1px solid var(--line);padding-top:22px;font-size:13.6px;color:var(--muted);font-weight:300;max-width:78ch;line-height:1.72}
+.note-box b{color:var(--fg);font-weight:500}
+ul{margin:10px 0 0 18px;display:grid;gap:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Zonesteward · styleframes</h1>
+  <p class="sub">
+    Round two takes <b style="color:var(--fg);font-weight:500">B (Ledger)</b> — the
+    typography and palette you picked — and tries three layout strategies on it.
+    All three now share one stylesheet, <span style="font-family:'Geist Mono',monospace;font-size:12.5px">shared/ledger.css</span>,
+    so whichever wins is already the foundation the real site starts from.
+  </p>
+
+  <div class="round">
+    <div class="round-head">
+      <span class="tag live">Round two</span>
+      <h2>Ledger layouts</h2>
+      <span class="note">B1R is the current direction.</span>
+    </div>
+    <div class="grid">
+
+      <div class="card" style="border-color:var(--accent)">
+        <div class="swatch" style="background:linear-gradient(150deg,#faf9f6 40%,#0d0d0f 40% 72%,#faf9f6 72%)">
+          <i class="chip" style="background:#16150f"></i>
+          <i class="chip" style="background:#c2410c"></i>
+          <i class="chip" style="background:#ffba78"></i>
+        </div>
+        <div class="body">
+          <span class="k" style="color:var(--accent)">Variant B1R · newest</span>
+          <h3>Stage</h3>
+          <p>B1 with the globe taken out of the hero. The headline runs full
+             measure; the globe becomes a 640px plate with a live readout of the
+             colos serving this very page. One dark band in the document, at the gate.</p>
+          <div class="meta">
+            <span><b>Globe</b> rotating, live-fed, full 157-PoP mesh</span>
+            <span><b>Bands</b> exactly one, so it can't read as stripes</span>
+          </div>
+          <div class="open"><a href="b1r-stage.html">Open B1R →</a></div>
+        </div>
+      </div>
+
+      <div class="card past">
+        <div class="swatch" style="background:linear-gradient(150deg,#faf9f6 58%,#0d0d0f 58%)">
+          <i class="chip" style="background:#16150f"></i>
+          <i class="chip" style="background:#c2410c"></i>
+          <i class="chip" style="background:#ddd9cf"></i>
+        </div>
+        <div class="body">
+          <span class="k">Variant B1</span>
+          <h3>Anchored</h3>
+          <p>A's bones in B's clothes. Two-column hero with the globe beside the
+             headline, a four-up proof strip under it, and the gate split card-left
+             against the ladder. Densest, most conventional, fastest to scan.</p>
+          <div class="meta">
+            <span><b>Hero</b> side-by-side, globe framed in paper</span>
+            <span><b>Risk</b> the safest, so the least memorable</span>
+          </div>
+          <div class="open"><a href="b1-anchored.html">Open B1 →</a></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="swatch" style="background:linear-gradient(150deg,#faf9f6,#edeae1)">
+          <i class="chip" style="background:#16150f"></i>
+          <i class="chip" style="background:#c2410c"></i>
+          <i class="chip" style="background:#fff"></i>
+        </div>
+        <div class="body">
+          <span class="k">Variant B2</span>
+          <h3>Broadsheet</h3>
+          <p>The editorial argument all the way. A double-ruled masthead, one
+             enormous headline, a drop cap, two-column body text and a sticky
+             sidenote gutter that gives the whole page one spine.</p>
+          <div class="meta">
+            <span><b>Hero</b> full-measure headline, globe as a banner</span>
+            <span><b>Risk</b> the boldest; needs nerve to ship</span>
+          </div>
+          <div class="open"><a href="b2-broadsheet.html">Open B2 →</a></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="swatch" style="background:repeating-linear-gradient(180deg,#faf9f6 0 22px,#0d0d0f 22px 44px)">
+          <i class="chip" style="background:#16150f"></i>
+          <i class="chip" style="background:#c2410c"></i>
+          <i class="chip" style="background:#0d0d0f"></i>
+        </div>
+        <div class="body">
+          <span class="k">Variant B3 · rejected</span>
+          <h3>Plates</h3>
+          <p>Paper to read on, full-bleed black for the product. The page
+             alternates, so each screenshot arrives edge to edge as an event.
+             The drama of the dark direction with every word still on paper.</p>
+          <div class="meta">
+            <span><b>Hero</b> centred, then a black band immediately</span>
+            <span><b>Risk</b> banding can feel repetitive over many pages</span>
+          </div>
+          <div class="open"><a href="b3-plates.html">Open B3 →</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="round">
+    <div class="round-head">
+      <span class="tag">Round one</span>
+      <h2>The original three</h2>
+      <span class="note">Kept for reference</span>
+    </div>
+    <div class="grid">
+      <div class="card past">
+        <div class="swatch" style="background:linear-gradient(160deg,#08080a,#16161a)">
+          <i class="chip" style="background:#f4f4f5"></i><i class="chip" style="background:#F6821F"></i>
+        </div>
+        <div class="body"><span class="k">A</span><h3>Instrument</h3>
+          <p>Near-black, product as hero. You liked the layout.</p>
+          <div class="open"><a href="a-instrument.html">Open A</a></div></div>
+      </div>
+      <div class="card past">
+        <div class="swatch" style="background:linear-gradient(160deg,#faf9f6,#eeebe3)">
+          <i class="chip" style="background:#16150f"></i><i class="chip" style="background:#c2410c"></i>
+        </div>
+        <div class="body"><span class="k">B</span><h3>Ledger</h3>
+          <p>Light, editorial. The chosen type and palette.</p>
+          <div class="open"><a href="b-ledger.html">Open B</a></div></div>
+      </div>
+      <div class="card past">
+        <div class="swatch" style="background:linear-gradient(160deg,#fbfbfa,#101014 72%)">
+          <i class="chip" style="background:#101014"></i><i class="chip" style="background:#b8480a"></i>
+        </div>
+        <div class="body"><span class="k">C</span><h3>Console</h3>
+          <p>Light shell, dark terminals, CLI beside the UI.</p>
+          <div class="open"><a href="c-console.html">Open C</a></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-box">
+    <b>What changed since round one.</b> The three new variants share a single
+    stylesheet rather than each carrying its own copy, so picking one is picking
+    a foundation rather than a mood board.
+    <ul>
+      <li>B1 is the direct answer to what you said: B's typography on A's layout.</li>
+      <li>B2 is what B wants to be if you let it commit. Worth opening even if
+          you don't pick it, because bits of it can go into B1.</li>
+      <li>B3 solves the thing A was doing well that B was not: giving the product
+          screenshots real presence.</li>
+      <li>Mixing is still fine. B1's hero with B3's bands is a coherent site.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
