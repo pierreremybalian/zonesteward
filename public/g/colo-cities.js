@@ -1,0 +1,36 @@
+/* IATA colo -> city, for the readout under the globe. Partial on purpose:
+   anything missing falls back to the bare code, which is still legible to the
+   audience this site is for. */
+const COLO_CITY = {
+  ATL:"Atlanta",ORD:"Chicago",DFW:"Dallas",DEN:"Denver",IAH:"Houston",LAS:"Las Vegas",
+  LAX:"Los Angeles",MIA:"Miami",MSP:"Minneapolis",EWR:"Newark",JFK:"New York",
+  IAD:"Ashburn",PHX:"Phoenix",PIT:"Pittsburgh",PDX:"Portland",SLC:"Salt Lake City",
+  SAN:"San Diego",SFO:"San Francisco",SJC:"San Jose",SEA:"Seattle",TPA:"Tampa",
+  BOS:"Boston",STL:"St. Louis",CMH:"Columbus",IND:"Indianapolis",MEM:"Memphis",
+  MCI:"Kansas City",OKC:"Oklahoma City",SMF:"Sacramento",YYZ:"Toronto",YUL:"Montreal",
+  YVR:"Vancouver",YYC:"Calgary",MEX:"Mexico City",GDL:"Guadalajara",GIG:"Rio de Janeiro",
+  GRU:"São Paulo",EZE:"Buenos Aires",SCL:"Santiago",LIM:"Lima",BOG:"Bogotá",
+  UIO:"Quito",CCS:"Caracas",PTY:"Panama City",SDQ:"Santo Domingo",AMS:"Amsterdam",
+  ATH:"Athens",BCN:"Barcelona",BEG:"Belgrade",BER:"Berlin",BRU:"Brussels",BUD:"Budapest",
+  CPH:"Copenhagen",DUB:"Dublin",DUS:"Düsseldorf",FRA:"Frankfurt",GVA:"Geneva",
+  HAM:"Hamburg",HEL:"Helsinki",IST:"Istanbul",KEF:"Reykjavík",KIV:"Chișinău",
+  LHR:"London",LIS:"Lisbon",LUX:"Luxembourg",MAD:"Madrid",MAN:"Manchester",
+  MRS:"Marseille",MUC:"Munich",MXP:"Milan",OSL:"Oslo",OTP:"Bucharest",PRG:"Prague",
+  RIX:"Riga",SOF:"Sofia",STO:"Stockholm",ARN:"Stockholm",TLL:"Tallinn",VIE:"Vienna",
+  VNO:"Vilnius",WAW:"Warsaw",ZAG:"Zagreb",ZRH:"Zurich",CDG:"Paris",TLV:"Tel Aviv",
+  BAH:"Manama",BKK:"Bangkok",BLR:"Bengaluru",BOM:"Mumbai",CAN:"Guangzhou",
+  CCU:"Kolkata",CGK:"Jakarta",CMB:"Colombo",CTU:"Chengdu",DEL:"Delhi",DPS:"Denpasar",
+  DXB:"Dubai",FUK:"Fukuoka",HAN:"Hanoi",HKG:"Hong Kong",HND:"Tokyo",HYD:"Hyderabad",
+  ICN:"Seoul",KHH:"Kaohsiung",KIX:"Osaka",KUL:"Kuala Lumpur",MAA:"Chennai",
+  MFM:"Macau",MNL:"Manila",NAG:"Nagoya",NRT:"Tokyo",PEK:"Beijing",PNH:"Phnom Penh",
+  PVG:"Shanghai",SGN:"Ho Chi Minh City",SHE:"Shenyang",SIN:"Singapore",SZX:"Shenzhen",
+  TPE:"Taipei",ULN:"Ulaanbaatar",YGN:"Yangon",KHV:"Khabarovsk",SVO:"Moscow",
+  DME:"Moscow",LED:"St Petersburg",AMM:"Amman",BEY:"Beirut",DOH:"Doha",KWI:"Kuwait City",
+  MCT:"Muscat",RUH:"Riyadh",THR:"Tehran",CAI:"Cairo",CMN:"Casablanca",CPT:"Cape Town",
+  DAR:"Dar es Salaam",DKR:"Dakar",JIB:"Djibouti",JNB:"Johannesburg",LOS:"Lagos",
+  MBA:"Mombasa",MRU:"Port Louis",NBO:"Nairobi",RUN:"Réunion",TUN:"Tunis",
+  ADL:"Adelaide",AKL:"Auckland",BNE:"Brisbane",CBR:"Canberra",CHC:"Christchurch",
+  HBA:"Hobart",MEL:"Melbourne",PER:"Perth",SYD:"Sydney",WLG:"Wellington",
+  NOU:"Nouméa",PPT:"Papeete",
+};
+window.COLO_CITY = COLO_CITY;

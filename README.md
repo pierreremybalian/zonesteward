@@ -1,18 +1,36 @@
 # Zonesteward
 
 Marketing site for Zonesteward — Cloudflare fleet operations for agencies.
+Astro, static output, deployed to Cloudflare Pages at
+**zonesteward.balian.dev**, with the live globe served by a Pages Function.
+
+```bash
+nvm use && npm install
+npm run dev     # astro, :4321
+npm run build   # -> dist/
+npm test        # the Pages Functions, no network, no wrangler
+```
 
 ## Layout
 
 ```
-styleframes/    design exploration, self-contained HTML, no build step
-  index.html      launcher with notes on every direction
-  b1r-stage.html  THE CHOSEN DIRECTION
-  shared/         the foundation the real build starts from
+src/            the site
+  layouts/Base.astro     head, fonts, both stylesheets
+  components/            one per section of the page
+  styles/ledger.css      the foundation: tokens, type, components
+  styles/site.css        the B1R layout on top of it
+public/g/       globe.js, land.js, globe-live.js, colo-cities.js
+functions/      Cloudflare Pages Functions (see "The live globe")
+schema.sql      D1
+styleframes/    the design exploration that got here, kept whole
 ```
 
-Open any styleframe straight off disk; there is no server and no build. The
-only network dependency is Google Fonts.
+Styleframes open straight off disk — no server, no build, Google Fonts the only
+network dependency.
+
+Both stylesheets are **global, not scoped per component**. Every selector was
+written against the approved styleframe, and Astro's default scoping would
+quietly change which ones still match.
 
 ## The chosen direction: B1R "Stage"
 
@@ -66,26 +84,57 @@ Not the client fleet, not aggregate Rocket55 traffic. Visitors to this site are
 themselves traffic on that zone, so the globe gets busier the more people are
 looking at it.
 
-Not built yet. The shape:
+### Why it does not use the Analytics API
 
-- A Cloudflare Worker with a token scoped to Zone Analytics Read on that one
-  zone queries GraphQL and caches the result. Deliberately **not** an endpoint
-  on the operator, which fails closed without a bound tenant and should not
-  grow a public carve-out for this.
-- The page ships with a baked-in snapshot as the fallback, so the globe cannot
-  break when the Worker or the origin is down. Never iframe the operator: it is
-  behind auth and would couple this page to app uptime.
-- Rolling 24-hour window, not instantaneous, so it survives quiet hours.
-- Relative intensity only, never raw request counts, so the page does not
-  publish exact traffic volume.
+The obvious route — query `httpRequestsAdaptiveGroups` for the zone — is shut
+on a free plan. Cloudflare denies `coloCode` to free zones and denies it as a
+*top-level* error that fails the whole query, so there is no partial answer to
+fall back on. That would have forced a paid plan just to draw the hero.
 
-**The zone must be on a paid Cloudflare plan.** Free zones are denied
-`coloCode` on `httpRequestsAdaptiveGroups`, and the denial fails the whole
-query rather than just that field, so the globe would fall back to country
-resolution and could not light points of presence at all.
+`request.cf.colo` costs nothing. It is the three-letter IATA code of the data
+centre that served the request, documented under **"All plans"**, and it
+arrives on every request as edge metadata rather than as analytics. So the site
+records what is happening as it happens instead of asking afterwards:
 
-## Open before build
+- `functions/_middleware.js` reads `request.cf.colo` on each page view and
+  bumps a per-colo, per-hour counter in D1.
+- `functions/api/globe.js` returns the last 24 hours normalised against the
+  busiest colo.
+- `src/components/Stage.astro` renders a baked snapshot immediately and swaps
+  in live numbers if the fetch succeeds.
 
-- Which domain, and get its zone onto a paid plan.
-- The real OVH region for the origin marker; it is a Beauharnois placeholder.
-- Mint the Worker's Analytics Read token — no existing token reaches this zone.
+Better than the analytics route on every axis: no API token, no plan upgrade,
+real-time rather than five minutes stale, and the operator is not involved.
+
+### Rules this holds to
+
+- **Counters only.** Colo and an hour bucket. No IP, no user agent, nothing
+  identifying. Cloudflare resolved the request to a colo at the edge, so there
+  is nothing left to geolocate and nothing worth storing.
+- **Relative intensity, never raw counts.** The hero should not publish exact
+  traffic volume to anyone who opens dev tools.
+- **The globe cannot break.** Baked fallback, edge-cached endpoint, and
+  instrumentation that swallows its own failures. This is the reason it is not
+  an iframe of the operator, which is behind auth and would tie this page to
+  app uptime.
+- **A rolling 24-hour window**, so it survives quiet hours.
+
+## Setting up D1
+
+```bash
+npx wrangler d1 create zonesteward-globe   # paste the id into wrangler.toml
+npm run db:remote                          # apply schema.sql
+```
+
+Then bind it in the Pages project: **Settings › Bindings › D1**, variable name
+`DB`, and redeploy. Until that binding exists every Function degrades to the
+baked snapshot rather than erroring.
+
+## Still open
+
+- Point `zonesteward.balian.dev` at the Pages project.
+- The real OVH region for the origin marker — it is a Beauharnois placeholder
+  in `src/components/Stage.astro`.
+- The beta form posts nowhere yet.
+- Confirm `request.cf` is populated on a real deploy. It is under `wrangler
+  pages dev` that it may be stubbed, not in production.

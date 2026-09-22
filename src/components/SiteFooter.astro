@@ -1,0 +1,17 @@
+---
+const links = ["How it works", "Security", "Pricing", "Docs", "Privacy", "Terms"];
+const hrefs = ["#gate", "#", "#pricing", "#", "#", "#"];
+---
+<footer>
+  <div class="wrap">
+    <div class="f-top">
+      <a href="/" class="mark" style="font-size:19px">Zone<i>steward</i></a>
+      <div class="f-links">{links.map((l, i) => <a href={hrefs[i]}>{l}</a>)}</div>
+    </div>
+    <p class="colophon">
+      Built by one person who runs a fleet of Cloudflare zones for an agency,
+      because the dashboard assumes you only have one. Set in Newsreader and
+      Geist. Not affiliated with Cloudflare, Inc.
+    </p>
+  </div>
+</footer>

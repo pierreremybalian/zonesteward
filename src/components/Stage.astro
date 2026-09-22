@@ -1,0 +1,88 @@
+---
+/* The stage: this site, seen through the product.
+   The globe reads one zone — zonesteward.balian.dev — and nothing else. Not
+   the client fleet. Visitors to this page are themselves that zone's traffic,
+   so the globe fills up as people look at it.
+
+   FALLBACK is baked in and rendered immediately; /api/globe replaces it when
+   it answers. If the Function or D1 is down the globe still draws, which is
+   the whole reason this is not an iframe of the operator. */
+const FALLBACK = {
+  MSP: 1.0, ORD: 0.72, LHR: 0.26, DFW: 0.41, IAD: 0.38, EWR: 0.33, LAX: 0.29,
+  SEA: 0.22, FRA: 0.21, YYZ: 0.19, AMS: 0.17, SIN: 0.14, CDG: 0.12, NRT: 0.11,
+  SYD: 0.09, GRU: 0.08, BOM: 0.07,
+};
+/* Beauharnois placeholder — replace with the real OVH region. */
+const ORIGIN = { lat: 45.315, lng: -73.87, label: "ORIGIN" };
+---
+<section class="stage">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="sc">Live</span>
+      <span class="who">This page, right now, through Zonesteward</span>
+      <span class="when"><i class="pulse"></i> <span id="when">updating…</span></span>
+    </div>
+
+    <canvas
+      class="stage-globe"
+      id="stage"
+      aria-label="Globe showing the Cloudflare points of presence that served this site in the last 24 hours"
+    ></canvas>
+    <p class="stage-cap">
+      <b id="cap">157 points of presence</b> · <span id="served">…</span>
+    </p>
+
+    <div class="readout" id="readout"></div>
+
+    <p class="frame-note">
+      Bright points are colos that served this zone; the arcs are the requests
+      that missed cache and reached the origin. Load this page and the colo that
+      served you lights up — the globe gets busier the more people are looking
+      at it. Intensity is relative to the busiest colo in the window, never a
+      raw request count.
+    </p>
+
+    <div class="proof">
+      <div><span class="k">The model can</span><div class="v">Propose only</div></div>
+      <div><span class="k">Every change</span><div class="v">Verified by read-back</div></div>
+      <div><span class="k">Per customer</span><div class="v">Its own database</div></div>
+      <div><span class="k">Every change</span><div class="v">Revertable</div></div>
+    </div>
+  </div>
+</section>
+
+<script is:inline src="/g/globe.js"></script>
+<script is:inline src="/g/land.js"></script>
+<script is:inline src="/g/colo-cities.js"></script>
+<script is:inline src="/g/globe-live.js"></script>
+<script is:inline define:vars={{ FALLBACK, ORIGIN }}>
+  (function () {
+    const globe = liveGlobe(document.getElementById("stage"), {
+      pops: POPS, land: LAND, live: FALLBACK, origin: ORIGIN,
+    });
+    document.getElementById("cap").textContent = POPS.length + " points of presence";
+
+    function paint(live, updated) {
+      const keys = Object.keys(live);
+      if (!keys.length) return;
+      globe.setLive(live);
+      document.getElementById("served").textContent =
+        keys.length + " served this zone in the last 24 hours";
+      document.getElementById("when").textContent = updated;
+      document.getElementById("readout").innerHTML = keys
+        .sort((a, b) => live[b] - live[a]).slice(0, 12)
+        .map(function (c) {
+          return '<div class="ro"><span class="c">' + c + "</span>" +
+            '<span class="city">' + ((window.COLO_CITY || {})[c] || "") + "</span>" +
+            '<span class="bar"><i style="width:' + Math.round(live[c] * 100) + '%"></i></span></div>';
+        }).join("");
+    }
+
+    paint(FALLBACK, "sample");
+
+    fetch("/api/globe", { headers: { accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && d.colos) paint(d.colos, d.updated || "just now"); })
+      .catch(function () { /* baked snapshot stands */ });
+  })();
+</script>

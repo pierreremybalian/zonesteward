@@ -1,0 +1,55 @@
+---
+const ladder = [
+  { b: "Impact classified before you see it",
+    p: "Low, medium or high. A site-wide lockdown or an apex DNS deletion needs an explicit acknowledgement, not a click." },
+  { b: "Blast radius against real traffic",
+    p: "The proposed rule is evaluated against your last 24 hours before it exists, so you know what it would have blocked." },
+  { b: "Read back from Cloudflare",
+    p: "\"Applied\" means the server asked Cloudflare what the setting is now and received the answer it expected." },
+  { b: "Reversible, with the payload stored",
+    p: "Every change lands in the audit trail together with the instructions to undo it." },
+];
+---
+<!-- The only dark band in the document. An earlier variant alternated all the
+     way down the page and read as zebra stripes. -->
+<section class="band" id="gate">
+  <div class="band-head">
+    <b>Plate II</b>
+    <span>Proposed, approved, verified, revertable</span>
+    <span class="r">rocket55dev.com</span>
+  </div>
+  <div class="band-body">
+    <div class="band-inner">
+      <div>
+        <div class="card">
+          <span class="kick">Proposed · rocket55dev.com</span>
+          <span class="impact">impact · medium</span>
+          <h3>Create IP access rule</h3>
+          <p class="sub">Challenge <code>34.165.86.164</code> — attacker: secrets &amp; config scan</p>
+          <div class="card-foot">
+            <span class="verified">Verified ✓</span>
+            <a href="#" class="revert">Revert</a>
+            <span class="sp">
+              <span class="chip-btn">Reject</span>
+              <span class="chip-btn solid">Approve</span>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-head" style="margin-bottom:30px">
+          <span class="sc">The gate</span>
+          <h2>Structurally unable to touch your zones.</h2>
+          <p>
+            Not a policy, not a system prompt. Every function that can change
+            Cloudflare is reachable from the execution core alone, so a prompt
+            injected through a request path or a user agent cannot cause a write.
+          </p>
+        </div>
+        <ol class="ladder">
+          {ladder.map((l) => <li><div><b>{l.b}</b><p>{l.p}</p></div></li>)}
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>

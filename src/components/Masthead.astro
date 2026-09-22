@@ -1,0 +1,25 @@
+---
+const nav = [
+  { href: "#gate", label: "How it works" },
+  { href: "#", label: "Security" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#", label: "Docs" },
+];
+---
+<header>
+  <div class="wrap">
+    <div class="masthead">
+      <a href="/" class="mark">Zone<i>steward</i></a>
+      <nav>{nav.map((n) => <a href={n.href}>{n.label}</a>)}</nav>
+      <div class="end">
+        <a href="#" class="btn btn-ghost btn-sm">Sign in</a>
+        <a href="#beta" class="btn btn-primary btn-sm">Apply for beta</a>
+      </div>
+    </div>
+    <div class="strap">
+      <span>Private beta · 20 seats</span>
+      <span>Cloudflare fleet operations</span>
+      <span>Est. 2026</span>
+    </div>
+  </div>
+</header>

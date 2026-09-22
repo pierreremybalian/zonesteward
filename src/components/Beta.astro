@@ -1,0 +1,21 @@
+---
+const TOTAL = 20, CLAIMED = 5, PIPS = 10;
+const filled = Math.round((CLAIMED / TOTAL) * PIPS);
+---
+<section class="beta" id="beta">
+  <div class="wrap beta-in">
+    <div>
+      <span class="sc">Private beta</span>
+      <h2 style="margin-top:14px">Twenty seats. Yours if it fits.</h2>
+      <p class="lede" style="font-size:15.5px;margin-top:16px">
+        Tell us how many zones you run and what you use today. If it's a fit you
+        get a workspace, and we get your honest opinion.
+      </p>
+      <div class="seats">
+        {Array.from({ length: PIPS }, (_, i) => <i class={i < filled ? "seat open" : "seat"}></i>)}
+        <span>{CLAIMED} OF {TOTAL} CLAIMED</span>
+      </div>
+    </div>
+    <a href="#" class="btn btn-primary btn-lg">Apply for beta →</a>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+---
+const cols = [
+  { n: "01", h: "No single view",
+    p: "One dashboard per zone. To learn who is under attack you open forty tabs, or you don't look at all." },
+  { n: "02", h: "Answers take an afternoon",
+    p: "\"Why is this site slow in Europe?\" has a GraphQL query behind it that nobody on the team is going to write." },
+  { n: "03", h: "Changes are frightening",
+    p: "A WAF rule on a client's production site, typed at five o'clock, with no preview of what it blocks and no way back." },
+];
+---
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The problem</span>
+      <h2>Cloudflare's dashboard assumes one zone and one expert.</h2>
+      <p>You have neither. You have forty zones across six clients and a support queue.</p>
+    </div>
+    <div class="cols">
+      {cols.map((c) => (
+        <div class="col"><span class="n">{c.n}</span><h3>{c.h}</h3><p>{c.p}</p></div>
+      ))}
+    </div>
+  </div>
+</section>

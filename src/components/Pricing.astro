@@ -1,0 +1,36 @@
+---
+const tiers = [
+  { plan: "Studio", zones: "up to 25 zones", amt: "$49", per: "/mo",
+    desc: "3 members. Chat, globe, investigation, approvals, audit, alerts." },
+  { plan: "Agency", zones: "up to 100 zones", amt: "$149", per: "/mo",
+    desc: "10 members. Everything in Studio, plus client share links." },
+  { plan: "Fleet", zones: "100+ zones", amt: "Talk", per: " to us",
+    desc: "Unlimited members. Everything, plus priority support." },
+];
+---
+<section style="background:var(--paper-2);border-top:1px solid var(--rule)" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">Rates</span>
+      <h2>Priced per workspace, by zones.</h2>
+      <p>Every tier includes everything. No security feature is held back for a higher plan.</p>
+    </div>
+    <table class="rate">
+      <thead><tr><th>Plan</th><th>From general availability</th><th>Included</th></tr></thead>
+      <tbody>
+        {tiers.map((t) => (
+          <tr>
+            <td><span class="plan">{t.plan}</span><span class="zn">{t.zones}</span></td>
+            <td><span class="amt">{t.amt}<small>{t.per}</small></span></td>
+            <td class="desc">{t.desc}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p class="note">
+      <b>Free during the beta</b>, then 50% off your first year, locked. You bring
+      your own Cloudflare token and Anthropic key, so model usage is billed to you
+      by Anthropic at cost. We do not mark it up.
+    </p>
+  </div>
+</section>

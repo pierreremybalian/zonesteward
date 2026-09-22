@@ -1,0 +1,8 @@
+name = "zonesteward"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zonesteward-globe"
+database_id = "PLACEHOLDER-run-wrangler-d1-create-and-paste-the-id"
