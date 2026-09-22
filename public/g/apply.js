@@ -10,9 +10,56 @@
     var note = f.querySelector("[data-note]");
     var msg = f.querySelector(".apply-msg");
     var i = 0;
+    var DRAFT = "zs-apply-draft";
 
-    function show(n) {
+    /* #apply/2 means step two. Written on every step change so the URL is
+       always the place you are, and read on load so a link or a reload lands
+       you back there. */
+    function stepFromHash() {
+      var m = /^#apply(?:\/(\d))?$/.exec(location.hash);
+      return m && m[1] ? Math.min(steps.length, Math.max(1, +m[1])) - 1 : null;
+    }
+    function writeHash(n) {
+      var want = "#apply/" + (n + 1);
+      if (location.hash === want) return;
+      var st = history.state || {};
+      st.apply = true;
+      history.replaceState(st, "", location.pathname + location.search + want);
+    }
+
+    /* Draft: every answer, saved as it is typed, restored on the next visit,
+       cleared on success. Per-browser convenience only — never the record. */
+    function saveDraft() {
+      try {
+        var o = {};
+        new FormData(f).forEach(function (v, k) { if (k === "company_url") return; (o[k] = o[k] || []).push(v); });
+        localStorage.setItem(DRAFT, JSON.stringify({ t: Date.now(), o: o }));
+      } catch (e) {}
+    }
+    function restoreDraft() {
+      try {
+        var raw = localStorage.getItem(DRAFT); if (!raw) return false;
+        var d = JSON.parse(raw);
+        if (!d || Date.now() - d.t > 7 * 864e5) { localStorage.removeItem(DRAFT); return false; }
+        var any = false;
+        Object.keys(d.o).forEach(function (k) {
+          var vals = d.o[k];
+          f.querySelectorAll('[name="' + k + '"]').forEach(function (el) {
+            if (el.type === "checkbox" || el.type === "radio") el.checked = vals.indexOf(el.value) !== -1;
+            else el.value = vals[0] || "";
+            if (el.value || el.checked) any = true;
+          });
+        });
+        return any;
+      } catch (e) { return false; }
+    }
+    function clearDraft() { try { localStorage.removeItem(DRAFT); } catch (e) {} }
+    f.addEventListener("input", saveDraft);
+    f.addEventListener("change", saveDraft);
+
+    function show(n, opts) {
       i = n;
+      if (!(opts && opts.silent)) writeHash(n);
       steps.forEach(function (s, k) { s.hidden = k !== n; });
       tabs.forEach(function (t, k) {
         t.classList.toggle("done", k < n);
@@ -121,6 +168,8 @@
           msg.hidden = false;
           msg.className = "apply-msg good";
           msg.innerHTML = receipt(rows);
+          clearDraft();
+          history.replaceState(null, "", location.pathname + location.search + "#apply/done");
           var dc = msg.querySelector("[data-done-close]");
           if (dc) dc.addEventListener("click", function () { var d = document.getElementById("apply-dlg"); if (d) d.close(); });
           msg.scrollIntoView({ block: "start" });
@@ -134,7 +183,37 @@
         });
     });
 
-    show(0);
+    /* Land on the step in the URL, but never past the first step that would
+       not validate — a deep link into step three with an empty step one is
+       a dead end, not a shortcut. */
+    function landOn(target) {
+      var n = 0;
+      while (n < target && stepValidQuiet(n)) n++;
+      show(n);
+    }
+    function stepValidQuiet(n) {
+      var fields = steps[n].querySelectorAll("input, select, textarea");
+      for (var k = 0; k < fields.length; k++) {
+        var el = fields[k];
+        if (el.type === "radio") {
+          if (el.required && !steps[n].querySelector('input[name="' + el.name + '"]:checked')) return false;
+          continue;
+        }
+        if (!el.checkValidity()) return false;
+      }
+      return true;
+    }
+    var resumed = restoreDraft();
+    var fromHash = stepFromHash();
+    if (fromHash !== null) landOn(fromHash);
+    else if (resumed) { landOn(steps.length - 1); }
+    else show(0, { silent: location.hash.indexOf("#apply") !== 0 });
+    if (resumed && note) note.textContent = "Picked up where you left off.";
+
+    addEventListener("hashchange", function () {
+      var n = stepFromHash();
+      if (n !== null && n !== i) landOn(n);
+    });
   }
   document.querySelectorAll("form.apply").forEach(setup);
 })();

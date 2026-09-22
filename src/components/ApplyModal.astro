@@ -33,30 +33,45 @@ import ApplyForm from "./ApplyForm.astro";
   (function () {
     var dlg = document.getElementById("apply-dlg");
     if (!dlg || typeof dlg.showModal !== "function") return;
+    var isApplyHash = function () { return location.hash.indexOf("#apply") === 0; };
 
-    function open(e) {
-      if (e) e.preventDefault();
+    function open(push) {
+      if (dlg.open) return;
+      if (push && !isApplyHash()) history.pushState({ apply: true }, "", location.pathname + location.search + "#apply/1");
       dlg.showModal();
       document.documentElement.classList.add("dlg-open");
-      var first = dlg.querySelector('input:not([type=hidden]):not([tabindex="-1"])');
+      var first = dlg.querySelector("input:not([type=hidden]):not([tabindex='-1']):not([hidden] *)");
       if (first) setTimeout(function () { first.focus(); }, 30);
     }
     function close() {
-      dlg.close();
+      if (!dlg.open) return;
+      // We pushed a history entry to open; going back is what closes it, so
+      // the browser's Back button and our × do the same thing.
+      if (history.state && history.state.apply) history.back();
+      else dlg.close();
     }
     dlg.addEventListener("close", function () {
       document.documentElement.classList.remove("dlg-open");
+      if (isApplyHash()) history.replaceState(null, "", location.pathname + location.search);
     });
+    // Escape fires 'cancel' before 'close'; route it through our close so the
+    // history entry goes too.
+    dlg.addEventListener("cancel", function (e) { e.preventDefault(); close(); });
 
     document.querySelectorAll('a[href="/apply"], a[href="#apply"]').forEach(function (a) {
-      a.addEventListener("click", open);
+      a.addEventListener("click", function (e) { e.preventDefault(); open(true); });
     });
     dlg.querySelector("[data-close]").addEventListener("click", close);
-    // click on the backdrop closes; click inside the sheet does not
-    dlg.addEventListener("click", function (e) {
-      if (e.target === dlg) close();
+    dlg.addEventListener("click", function (e) { if (e.target === dlg) close(); });
+
+    addEventListener("popstate", function () {
+      if (isApplyHash()) open(false);
+      else if (dlg.open) dlg.close();
     });
 
-    if (location.hash === "#apply") open();
+    if (isApplyHash()) {
+      history.replaceState({ apply: true }, "", location.href);
+      open(false);
+    }
   })();
 </script>
