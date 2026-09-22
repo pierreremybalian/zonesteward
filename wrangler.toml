@@ -5,4 +5,4 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "zonesteward-globe"
-database_id = "PLACEHOLDER-run-wrangler-d1-create-and-paste-the-id"
+database_id = "d34b8df3-44a7-4a0e-8b80-90e06743e3a2"

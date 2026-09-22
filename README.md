@@ -121,14 +121,23 @@ real-time rather than five minutes stale, and the operator is not involved.
 
 ## Setting up D1
 
+Already done: database `zonesteward-globe`, id in `wrangler.toml`, schema
+applied to both remote and local.
+
 ```bash
-npx wrangler d1 create zonesteward-globe   # paste the id into wrangler.toml
-npm run db:remote                          # apply schema.sql
+npm run db:local    # after changing schema.sql
+npm run db:remote
+npm run preview     # build + wrangler pages dev, Functions and D1 for real
 ```
 
-Then bind it in the Pages project: **Settings › Bindings › D1**, variable name
-`DB`, and redeploy. Until that binding exists every Function degrades to the
-baked snapshot rather than erroring.
+**Do not pass `--d1` to `wrangler pages dev`.** The binding already comes from
+`wrangler.toml`; passing the flag as well resolves to a *different* local
+database, so the schema lands in one and the Function writes to the other. It
+fails silently, because the middleware swallows its own errors by design.
+
+Still to do in the dashboard: **Settings › Bindings › D1**, variable name `DB`,
+then redeploy. Until that binding exists the Functions degrade to the baked
+snapshot rather than erroring.
 
 ## Still open
 
@@ -136,5 +145,6 @@ baked snapshot rather than erroring.
 - The real OVH region for the origin marker — it is a Beauharnois placeholder
   in `src/components/Stage.astro`.
 - The beta form posts nowhere yet.
-- Confirm `request.cf` is populated on a real deploy. It is under `wrangler
-  pages dev` that it may be stubbed, not in production.
+`request.cf` is populated under `wrangler pages dev` too, with real values —
+verified locally as `colo: MSP`, ASN 209, so the pipeline can be exercised
+end to end without deploying.

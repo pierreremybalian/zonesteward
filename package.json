@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "astro dev --port 4321",
     "build": "astro build",
-    "preview": "wrangler pages dev dist --d1 DB=zonesteward-globe",
+    "preview": "astro build && wrangler pages dev",
     "db:local": "wrangler d1 execute zonesteward-globe --local --file=schema.sql",
     "db:remote": "wrangler d1 execute zonesteward-globe --remote --file=schema.sql",
     "test": "node tests/functions.test.mjs"
