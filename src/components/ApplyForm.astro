@@ -9,8 +9,8 @@ const { id = "apply" } = Astro.props;
 
 const zones = [["1-10", "1–10"], ["11-25", "11–25"], ["26-100", "26–100"], ["100+", "100+"]];
 const traffic = [
-  ["<1M", "Under 1M requests / month"], ["1-10M", "1–10M"], ["10-100M", "10–100M"],
-  ["100M+", "100M+"], ["unsure", "Not sure"],
+  ["<1M", "Under 1 million"], ["1-10M", "1–10 million"], ["10-100M", "10–100 million"],
+  ["100M+", "100 million or more"], ["unsure", "Not sure"],
 ];
 const plans = [["free", "Free"], ["pro", "Pro"], ["business", "Business"], ["enterprise", "Enterprise"]];
 const focus = [
@@ -18,7 +18,7 @@ const focus = [
   ["investigation", "Analytics & incident digging"], ["reporting", "Client reporting"],
 ];
 const roles = [
-  ["me", "Just me"], ["team", "A small team"], ["ops", "A dedicated ops person"], ["client", "The client does"],
+  ["me", "I do, on my own"], ["team", "A small team at my company"], ["ops", "A dedicated ops person"], ["client", "Each client manages their own"],
 ];
 ---
 <form class="apply" id={id} method="POST" action="/api/beta" novalidate>
@@ -55,7 +55,7 @@ const roles = [
 
   <!-- 02 · Your fleet -->
   <fieldset class="step" data-step="2" hidden>
-    <legend class="step-title">What are you running?</legend>
+    <legend class="step-title">The Cloudflare zones you manage.</legend>
 
     <div class="f2">
       <p class="fld">
@@ -66,7 +66,7 @@ const roles = [
         </select>
       </p>
       <p class="fld">
-        <label for={`${id}-traffic`}>Traffic across all of them, roughly</label>
+        <label for={`${id}-traffic`}>Monthly requests across those zones, roughly</label>
         <select id={`${id}-traffic`} name="traffic" required>
           <option value="" selected disabled>Choose…</option>
           {traffic.map(([v, l]) => <option value={v}>{l}</option>)}
@@ -75,22 +75,22 @@ const roles = [
     </div>
 
     <fieldset class="fld">
-      <legend>Which plans are they on? <span class="opt">pick any</span></legend>
+      <legend>Which Cloudflare plans are those zones on? <span class="opt">pick any</span></legend>
       <ul class="checks">
         {plans.map(([v, l]) => <li><label><input type="checkbox" name="plans" value={v} /><span>{l}</span></label></li>)}
       </ul>
-      <span class="hint">Some things Cloudflare only exposes on paid plans. Knowing the mix tells us what you'll actually see.</span>
+      <span class="hint">Cloudflare exposes some analytics only on paid plans. The mix tells us what Zonesteward will be able to show you.</span>
     </fieldset>
 
     <fieldset class="fld">
-      <legend>Where do you spend your Cloudflare time? <span class="opt">pick any</span></legend>
+      <legend>What takes most of your Cloudflare time? <span class="opt">pick any</span></legend>
       <ul class="checks">
         {focus.map(([v, l]) => <li><label><input type="checkbox" name="focus" value={v} /><span>{l}</span></label></li>)}
       </ul>
     </fieldset>
 
     <p class="fld">
-      <label for={`${id}-role`}>Who looks after it today?</label>
+      <label for={`${id}-role`}>Who manages those zones today?</label>
       <select id={`${id}-role`} name="role">
         <option value="">Choose…</option>
         {roles.map(([v, l]) => <option value={v}>{l}</option>)}
@@ -100,7 +100,7 @@ const roles = [
 
   <!-- 03 · Fit -->
   <fieldset class="step" data-step="3" hidden>
-    <legend class="step-title">Is it a fit?</legend>
+    <legend class="step-title">Is Zonesteward a fit?</legend>
 
     <p class="fld">
       <label for={`${id}-key`}>Do you have an Anthropic API key?</label>
@@ -109,13 +109,13 @@ const roles = [
         <option value="not yet">Not yet, but I can get one</option>
         <option value="what is that">No idea what that is</option>
       </select>
-      <span class="hint">You bring your own key, so model usage is billed to you at cost. We don't mark it up and we never hold it.</span>
+      <span class="hint">You bring your own key. It's stored encrypted, like your Cloudflare tokens, and used only to call Anthropic on your behalf — so Anthropic bills you directly at cost and we never mark it up.</span>
     </p>
 
     <p class="fld">
-      <label for={`${id}-today`}>What goes wrong today?</label>
+      <label for={`${id}-today`}>What goes wrong with how you manage Cloudflare today?</label>
       <textarea id={`${id}-today`} name="today" rows="5" maxlength="1200"
-        placeholder="The thing you dread. Forty tabs. A WAF change at five o'clock with no way back. A client asking why their site is slow in Europe."></textarea>
+        placeholder="The thing you dread. Forty dashboard tabs. A WAF change on a client's live site at five o'clock with no way back. A client asking why their site is slow in Europe."></textarea>
     </p>
 
     <!-- honeypot: invisible to people, irresistible to bots -->

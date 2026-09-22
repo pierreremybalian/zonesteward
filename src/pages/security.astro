@@ -57,7 +57,7 @@ import Page from "../layouts/Page.astro";
     <section class="sec-block">
       <h2>Sub-processors</h2>
       <ul>
-        <li><strong>Anthropic</strong> — the model. Your questions and the analytics needed to answer them are sent to the Anthropic API under <em>your</em> key. We never hold the key in the middle and we never mark usage up.</li>
+        <li><strong>Anthropic</strong> — the model. Your questions and the analytics needed to answer them are sent to the Anthropic API under <em>your</em> key, which is stored encrypted exactly as Cloudflare tokens are. We never mark usage up.</li>
         <li><strong>Cloudflare</strong> — your zones' API, and the edge in front of the product and this site.</li>
         <li><strong>OVHcloud</strong> — the server the product runs on.</li>
         <li><strong>Resend</strong> — account emails: sign-in links and invitations.</li>
