@@ -1,0 +1,27 @@
+---
+/* Six of the eight use cases, as one-line composer prompts. Each links into
+   the full scenario on /use-cases. */
+const asks = [
+  ["down", "Is client.com down?"],
+  ["slow", "Why is the site slow?"],
+  ["attack", "Who is attacking us right now?"],
+  ["block", "What would this WAF rule actually block?"],
+  ["undo", "Did that change take effect? Undo it."],
+  ["region", "Why is it slow in Germany?"],
+];
+---
+<section class="askit">
+  <div class="wrap">
+    <div class="sec-head" style="margin-bottom:30px">
+      <span class="sc">Ask it this</span>
+      <h2>The questions you already get.</h2>
+      <p>Every one of these is a question first, a proposal second, and a change only after you approve it.</p>
+    </div>
+    <ul class="asks">
+      {asks.map(([id, q]) => (
+        <li><a href={`/use-cases#${id}`} class="composer ask-link"><span style="color:var(--muted)">›</span> {q}<span class="go">→</span></a></li>
+      ))}
+    </ul>
+    <p style="margin-top:26px"><a href="/use-cases" class="btn btn-ghost">All eight, with what it checks and what it proposes</a></p>
+  </div>
+</section>

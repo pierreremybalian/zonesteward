@@ -8,6 +8,14 @@ import Page from "../layouts/Page.astro";
   h1="Getting started."
   lede="Four steps, ten minutes. Start read-only if you want to; you can grant more later without reconnecting."
 >
+  <h2>0. Take the tour</h2>
+  <p>
+    On first sign-in the product runs a two-minute guided tour that drives
+    itself: it asks a question, reads the answer off the globe, proposes a
+    change and stops at the approval card. Let it run once. Everything below
+    will already look familiar.
+  </p>
+
   <h2>1. Connect a Cloudflare token</h2>
   <p>
     Cloudflare has no OAuth for third-party apps, so you create an API token
@@ -50,6 +58,7 @@ import Page from "../layouts/Page.astro";
     <li><em>Which zones are still on TLS 1.0?</em></li>
     <li><em>Show me every 5xx in the last hour, by path.</em></li>
   </ul>
+  <p><a href="/use-cases">Eight of these, with what it checks and what it proposes →</a></p>
   <p>
     The model writes the GraphQL; the server scopes it to your active zone or
     group. Answers drop into the conversation with their evidence, so the next

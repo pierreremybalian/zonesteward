@@ -1,0 +1,107 @@
+---
+/* Every "It checks" line maps to a real read tool or detector in the operator
+   (FEATURES.md §1, §3, §4, §5; app/lib/monitoring/detectors/*). Nothing here
+   is aspirational. */
+import Page from "../layouts/Page.astro";
+const cases = [
+  { id: "down", ask: "Is client.com down?",
+    checks: [
+      "Origin reachability — the product pings your origin itself, it doesn't wait for a complaint",
+      "5xx rate and the full status mix for the last fifteen minutes, by path",
+      "Whether Cloudflare is still serving cached copies while the origin is unreachable",
+      "The audit trail: did anyone change anything on this zone in the last hour",
+    ],
+    proposes: "If the origin is down there is nothing to write to Cloudflare — it tells you plainly that it's the server, opens an incident, and pages the channel you chose. If a rule you approved earlier is what's blocking, you get a revert card.",
+  },
+  { id: "slow", ask: "Why is the site slow?",
+    checks: [
+      "Origin response time at the median, 95th and 99th percentile, over the last hour against the day before",
+      "Cache hit ratio, and the paths that are missing cache most",
+      "Whether it's slow everywhere or from one region",
+      "How much of the traffic is bots, and whether they're being challenged",
+    ],
+    proposes: "A cache rule for static paths that are going to the origin uncached, with the request count it would affect. Or nothing, if the numbers say it's the origin — in which case it says so.",
+  },
+  { id: "attack", ask: "Who is attacking us right now?",
+    checks: [
+      "Every source classified across nine attack categories with a severity score",
+      "Paths probed versus paths that actually exist and were served — the signature of a scanner",
+      "The same source against every other zone you manage, so a fleet-wide sweep is seen as one",
+      "Sources that look hostile but aren't — crawlers, research scanners, a theme fetching its own assets — listed with the reason they were cleared",
+    ],
+    proposes: "A managed-challenge rule for the single source, with the blast-radius count beside it. If the source is hitting several clients, the same rule fanned across the zone group with one acknowledgement.",
+  },
+  { id: "block", ask: "What would this WAF rule actually block?",
+    checks: [
+      "The rule's expression translated into analytics filters and run against your real last 24 hours",
+      "The matches broken down by country, ASN, path and user agent",
+      "Whether any of that traffic was served — that is, whether you're about to block customers",
+    ],
+    proposes: "The rule, with the number it would have matched, or a narrower expression if the count says it's too broad. You decide with the count in front of you, before the rule exists.",
+  },
+  { id: "undo", ask: "Did that change take effect? Undo it.",
+    checks: [
+      "The setting read back from Cloudflare right now, not the API's 200 from earlier",
+      "The audit row: who approved it, when, the exact payload, and the before-state that was recorded",
+    ],
+    proposes: "A revert card built from the stored before-state, through the same pipeline as the original — classified, approved, executed, read back.",
+  },
+  { id: "region", ask: "Why is it slow in Germany?",
+    checks: [
+      "Requests and origin latency by country, then by the Cloudflare data centre and network that served them",
+      "Whether that region's traffic is hitting cache or going to the origin",
+      "Whether a rule or a challenge is firing disproportionately on that region",
+    ],
+    proposes: "What is different about that region in one paragraph, with the evidence. A cache or origin rule if one would help; a plain answer if the origin is simply far away.",
+  },
+  { id: "purge", ask: "Purge the cache for the homepage on every client site.",
+    checks: [
+      "Which zones are in the group you named, and which token reaches each one",
+      "That the purge is by URL, so nothing else is touched",
+    ],
+    proposes: "One bulk purge card listing every zone, with per-zone read-back after execution and a separate acknowledgement because it fans across many zones.",
+  },
+  { id: "next", ask: "Tell me before it happens next time.",
+    checks: [
+      "Nothing to check — this one turns the question into a rule",
+    ],
+    proposes: "The alert composer writes a monitoring rule from your sentence — query, threshold, window, minimum volume — dry-runs it against the zone, shows you in plain words what it does, and arms it to the channels you pick. From then on it watches.",
+    link: ["/#alerts", "How alerts are composed →"],
+  },
+];
+---
+<Page
+  title="Use cases — Zonesteward"
+  description="Is the site down? Why is it slow? Who is attacking us? What would this rule block? The questions an agency actually gets, and what Zonesteward does when you type them in."
+  eyebrow="Use cases"
+  h1="Ask it what you'd ask a colleague."
+  lede="The questions an agency gets at five o'clock, and what happens when you type them in. Every one is a question first, a proposal second, and a change only after you approve it."
+  wide
+>
+  <ol class="cases">
+    {cases.map((c, i) => (
+      <li class="case" id={c.id}>
+        <div class="case-n">{String(i + 1).padStart(2, "0")}</div>
+        <div class="case-ask">
+          <span class="sc">You ask</span>
+          <div class="composer" style="margin-top:10px"><span style="color:var(--muted)">›</span> {c.ask}</div>
+        </div>
+        <div class="case-checks">
+          <span class="sc">It checks</span>
+          <ul>{c.checks.map((x) => <li>{x}</li>)}</ul>
+        </div>
+        <div class="case-does">
+          <span class="sc">It proposes</span>
+          <p>{c.proposes}</p>
+          {c.link && <p><a href={c.link[0]}>{c.link[1]}</a></p>}
+          <p class="case-pipe">proposed · approved · verified · revertable</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <div class="cta" style="margin-top:64px">
+    <a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a>
+    <span class="cta-note">Twenty seats. Bring the question you dread most.</span>
+  </div>
+</Page>
