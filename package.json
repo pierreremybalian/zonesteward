@@ -8,7 +8,8 @@
     "preview": "astro build && wrangler pages dev",
     "db:local": "wrangler d1 execute zonesteward-globe --local --file=schema.sql",
     "db:remote": "wrangler d1 execute zonesteward-globe --remote --file=schema.sql",
-    "test": "node tests/functions.test.mjs"
+    "test": "node tests/functions.test.mjs",
+    "deploy": "astro build && wrangler pages deploy dist --project-name zonesteward --branch main"
   },
   "dependencies": {
     "astro": "^5.14.1"

@@ -135,9 +135,21 @@ npm run preview     # build + wrangler pages dev, Functions and D1 for real
 database, so the schema lands in one and the Function writes to the other. It
 fails silently, because the middleware swallows its own errors by design.
 
-Still to do in the dashboard: **Settings › Bindings › D1**, variable name `DB`,
-then redeploy. Until that binding exists the Functions degrade to the baked
-snapshot rather than erroring.
+The binding is picked up from `wrangler.toml` on deploy — nothing to add in the
+dashboard.
+
+## Deploying
+
+The Pages project was created from the CLI, because the dashboard no longer
+offers Pages under "Create application" — that flow now only makes Workers.
+So there is **no git integration**: pushing to `main` does not deploy.
+
+```bash
+npm run deploy
+```
+
+Live at https://zonesteward.pages.dev. To get deploy-on-push, connect the repo
+from the project's Settings once Cloudflare exposes it again.
 
 ## Still open
 
