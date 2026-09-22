@@ -66,6 +66,16 @@ import Page from "../layouts/Page.astro";
     undo it. <a href="/how-it-works">The whole pipeline.</a>
   </p>
 
+  <h2>5. Turn a question into an alert</h2>
+  <p>
+    Anything you can ask about, you can watch. Open Alerts → Rules, describe
+    what would worry you — <em>"tell me if cache hit ratio on any client zone
+    drops below 60% for half an hour"</em> — and the model composes the rule:
+    the query, the threshold, the window, a minimum volume so quiet hours can't
+    trip it. It's dry-run against the zone before you arm it, and the preview
+    tells you in plain words what it will do. Pick the channels, arm it, done.
+  </p>
+
   <h2>Bring your own Anthropic key</h2>
   <p>
     Zonesteward calls Anthropic's API under your key, so usage is billed to you

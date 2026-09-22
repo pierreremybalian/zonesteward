@@ -1,0 +1,70 @@
+---
+/* Any question the graph can answer can become an alert. Verified against
+   the operator: an AI-composed custom_query rule carries a GraphQL query, a
+   metric expression, comparator, threshold, window and minimum volume; the
+   server dry-runs it against the live zone and refuses to arm anything that
+   errors or does not yield a number. */
+---
+<section class="alert-sec" id="alerts">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The alert</span>
+      <h2>If the graph can show it, a sentence can watch it.</h2>
+      <p>
+        Every number Cloudflare exposes about your zones — status codes by path,
+        cache ratio by country, bot score by ASN, bytes from one origin — can be
+        turned into an alert by describing it. No query language. No threshold
+        maths. You say what would worry you; the model writes the rule and
+        shows you exactly what it means before it's armed.
+      </p>
+    </div>
+
+    <div class="alert-grid">
+      <div>
+        <div class="composer">
+          <span style="color:var(--muted)">›</span> Tell me if any client site starts returning more than 2% 5xx over ten minutes, but only if it's getting real traffic.<span class="caret"></span>
+        </div>
+        <ol class="ladder" style="margin-top:28px">
+          <li><div><b>The model writes the rule</b>
+            <p>A GraphQL query against the live analytics, a metric expression, a comparator, a threshold, a window and a minimum volume so an empty site at 3am can't trip it.</p></div></li>
+          <li><div><b>It's dry-run before it's armed</b>
+            <p>The rule is executed against the zone right now. If it errors, or doesn't come back with a number, it is refused. Nothing that can't fire correctly is ever saved.</p></div></li>
+          <li><div><b>You read it in English</b>
+            <p>The preview card says what it does in plain words, and keeps that explanation beside the rule forever, so the rules list never turns into a wall of formulas.</p></div></li>
+          <li><div><b>Then it watches</b>
+            <p>Checked on a cadence, sent to the channels you've chosen, deduplicated into incidents, with an investigation of probable cause attached when it fires.</p></div></li>
+        </ol>
+      </div>
+
+      <figure class="plate">
+        <div class="plate-in rule-card">
+          <div class="rule-top">
+            <span class="kick">Custom rule · every client zone</span>
+            <span class="sev-tag">high</span>
+          </div>
+          <h3>5xx error rate over 2%</h3>
+          <p class="rule-desc">Fires when more than 2% of requests in the last 10 minutes were 5xx, and the zone served at least 500 requests in that window.</p>
+          <dl class="rule-grid">
+            <div><dt>Fires when</dt><dd><code>5xx / requests &gt; 0.02</code></dd></div>
+            <div><dt>Minimum volume</dt><dd>500 requests</dd></div>
+            <div><dt>Window</dt><dd>10 min</dd></div>
+            <div><dt>Checks every</dt><dd>2 min</dd></div>
+          </dl>
+          <div class="rule-dry">
+            <span class="ok-dot"></span> Dry run against live traffic: <b>0.4%</b> right now · would not fire
+          </div>
+          <div class="rule-foot">
+            <span class="chan">Slack #ops</span><span class="chan">PagerDuty</span><span class="chan">Email</span>
+            <span class="sp"><span class="chip-btn">Discard</span><span class="chip-btn solid">Arm rule</span></span>
+          </div>
+        </div>
+        <figcaption><span><b>Plate IV.</b> The rule, before it exists</span><span>Monitoring</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="presets">
+      <span class="sc">Or start from a preset</span>
+      <p>Error-rate spike · traffic spike · traffic drop · 404 surge · origin unreachable · path attack · geographic anomaly · firewall block surge · bot score surge · cache-hit ratio drop · latency — each one tunable, each one explained.</p>
+    </div>
+  </div>
+</section>
