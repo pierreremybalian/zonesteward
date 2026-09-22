@@ -17,6 +17,9 @@ const jobs = [
       ["DVR", "pause, scrub, 24-hour replay"],
       ["Fleet view", "every zone on one globe, colour-coded per site"],
       ["Honest status semantics", "2xx served, 3xx redirected, 4xx–5xx rejected. A redirect is never counted as a hit"],
+      ["Composable dashboard", "a widget grid you arrange and save: traffic, security, performance, origin health, network, fleet overview, Google Analytics, and any chart you've built"],
+      ["Graph builder", "ad-hoc charts against Cloudflare analytics; the model proposes a visualisation for any result set; save the ones you keep to a library"],
+      ["Zone and incident reports", "hourly traffic, status mix, top paths, countries, ASNs and user agents, highlights written in prose — each rendered as a page you can share with a client, or export as CSV"],
     ]},
   { h: "Investigate", lede: "Traffic classified into nine attack categories with a composite severity score per source — built to be right about what isn't an attack, not just what is.",
     items: [
@@ -39,14 +42,27 @@ const jobs = [
     items: [
       ["Detectors", "firewall block surge, bot score surge, cache-hit-ratio drop, latency anomaly, origin reachability, plus custom detectors composed in natural language"],
       ["Incidents", "deduplicated, acknowledged, resolved, with an AI investigation of probable cause and a suggested fix — an investigator that may not propose DNS changes, deletes or WAF skips"],
-      ["Channels", "email, Slack, Microsoft Teams, webhook, SMS, PagerDuty; per-rule subscriptions, test sends, a delivery log"],
+      ["Channels, by name", "Email through Resend, SendGrid, Mailgun or any SMTP server · Slack incoming webhooks · Microsoft Teams via Power Automate workflows · PagerDuty events · SMS through Twilio · generic webhooks (JSON, signed) for anything else"],
+      ["Per rule, per channel", "each detector subscribes to the channels it should reach; a test send from the channel screen; a delivery log showing what went where and whether it arrived"],
       ["Live stream", "alerts pushed to the browser as they happen"],
+    ]},
+  { h: "Connect", lede: "Everything Zonesteward reads from, writes to, or talks through. Bring your own accounts for all of it; credentials are stored encrypted and used only for your workspace.",
+    items: [
+      ["Cloudflare", "any number of API tokens across any number of Cloudflare accounts; the connection wizard builds the exact token-creation link and tells you what the pasted token can do"],
+      ["Anthropic", "your own API key; usage billed to you at Anthropic's rates, never marked up"],
+      ["Google Analytics 4", "OAuth into the GA4 properties you can already see, to put site analytics beside Cloudflare traffic on the same dashboard"],
+      ["Email", "Resend, SendGrid, Mailgun, or plain SMTP"],
+      ["Chat", "Slack, Microsoft Teams"],
+      ["Paging", "PagerDuty"],
+      ["SMS", "Twilio"],
+      ["Anything else", "signed JSON webhooks on every alert, so your own systems can react"],
     ]},
   { h: "Govern", lede: "Multiple clients, multiple tokens, multiple people — and a record of every one of them.",
     items: [
       ["Fleet roster", "every zone across every token, with its plan tier"],
       ["Zone groups", "named collections for bulk work and for scoping what a client sees"],
-      ["Share links", "time-limited, revocable, honouring the role behind them — a client report without a client login"],
+      ["Sign in with", "Google, Microsoft or GitHub, or an emailed link — no passwords to hold. Only provider-verified addresses can create an account"],
+      ["Share links", "hand a client a link to their zone, a group, a dashboard or a report — no login, time-limited, revocable, and never carrying more than the role of the person who made it"],
       ["Roles", "owner, admin, user, viewer, enforced at three layers"],
       ["Audit trail", "every attempt, successful or not"],
       ["Cloudflare error log", "every refusal classified and attributed, so plan limits become measured rather than assumed"],
@@ -55,10 +71,10 @@ const jobs = [
 ---
 <Page
   title="Features — Zonesteward"
-  description="Ask, See, Investigate, Operate, Monitor, Govern. Everything Zonesteward does for a fleet of Cloudflare zones, organised by the job you're trying to do."
+  description="Ask, See, Investigate, Operate, Monitor, Connect, Govern. Everything Zonesteward does for a fleet of Cloudflare zones — and every service it plugs into — organised by the job you're trying to do."
   eyebrow="Features"
   h1="Everything, by the job you came to do."
-  lede="Six jobs. Every tier gets all of them — no security feature is held back for a higher plan."
+  lede="Seven jobs. Every tier gets all of them — no feature or integration is held back for a higher plan."
   wide
 >
   <div class="jobs">
