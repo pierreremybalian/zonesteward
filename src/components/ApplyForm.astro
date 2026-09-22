@@ -57,41 +57,45 @@ const roles = [
   <fieldset class="step" data-step="2" hidden>
     <legend class="step-title">What are you running?</legend>
 
-    <fieldset class="fld">
-      <legend>How many Cloudflare zones do you manage?</legend>
-      <div class="radios">
-        {zones.map(([v, l]) => <label class="radio"><input type="radio" name="zones" value={v} required /><span>{l}</span></label>)}
-      </div>
-    </fieldset>
-
-    <fieldset class="fld">
-      <legend>Traffic across all of them, roughly</legend>
-      <div class="radios">
-        {traffic.map(([v, l]) => <label class="radio"><input type="radio" name="traffic" value={v} required /><span>{l}</span></label>)}
-      </div>
-    </fieldset>
+    <div class="f2">
+      <p class="fld">
+        <label for={`${id}-zones`}>How many Cloudflare zones do you manage?</label>
+        <select id={`${id}-zones`} name="zones" required>
+          <option value="" selected disabled>Choose…</option>
+          {zones.map(([v, l]) => <option value={v}>{l}</option>)}
+        </select>
+      </p>
+      <p class="fld">
+        <label for={`${id}-traffic`}>Traffic across all of them, roughly</label>
+        <select id={`${id}-traffic`} name="traffic" required>
+          <option value="" selected disabled>Choose…</option>
+          {traffic.map(([v, l]) => <option value={v}>{l}</option>)}
+        </select>
+      </p>
+    </div>
 
     <fieldset class="fld">
       <legend>Which plans are they on? <span class="opt">pick any</span></legend>
-      <div class="radios">
-        {plans.map(([v, l]) => <label class="radio"><input type="checkbox" name="plans" value={v} /><span>{l}</span></label>)}
-      </div>
-      <p class="hint">Some things Cloudflare only exposes on paid plans. Knowing the mix tells us what you'll actually see.</p>
+      <ul class="checks">
+        {plans.map(([v, l]) => <li><label><input type="checkbox" name="plans" value={v} /><span>{l}</span></label></li>)}
+      </ul>
+      <span class="hint">Some things Cloudflare only exposes on paid plans. Knowing the mix tells us what you'll actually see.</span>
     </fieldset>
 
     <fieldset class="fld">
       <legend>Where do you spend your Cloudflare time? <span class="opt">pick any</span></legend>
-      <div class="radios">
-        {focus.map(([v, l]) => <label class="radio"><input type="checkbox" name="focus" value={v} /><span>{l}</span></label>)}
-      </div>
+      <ul class="checks">
+        {focus.map(([v, l]) => <li><label><input type="checkbox" name="focus" value={v} /><span>{l}</span></label></li>)}
+      </ul>
     </fieldset>
 
-    <fieldset class="fld">
-      <legend>Who looks after it today?</legend>
-      <div class="radios">
-        {roles.map(([v, l]) => <label class="radio"><input type="radio" name="role" value={v} /><span>{l}</span></label>)}
-      </div>
-    </fieldset>
+    <p class="fld">
+      <label for={`${id}-role`}>Who looks after it today?</label>
+      <select id={`${id}-role`} name="role">
+        <option value="">Choose…</option>
+        {roles.map(([v, l]) => <option value={v}>{l}</option>)}
+      </select>
+    </p>
   </fieldset>
 
   <!-- 03 · Fit -->
