@@ -61,11 +61,26 @@ const cases = [
     ],
     proposes: "One bulk purge card listing every zone, with per-zone read-back after execution and a separate acknowledgement because it fans across many zones.",
   },
-  { id: "next", ask: "Tell me before it happens next time.",
+  { id: "digest", ask: "Send me a seven-day digest for client.com.",
     checks: [
-      "Nothing to check — this one turns the question into a rule",
+      "Traffic, 5xx rate, top countries, paths and networks over the window",
+      "Firewall activity, alerts that fired, and every change that was made — from the audit trail",
     ],
-    proposes: "The alert composer writes a monitoring rule from your sentence — query, threshold, window, minimum volume — dry-runs it against the zone, shows you in plain words what it does, and arms it to the channels you pick. From then on it watches.",
+    proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you'd otherwise assemble by hand for a client on Friday afternoon.",
+  },
+  { id: "graph", ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
+    checks: [
+      "The analytics query behind the chart, run against the zone",
+      "Which chart fits the shape of the result — it proposes one, and you can pick another",
+    ],
+    proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard as a widget. Saved graphs keep the conversation they came from, so you can see why you built them.",
+  },
+  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.",
+    checks: [
+      "This one is typed on the Alerts page, not in the chat — into the rule composer",
+      "The composer's dry run: the rule executed against the zone right now, refused if it errors or yields no number",
+    ],
+    proposes: "A monitoring rule — query, threshold, window, minimum volume — shown to you in plain words on a preview card before it's armed to the channels you pick. From then on it watches.",
     link: ["/#alerts", "How alerts are composed →"],
   },
 ];
@@ -75,7 +90,7 @@ const cases = [
   description="Is the site down? Why is it slow? Who is attacking us? What would this rule block? The questions an agency actually gets, and what Zonesteward does when you type them in."
   eyebrow="Use cases"
   h1="Ask it what you'd ask a colleague."
-  lede="The questions an agency gets at five o'clock, and what happens when you type them in. Every one is a question first, a proposal second, and a change only after you approve it."
+  lede="The questions an agency gets at five o'clock, and what happens when you type them in. Every one is a question first, a proposal second, and a change only after you approve it. Nine are asked in the chat; the last is typed into the alert composer."
   wide
 >
   <ol class="cases">
