@@ -55,24 +55,75 @@
       }
     });
 
+    /* Read the answers back from the DOM so the receipt uses the same words the
+       applicant just saw — no second copy of the option labels to drift. */
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+    function answers() {
+      var rows = [];
+      function text(name) { var el = f.querySelector('[name="' + name + '"]'); return el && el.value.trim(); }
+      function pick(name) {
+        var el = f.querySelector('select[name="' + name + '"]');
+        return el && el.value ? el.options[el.selectedIndex].text : "";
+      }
+      function many(name) {
+        return Array.prototype.map.call(f.querySelectorAll('input[name="' + name + '"]:checked'), function (c) {
+          var l = c.closest("label"); return l ? l.textContent.trim() : c.value;
+        }).join(", ");
+      }
+      function row(k, v, cls) { if (v) rows.push({ k: k, v: v, cls: cls || "" }); }
+      row("Name", text("name")); row("Email", text("email")); row("Company", text("company")); row("Website", text("site"));
+      row("Zones", pick("zones")); row("Monthly requests", pick("traffic")); row("Plans", many("plans"));
+      row("Time goes on", many("focus")); row("Managed by", pick("role")); row("Anthropic key", pick("anthropic"));
+      row("What goes wrong", text("today"), "long");
+      return rows;
+    }
+
+    function receipt(rows) {
+      var email = (rows.filter(function (r) { return r.k === "Email"; })[0] || {}).v || "you";
+      var when = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+      var html = '<div class="done">' +
+        '<span class="sc">Application received · ' + esc(when) + "</span>" +
+        '<h2 class="done-title">You\u2019re on the list.</h2>' +
+        '<p class="done-lede">Here\u2019s what you told us. We read every one of these ourselves, usually within a few days.</p>' +
+        '<dl class="receipt">';
+      rows.forEach(function (r) {
+        html += '<div class="rr' + (r.cls ? " " + r.cls : "") + '"><dt>' + esc(r.k) + "</dt><dd>" + esc(r.v) + "</dd></div>";
+      });
+      html += "</dl>" +
+        '<div class="next"><span class="sc">What happens next</span><ol>' +
+        "<li>We read it. A person, not a filter.</li>" +
+        "<li>If it\u2019s a fit, an invitation lands at <b>" + esc(email) + "</b> with your workspace ready.</li>" +
+        "<li>If it isn\u2019t yet, we\u2019ll say so, and why.</li>" +
+        "</ol></div>" +
+        '<p class="done-foot">Need to change something? Reply to the confirmation, or write to <a href="mailto:hello@zonesteward.com">hello@zonesteward.com</a>.</p>' +
+        '<p class="done-actions"><a href="/" class="btn btn-ghost">Back to the site</a>' +
+        (document.getElementById("apply-dlg") ? ' <button type="button" class="btn btn-primary" data-done-close>Done</button>' : "") +
+        "</p></div>";
+      return html;
+    }
+
     f.addEventListener("submit", function (e) {
       for (var k = 0; k < steps.length; k++) { if (!stepValid(k)) { show(k); return e.preventDefault(); } }
       e.preventDefault();
+      var rows = answers();
       submit.disabled = true;
       var was = submit.textContent;
-      submit.textContent = "Sending…";
+      submit.textContent = "Sending\u2026";
       msg.hidden = true;
 
       fetch(f.action, { method: "POST", body: new FormData(f), headers: { accept: "application/json" } })
         .then(function (r) { return r.json().catch(function () { return { ok: r.ok }; }); })
         .then(function (d) {
-          if (!(d && d.ok)) throw new Error((d && d.error) || "That didn't go through.");
+          if (!(d && d.ok)) throw new Error((d && d.error) || "That didn\u2019t go through.");
           steps.forEach(function (s) { s.hidden = true; });
           f.querySelector(".step-nav").hidden = true;
           f.querySelector(".steps").hidden = true;
           msg.hidden = false;
           msg.className = "apply-msg good";
-          msg.innerHTML = "<b>You're on the list.</b> We read every one of these — if it's a fit you'll hear from us with a workspace.";
+          msg.innerHTML = receipt(rows);
+          var dc = msg.querySelector("[data-done-close]");
+          if (dc) dc.addEventListener("click", function () { var d = document.getElementById("apply-dlg"); if (d) d.close(); });
+          msg.scrollIntoView({ block: "start" });
         })
         .catch(function (err) {
           submit.disabled = false;

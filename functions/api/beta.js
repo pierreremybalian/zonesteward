@@ -13,6 +13,61 @@ const FOCUS = new Set(["security", "dns", "performance", "investigation", "repor
 const ROLE = new Set(["me", "team", "ops", "client"]);
 const KEY = new Set(["yes", "not yet", "what is that"]);
 
+/* Labels for the no-JS receipt. The JS path reads them off the form itself. */
+const LABEL = {
+  zones: { "1-10": "1–10", "11-25": "11–25", "26-100": "26–100", "100+": "100+" },
+  traffic: { "<1M": "Under 1 million", "1-10M": "1–10 million", "10-100M": "10–100 million", "100M+": "100 million or more", unsure: "Not sure" },
+  plans: { free: "Free", pro: "Pro", business: "Business", enterprise: "Enterprise" },
+  focus: { security: "WAF, firewall, bots", dns: "DNS", performance: "Cache & performance", investigation: "Analytics & incident digging", reporting: "Client reporting" },
+  role: { me: "I do, on my own", team: "A small team at my company", ops: "A dedicated ops person", client: "Each client manages their own" },
+  anthropic: { yes: "Yes", "not yet": "Not yet, but I can get one", "what is that": "No idea what that is" },
+};
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const label = (k, v) => (v || "").split(",").filter(Boolean).map((x) => LABEL[k][x] || x).join(", ");
+
+function receiptPage(row) {
+  const when = new Date(row.created).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+  const rows = [
+    ["Name", row.name], ["Email", row.email], ["Company", row.company], ["Website", row.site],
+    ["Zones", label("zones", row.zones)], ["Monthly requests", label("traffic", row.traffic)],
+    ["Plans", label("plans", row.plans)], ["Time goes on", label("focus", row.focus)],
+    ["Managed by", label("role", row.role)], ["Anthropic key", label("anthropic", row.anthropic)],
+  ].filter(([, v]) => v);
+  const dl = rows.map(([k, v]) => `<div class="rr"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("") +
+    (row.today ? `<div class="rr long"><dt>What goes wrong</dt><dd>${esc(row.today)}</dd></div>` : "");
+  return new Response(
+`<!doctype html><html lang="en"><meta charset="utf-8"><title>You’re on the list — Zonesteward</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300;6..72,400&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#faf9f6;--paper-2:#f3f1ec;--ink:#16150f;--ink-2:#3d3b33;--muted:#6f6c60;--rule:#ddd9cf;--accent:#c2410c}
+*{box-sizing:border-box;margin:0}body{background:var(--paper);color:var(--ink);font:300 16px/1.6 Geist,system-ui,sans-serif;padding:48px 24px 80px}
+main{max-width:640px;margin:0 auto}.sc{font:400 11px/1 "Geist Mono",monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+h1{font:300 clamp(2.2rem,6vw,3.4rem)/1.02 Newsreader,Georgia,serif;letter-spacing:-.025em;margin-top:14px}
+h1::after{content:"";display:block;width:56px;height:2px;background:var(--accent);margin-top:22px}
+.lede{margin-top:20px;color:var(--ink-2);max-width:52ch}dl{margin-top:34px;border-top:1px solid var(--ink)}
+.rr{display:grid;grid-template-columns:150px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--rule)}
+@media(max-width:560px){.rr{grid-template-columns:1fr;gap:4px}}
+dt{font:400 10.5px/1 "Geist Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+dd{font-size:15.5px;overflow-wrap:anywhere}.long dd{font:300 1.12rem/1.55 Newsreader,serif;color:var(--ink-2);white-space:pre-line}
+.next{margin-top:36px;background:var(--paper-2);border-left:2px solid var(--accent);padding:18px 22px 20px}
+.next ol{margin:10px 0 0 1.2em;display:grid;gap:8px;font-size:15px;color:var(--ink-2)}.next b{color:var(--ink);font-weight:500}
+.foot{margin-top:26px;font-size:14px;color:var(--muted)}a{color:var(--accent)}
+.btn{display:inline-block;margin-top:26px;padding:10px 18px;background:var(--ink);color:var(--paper);text-decoration:none;font-weight:500;font-size:14px;border-radius:2px}
+</style><body><main>
+<span class="sc">Application received · ${esc(when)}</span>
+<h1>You’re on the list.</h1>
+<p class="lede">Here’s what you told us. We read every one of these ourselves, usually within a few days.</p>
+<dl>${dl}</dl>
+<div class="next"><span class="sc">What happens next</span><ol>
+<li>We read it. A person, not a filter.</li>
+<li>If it’s a fit, an invitation lands at <b>${esc(row.email)}</b> with your workspace ready.</li>
+<li>If it isn’t yet, we’ll say so, and why.</li></ol></div>
+<p class="foot">Need to change something? Write to <a href="mailto:hello@zonesteward.com">hello@zonesteward.com</a>.</p>
+<a class="btn" href="/">Back to zonesteward.com</a>
+</main></html>`, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+}
+
 /* checkbox groups arrive as repeated keys; keep only known values, joined */
 const multi = (form, key, allowed) =>
   [...new Set(form.getAll(key).map((v) => clean(v, 30)).filter((v) => allowed.has(v)))].join(",");
@@ -99,7 +154,5 @@ export async function onRequestPost(context) {
     return fail("Something broke on our side. Try again, or email us.", 500);
   }
 
-  return wantsJson
-    ? Response.json({ ok: true })
-    : page("You're on the list", "We read every one of these. If it's a fit you'll hear from us with a workspace.", 200);
+  return wantsJson ? Response.json({ ok: true }) : receiptPage(row);
 }

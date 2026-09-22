@@ -171,3 +171,24 @@ h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
 .apply-msg.good b{color:var(--ok);font-weight:500}
 .apply-msg.bad{color:#a33}
 .apply button[disabled]{opacity:.55}
+
+/* the success state: a receipt, in the Ledger idiom */
+.apply-msg.good{max-width:none;color:var(--ink)}
+.done{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.done{animation:none}}
+.done-title{font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.02;margin-top:14px;letter-spacing:-.025em}
+.done-title::after{content:"";display:block;width:56px;height:2px;background:var(--accent);margin-top:22px}
+.done-lede{margin-top:20px;font-size:16px;color:var(--ink-2);font-weight:300;max-width:52ch}
+.receipt{margin:34px 0 0;border-top:1px solid var(--ink);display:grid}
+.receipt .rr{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:13px 0;border-bottom:1px solid var(--rule)}
+@media(max-width:560px){.receipt .rr{grid-template-columns:1fr;gap:4px}}
+.receipt dt{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding-top:4px}
+.receipt dd{font-size:15.5px;color:var(--ink);font-weight:300;overflow-wrap:anywhere}
+.receipt .long dd{font-family:Newsreader,serif;font-size:1.12rem;line-height:1.55;color:var(--ink-2);white-space:pre-line}
+.next{margin-top:36px;background:var(--paper-2);border-left:2px solid var(--accent);padding:18px 22px 20px}
+.next ol{margin:10px 0 0 1.2em;display:grid;gap:8px;font-size:15px;color:var(--ink-2);font-weight:300}
+.next b{color:var(--ink);font-weight:500}
+.done-foot{margin-top:26px;font-size:14px;color:var(--muted);font-weight:300}
+.done-foot a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.done-actions{margin-top:26px;display:flex;flex-wrap:wrap;gap:12px}

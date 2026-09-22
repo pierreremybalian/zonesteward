@@ -128,7 +128,12 @@ bdb = betaDB();
 ok('joins checkbox groups and drops unknown values', bdb.rows[0].includes('pro,free') && !bdb.rows[0].some((v) => String(v).includes('platinum')) && bdb.rows[0].includes('dns'));
 
 r = await post(GOOD, betaDB(), 'text/html');
-ok('works without JS: HTML confirmation', (r.headers.get('content-type') || '').includes('text/html'));
+{
+  const html = await r.text();
+  ok('works without JS: HTML confirmation', (r.headers.get('content-type') || '').includes('text/html'));
+  ok('no-JS receipt echoes the answers with labels', html.includes('pat@agency.com') && html.includes('10–100 million') && html.includes('26–100'));
+  ok('no-JS receipt escapes what it echoes', !(await post({ ...GOOD, name: '<img src=x onerror=1>' }, betaDB(), 'text/html').then((x) => x.text())).includes('<img'));
+}
 
 r = await post(GOOD, undefined);
 ok('no binding fails loudly rather than dropping a signup', r.status === 503);
