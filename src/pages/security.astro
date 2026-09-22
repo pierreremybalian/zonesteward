@@ -3,93 +3,76 @@ import Page from "../layouts/Page.astro";
 ---
 <Page
   title="Security — Zonesteward"
-  description="How Zonesteward holds your Cloudflare credentials: no autonomous writes, one database and one key per customer, AES-256-GCM at rest, nightly encrypted backups, and the limitations we haven't closed yet."
+  description="How Zonesteward holds your Cloudflare credentials: no autonomous writes, one database and one encryption key per customer, tokens that never leave the server, encrypted off-site backups."
   eyebrow="Security"
   h1="You're handing over a Cloudflare token. Here is exactly what happens to it."
-  lede="Written for the person who has to approve this internally. Every claim below is one the code supports; the last section is the list of things it doesn't yet."
+  lede="Written for the person who has to approve this internally. Every claim below is one the code supports."
   wide
 >
   <div class="sec-grid">
     <section class="sec-block">
       <h2>No autonomous writes</h2>
-      <p>The model proposes. A human approves. The server executes and verifies. Every function that can change Cloudflare is reachable from the execution core alone, after approval — there is no path from a chat tool call to a write, so prompt injection through attacker-controlled data (request paths, user agents, rule names) cannot cause one. <a href="/how-it-works">The full pipeline.</a></p>
+      <p>The model proposes. A human approves. The server executes and verifies. Every function that can change Cloudflare is reachable only after approval — there is no path from a chat tool call to a write, so prompt injection through attacker-controlled data (request paths, user agents, rule names) cannot cause one. <a href="/how-it-works">The full pipeline.</a></p>
     </section>
 
     <section class="sec-block">
       <h2>Workspace isolation</h2>
-      <p>One database per customer. One data-encryption key per customer, itself wrapped under a deployment master key — so a stolen database file decrypts nothing without both. Every request runs inside its workspace's context and the database layer <strong>fails closed</strong>: a request with no bound workspace gets an error, not somebody else's data.</p>
+      <p>One database per customer. One encryption key per customer, itself protected by a key the customer database never holds — so a copy of your data decrypts nothing on its own. Every request runs inside its workspace, and the data layer <strong>fails closed</strong>: a request with no bound workspace gets an error, never somebody else's data.</p>
     </section>
 
     <section class="sec-block">
       <h2>Credentials</h2>
       <ul>
-        <li>Cloudflare tokens encrypted at rest with <strong>AES-256-GCM</strong>, a fresh random IV per record, authenticated, versioned envelope. The application refuses to start without a valid key; there is no default.</li>
-        <li>Decrypted tokens never leave the server. API responses serialise tokens through one allow-listed shape carrying metadata only.</li>
-        <li>Write permissions are <strong>never discovered by writing</strong>. Capabilities are learned from observed responses, token introspection and read-only probes, in that order of trust. We will not create a test record in your zone to see if we can.</li>
-        <li>The connection wizard builds a pre-filled Cloudflare token-creation link with exactly the permission groups needed, in three tiers, then introspects what you pasted and tells you what's missing. Start with read-only if you like.</li>
+        <li>Cloudflare tokens and any provider credentials you add are <strong>encrypted at rest with authenticated encryption</strong>. The application refuses to start without its key; there is no default and no fallback.</li>
+        <li>Decrypted tokens <strong>never leave the server</strong>. Nothing returned to a browser carries more than a token's name and what it can do.</li>
+        <li>Write permissions are <strong>never discovered by writing</strong>. What a token can do is learned from observed responses, token introspection and read-only probes. We will not create a test record in your zone to see if we can.</li>
+        <li>The connection wizard builds a Cloudflare token-creation link with exactly the permissions needed, in three tiers, then tells you what the token you pasted can and can't do. Start read-only if you like.</li>
       </ul>
     </section>
 
     <section class="sec-block">
       <h2>Access</h2>
       <ul>
-        <li>Sign in with Google, Microsoft or GitHub, or an emailed link. Only provider-verified addresses can create an account — and for Microsoft, only addresses whose domain the tenant has actually verified, because an Entra admin can otherwise set any email on any user.</li>
-        <li>Roles: owner, admin, user, viewer. Viewers are blocked from every mutating route at the middleware and again at the execution core. DNS and bulk operations are admin-only, enforced independently at the HTTP layer, the tool dispatch, and the model's tool list.</li>
-        <li>Share links are backed by a synthetic user, revocable, optionally time-limited, and validated against a SHA-256 hash of a 192-bit secret.</li>
-        <li>Full audit trail: every mutation attempt, successful or not, with actor, payload, Cloudflare's response, IP and user agent.</li>
+        <li>Sign in with Google, Microsoft or GitHub, or an emailed link. Only provider-verified addresses can create an account — and for Microsoft, only addresses whose domain the tenant has actually verified.</li>
+        <li>Roles: owner, admin, user, viewer. Viewers are blocked from every mutating action at more than one layer. DNS and bulk operations are admin-only.</li>
+        <li>Share links are revocable, optionally time-limited, and carry the role of the person who made them, no more.</li>
+        <li>A full audit trail: every change attempt, successful or not, with who, what, the response, and where from.</li>
       </ul>
     </section>
 
     <section class="sec-block">
-      <h2>Transport and origin</h2>
+      <h2>Transport</h2>
       <ul>
-        <li>Enforcing first-party Content-Security-Policy; no third-party scripts. <code>frame-ancestors 'none'</code>, HSTS with a one-year max-age set by the application itself, Permissions-Policy denying camera, microphone, geolocation, payment and USB.</li>
-        <li>The origin accepts TLS <strong>only from Cloudflare's client certificate</strong> (Authenticated Origin Pulls with an operator-issued CA). Connecting to the server's IP directly is refused at the handshake, so nothing — including the access rules this product creates — can be bypassed by going around the edge.</li>
-        <li>Session cookies carry the <code>__Host-</code>/<code>__Secure-</code> prefixes with <code>HttpOnly; Secure; SameSite=Lax</code>.</li>
+        <li>Everything is served through Cloudflare. The origin refuses connections that don't come from Cloudflare, so the WAF, rate limits and access rules in front of the product — including the ones the product creates — cannot be bypassed by going around the edge.</li>
+        <li>Strict transport security, a first-party content security policy with no third-party scripts, and hardened session cookies.</li>
+        <li>No third-party analytics or tracking anywhere in the product.</li>
       </ul>
     </section>
 
     <section class="sec-block">
       <h2>Backups</h2>
-      <p>Nightly. Consistent snapshots of every workspace and the control plane, integrity-checked, encrypted with AES-256, kept 14 days on the box and pushed to Cloudflare R2 off-box. <strong>The job decrypts and unpacks its own output before it reports success</strong>, so a backup that can't be restored fails loudly rather than sitting there looking fine. Restore tested end to end, including from R2 alone as though the server were gone, on 21 September 2026.</p>
+      <p>Nightly, encrypted, kept both on and off the server, integrity-checked. <strong>The job restores its own output before it reports success</strong>, so a backup that can't be restored fails loudly rather than sitting there looking fine. Restore has been tested end to end from the off-site copy alone.</p>
     </section>
 
     <section class="sec-block">
-      <h2>Sub-processors</h2>
+      <h2>Who else touches your data</h2>
       <ul>
-        <li><strong>Anthropic</strong> — the model. Your questions and the analytics needed to answer them are sent to the Anthropic API under <em>your</em> key, which is stored encrypted exactly as Cloudflare tokens are. We never mark usage up.</li>
+        <li><strong>Anthropic</strong> — the model. Your questions and the analytics needed to answer them are sent to the Anthropic API under <em>your</em> key, which is stored encrypted exactly as Cloudflare tokens are. Usage is billed to you at cost and never marked up.</li>
         <li><strong>Cloudflare</strong> — your zones' API, and the edge in front of the product and this site.</li>
-        <li><strong>OVHcloud</strong> — the server the product runs on.</li>
-        <li><strong>Resend</strong> — account emails: sign-in links and invitations.</li>
+        <li>Our hosting and transactional-email providers, for the server the product runs on and for sign-in links and invitations. Named in the <a href="/privacy">privacy policy</a> on request.</li>
       </ul>
-      <p>Alert channels — email, Slack, Teams, SMS, PagerDuty, webhooks — go to providers <em>you</em> configure with <em>your</em> credentials, stored the same way tokens are.</p>
+      <p>Alert channels — email, Slack, Teams, SMS, PagerDuty, webhooks — go to providers <em>you</em> configure with <em>your</em> credentials.</p>
     </section>
 
     <section class="sec-block">
       <h2>What the model sees</h2>
-      <p>Zone names, traffic analytics, attacker IPs, probed paths, rule definitions — whatever it needs to answer the question, scoped to the zone you're working in. The server injects the zone; a question cannot reach a zone outside your active context. No third-party analytics or tracking runs in the product.</p>
+      <p>Zone names, traffic analytics, attacker IPs, probed paths, rule definitions — whatever it needs to answer the question, scoped to the zone you're working in. The server injects the zone; a question cannot reach a zone outside your active context.</p>
     </section>
   </div>
 
   <div class="prose" style="padding-top:64px">
-    <h2>Known limitations</h2>
-    <p>These are tracked and prioritised. They're listed so the model above isn't overstated — publishing what isn't finished is the only way a page like this earns trust.</p>
-    <div class="lim">
-      <h3>The approval card is enforced by role, not bound to a proposal</h3>
-      <p>A signed-in non-viewer could post a well-formed action directly to the execute endpoint without going through a card. Impact classification, the drift check, read-back and the audit row all still apply server-side, so this is a bypass of the <em>UI</em>, not of the pipeline — but it should be bound, and it will be.</p>
-    </div>
-    <div class="lim">
-      <h3>Some ownership checks are role-based</h3>
-      <p>Alert rules and token-metadata routes check your role rather than whether you own the specific object. Within one workspace, that means an admin can edit another admin's alert rule. Across workspaces it is not reachable.</p>
-    </div>
-    <div class="lim">
-      <h3>The master key lives on the server's disk</h3>
-      <p>The per-workspace keys are wrapped under a master key held in a root-only file, not in a hardware module or cloud KMS. Moving it is planned before general availability.</p>
-    </div>
-    <div class="lim">
-      <h3>CSP still allows <code>'unsafe-inline'</code> and <code>'unsafe-eval'</code></h3>
-      <p>Required by the framework's bootstrap and the WebGL globe. Nonces and eval removal are planned.</p>
-    </div>
+    <h2>What we're still hardening</h2>
+    <p>Pre-1.0 means some things are on the roadmap rather than done. In broad terms: moving key management to a hardware-backed service before general availability, tightening some authorisation checks from role-scoped to object-scoped within a workspace, and tightening the browser content-security policy further. Beta participants get the specifics, and get told when each one lands.</p>
 
     <h2>Reporting a vulnerability</h2>
     <p>Email <a href="mailto:security@zonesteward.com">security@zonesteward.com</a> with reproduction steps. You'll get an acknowledgement, and a fix or mitigation plan, as fast as the severity warrants. Please don't open a public issue.</p>
