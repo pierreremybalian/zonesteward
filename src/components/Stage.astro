@@ -32,8 +32,6 @@ const ORIGIN = { lat: 45.315, lng: -73.87, label: "ORIGIN" };
       <b id="cap">157 points of presence</b> · <span id="served">…</span>
     </p>
 
-    <div class="readout" id="readout"></div>
-
     <p class="frame-note">
       Bright points are colos that served this zone; the arcs are the requests
       that missed cache and reached the origin. Load this page and the colo that
@@ -53,7 +51,6 @@ const ORIGIN = { lat: 45.315, lng: -73.87, label: "ORIGIN" };
 
 <script is:inline src="/g/globe.js"></script>
 <script is:inline src="/g/land.js"></script>
-<script is:inline src="/g/colo-cities.js"></script>
 <script is:inline src="/g/globe-live.js"></script>
 <script is:inline define:vars={{ FALLBACK, ORIGIN }}>
   (function () {
@@ -69,13 +66,6 @@ const ORIGIN = { lat: 45.315, lng: -73.87, label: "ORIGIN" };
       document.getElementById("served").textContent =
         keys.length + " served this zone in the last 24 hours";
       document.getElementById("when").textContent = updated;
-      document.getElementById("readout").innerHTML = keys
-        .sort((a, b) => live[b] - live[a]).slice(0, 12)
-        .map(function (c) {
-          return '<div class="ro"><span class="c">' + c + "</span>" +
-            '<span class="city">' + ((window.COLO_CITY || {})[c] || "") + "</span>" +
-            '<span class="bar"><i style="width:' + Math.round(live[c] * 100) + '%"></i></span></div>';
-        }).join("");
     }
 
     paint(FALLBACK, "sample");
