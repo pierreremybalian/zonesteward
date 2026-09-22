@@ -2,7 +2,7 @@
 
 Marketing site for Zonesteward — Cloudflare fleet operations for agencies.
 Astro, static output, deployed to Cloudflare Pages at
-**zonesteward.balian.dev**, with the live globe served by a Pages Function.
+**zonesteward.com**, with the live globe served by a Pages Function.
 
 ```bash
 nvm use && npm install
@@ -148,12 +148,11 @@ So there is **no git integration**: pushing to `main` does not deploy.
 npm run deploy
 ```
 
-Live at https://zonesteward.pages.dev. To get deploy-on-push, connect the repo
+Live at https://zonesteward.com (and zonesteward.pages.dev). To get deploy-on-push, connect the repo
 from the project's Settings once Cloudflare exposes it again.
 
 ## Still open
 
-- Point `zonesteward.balian.dev` at the Pages project.
 - The real OVH region for the origin marker — it is a Beauharnois placeholder
   in `src/components/Stage.astro`.
 - The beta form posts nowhere yet.
