@@ -85,12 +85,16 @@ import Page from "../layouts/Page.astro";
     tells you in plain words what it will do. Pick the channels, arm it, done.
   </p>
 
-  <h2>Bring your own Anthropic key</h2>
+  <h2>Bring your own model</h2>
   <p>
-    Zonesteward calls Anthropic's API under your key, so usage is billed to you
-    at Anthropic's rates and never marked up. Create one at
-    console.anthropic.com and paste it in Settings. It's stored the same way
-    Cloudflare tokens are.
+    Zonesteward calls the model provider you choose, under your own key, so
+    usage is billed to you at the provider's rates and never marked up.
+    Settings → AI takes Anthropic, OpenAI, or any OpenAI-compatible endpoint —
+    including one you host, if you'd rather nothing leave your network. Pick a
+    model per job, then <em>Test and save</em>: it makes one tiny call that
+    asks the model for structured output, because a model that can't do that
+    can't compose graphs or alert rules, and you'd rather learn that now than
+    mid-incident. Keys are stored the same way Cloudflare tokens are.
   </p>
 
   <h2>Need more?</h2>
