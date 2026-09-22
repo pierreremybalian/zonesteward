@@ -1,0 +1,21 @@
+---
+/* Providers verified in the operator: notify channel types email/slack/teams/
+   webhook/sms/pagerduty; email providers resend/sendgrid/mailgun/smtp;
+   Twilio; Power Automate for Teams; GA4 OAuth; auth.ts providers. */
+const rows = [
+  ["Reads from", ["Cloudflare — any number of tokens, any number of accounts", "Google Analytics 4"]],
+  ["Thinks with", ["Anthropic — your own key, billed to you at cost"]],
+  ["Alerts through", ["Email: Resend, SendGrid, Mailgun, or SMTP", "Slack", "Microsoft Teams", "PagerDuty", "SMS via Twilio", "Signed JSON webhooks"]],
+  ["Signs in with", ["Google", "Microsoft", "GitHub", "An emailed link"]],
+];
+---
+<section class="connect" id="connect">
+  <div class="wrap">
+    <div class="connect-grid">
+      {rows.map(([h, items]) => (
+        <div class="cg"><span class="sc">{h}</span><ul>{items.map((t) => <li>{t}</li>)}</ul></div>
+      ))}
+    </div>
+    <p class="cta-note" style="margin-top:22px">Every credential you add is stored encrypted and used only for your workspace. <a href="/features#connect" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px">All integrations →</a></p>
+  </div>
+</section>

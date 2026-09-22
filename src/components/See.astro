@@ -1,0 +1,62 @@
+---
+/* Dashboard + graph builder + saved library. Widget ids from
+   app/components/dashboard/widgets; chart kinds from viz-spec.ts; library from
+   viz-store.ts (per user, pinned, tied to its conversation). */
+const kinds = ["line","area","stacked area","bar","multi-bar","bar timeline","multi-line","pie","scatter","histogram","table","big number","choropleth","globe"];
+---
+<section id="see">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">See</span>
+      <h2>A dashboard built for a wall, and a chart for every question.</h2>
+      <p>
+        Arrange the widgets you want and leave it on a screen: status mix,
+        requests, bandwidth, top paths, countries, networks, origin health, open
+        incidents, the fleet globe, Google Analytics — all streaming live. Then
+        describe any chart you can't find, review the query and the proposed
+        visualisation, and save it. Saved graphs keep the conversation they came
+        from, and any one of them becomes a widget in one click.
+      </p>
+    </div>
+
+    <div class="see-grid">
+      <figure class="plate">
+        <div class="plate-in dash">
+          <div class="dash-bar"><span class="kick">Dashboard · Rocket55 fleet · live</span><span class="dash-live"><i></i>streaming</span></div>
+          <div class="dash-grid">
+            <div class="w w-num"><span class="wk">Requests · 24h</span><b>4.81M</b><small>▲ 6% vs yesterday</small></div>
+            <div class="w w-num"><span class="wk">Served · 2xx</span><b>96.2%</b><small>3xx 2.1% · 4xx 1.5% · 5xx 0.2%</small></div>
+            <div class="w w-num"><span class="wk">Active now · GA4</span><b>318</b><small>top: /pricing, /blog/…</small></div>
+            <div class="w w-bars"><span class="wk">Top paths</span>
+              <div class="wb"><span>/</span><i style="width:88%"></i></div>
+              <div class="wb"><span>/wp-json/wp/v2/posts</span><i style="width:41%"></i></div>
+              <div class="wb"><span>/assets/app.js</span><i style="width:34%"></i></div>
+              <div class="wb"><span>/pricing</span><i style="width:22%"></i></div>
+            </div>
+            <div class="w w-inc"><span class="wk">Open incidents</span>
+              <div class="wi"><span class="sev-dot"></span>5xx rate 2.4% · client-b.com · 12 min</div>
+              <div class="wi"><span class="sev-dot ok"></span>origin latency · resolved 1h ago</div>
+            </div>
+            <div class="w w-chart"><span class="wk">Cache hit ratio · by hour · saved graph</span>
+              <svg viewBox="0 0 320 70" preserveAspectRatio="none" aria-hidden="true">
+                <polyline fill="none" stroke="#F6821F" stroke-width="1.6" points="0,38 20,34 40,36 60,30 80,31 100,26 120,28 140,22 160,25 180,19 200,21 220,16 240,18 260,13 280,15 300,11 320,12"/>
+                <polyline fill="none" stroke="#8b8b95" stroke-width="1" stroke-dasharray="3 3" points="0,44 320,44"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <figcaption><span><b>Plate V.</b> The wall</span><span>Dashboard</span></figcaption>
+      </figure>
+
+      <div>
+        <div class="composer"><span style="color:var(--muted)">›</span> Chart cache hit ratio by hour for this week, and put it on the dashboard.<span class="caret"></span></div>
+        <ol class="ladder" style="margin-top:26px">
+          <li><div><b>The query, shown</b><p>You see the analytics query behind the chart, not just the picture.</p></div></li>
+          <li><div><b>A visualisation proposed</b><p>The model picks the chart that fits the shape of the result. Pick another if you disagree.</p></div></li>
+          <li><div><b>Saved, pinned, on the wall</b><p>Into your library with the conversation that produced it, and onto the dashboard as a widget.</p></div></li>
+        </ol>
+        <p class="kinds"><span class="sc">Chart kinds</span> {kinds.join(" · ")}</p>
+      </div>
+    </div>
+  </div>
+</section>
