@@ -13,6 +13,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {/* PRE-LAUNCH: remove this line, restore robots.txt and public/_headers when the site goes public */}
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="canonical" href={canonical} />
 
   <meta property="og:type" content="website" />

@@ -1,4 +1,3 @@
+# Pre-launch. Restore "Allow: /" + the Sitemap line when going public.
 User-agent: *
-Allow: /
-Disallow: /api/
-Sitemap: https://zonesteward.com/sitemap.xml
+Disallow: /
