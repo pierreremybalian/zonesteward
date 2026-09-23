@@ -17,6 +17,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;overflow-x:clip;scroll-behavior:smooth}
+body{overflow-x:clip}
+img,svg,video,canvas{max-width:100%}
+code,.mono,kbd{overflow-wrap:anywhere}
+table{max-width:100%}
 body{
   background:var(--paper);color:var(--ink);
   font-family:Geist,ui-sans-serif,system-ui,sans-serif;
@@ -138,7 +142,7 @@ figcaption span:last-child{margin-left:auto}
 /* ── the ladder ─────────────────────────────────────────────── */
 .ladder{list-style:none;counter-reset:s;display:grid}
 .ladder li{
-  counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:16px;
+  counter-increment:s;display:grid;grid-template-columns:34px minmax(0,1fr);gap:16px;
   padding:20px 0;border-bottom:1px solid var(--rule);
 }
 .ladder li:first-child{border-top:1px solid var(--rule)}
@@ -188,3 +192,12 @@ footer{border-top:1px solid var(--rule);padding:44px 0 62px;font-size:13.8px;col
   padding:8px 12px;border-radius:2px;opacity:.88;
 }
 .vbadge a{color:var(--accent-t);margin-left:10px}
+/* Phones: the rate table stacks — plan and price on one line, description
+   beneath — instead of three columns fighting over 340px. */
+@media(max-width:640px){
+  .rate thead{display:none}
+  .rate tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 16px;padding:16px 0;border-bottom:1px solid var(--rule);align-items:baseline}
+  .rate td,.rate th{display:block;padding:0;border:0}
+  .rate td.desc{grid-column:1/-1;margin-top:6px}
+  .rate .amt{font-size:1.5rem}
+}
