@@ -57,6 +57,7 @@ h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
 .proof{margin-top:64px;border-top:1px solid var(--ink);border-bottom:1px solid var(--rule);display:grid;gap:0}
 @media(min-width:820px){.proof{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .proof div{padding:18px 20px 18px 0;border-bottom:1px solid var(--rule)}
+.proof div:last-child{border-bottom:0} /* the strip itself draws the closing rule */
 @media(min-width:820px){
   .proof div{border-bottom:0;border-right:1px solid var(--rule);padding-left:20px}
   .proof div:first-child{padding-left:0}
