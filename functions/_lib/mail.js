@@ -26,8 +26,8 @@ export const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&am
 export function shell({ eyebrow, title, body, foot }) {
   return `<!doctype html><html><body style="margin:0;background:#faf9f6;padding:32px 16px;font:300 16px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#16150f">
 <div style="max-width:600px;margin:0 auto">
-  <div style="padding-bottom:18px;margin-bottom:28px;border-bottom:1px solid #16150f">
-    <a href="https://zonesteward.com" style="font:400 24px/1 Georgia,'Times New Roman',serif;letter-spacing:-.01em;color:#16150f;text-decoration:none">Zone<span style="font-style:italic;color:#c2410c">steward</span></a>
+  <div style="padding-bottom:16px;margin-bottom:28px;border-bottom:1px solid #16150f">
+    <a href="https://zonesteward.com" style="text-decoration:none;display:inline-block"><img src="https://zonesteward.com/brand/zonesteward-wordmark@2x.png" width="180" height="35" alt="Zonesteward" style="display:block;width:180px;height:35px;border:0"></a>
   </div>
   <div style="font:400 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase;color:#6f6c60">${esc(eyebrow)}</div>
   <h1 style="font:300 30px/1.1 Georgia,'Times New Roman',serif;letter-spacing:-.02em;margin:14px 0 0">${title}</h1>
