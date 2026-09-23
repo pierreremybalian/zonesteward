@@ -5,7 +5,7 @@
  */
 export async function sendMail(env, { to, subject, html, text, replyTo }) {
   if (!env.RESEND_API_KEY) return { sent: false, error: "no RESEND_API_KEY" };
-  const from = env.MAIL_FROM || "Zonesteward <beta@balian.dev>";
+  const from = env.MAIL_FROM || "Zonesteward <beta@zonesteward.com>";
   try {
     const r = await (env.__fetch || fetch)("https://api.resend.com/emails", {
       method: "POST",
