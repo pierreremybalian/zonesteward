@@ -122,6 +122,7 @@
       row("Zones", pick("zones")); row("Monthly requests", pick("traffic")); row("Plans", many("plans"));
       row("Time goes on", many("focus")); row("Managed by", pick("role")); row("Anthropic key", pick("anthropic"));
       row("What goes wrong", text("today"), "long");
+      row("The beta trade", f.querySelector('input[name="agreed"]:checked') ? "Agreed — monthly questions, two calls, honest feedback" : "");
       return rows;
     }
 

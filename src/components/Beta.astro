@@ -1,17 +1,26 @@
 ---
-/* No seat counter here. There was a "5 OF 20 CLAIMED" indicator once, which
-   was invented. The project's own rules say no invented metrics. */
+/* The beta, said plainly, on the home page. The full trade is /beta; the
+   numbers here (free, 50% for a year, 30 days' notice, twenty seats) are the
+   same ones promised on /pricing and in the application consent. No seat
+   counter — there was an invented "5 OF 20 CLAIMED" once. */
+const get = ["Free for the whole beta", "Half price for your first year, locked", "A direct line to the person building it"];
+const ask = ["Three questions a month, in the app", "Two twenty-minute calls: month one, month three", "The truth when something's wrong"];
 ---
 <section class="beta" id="beta">
   <div class="wrap beta-in">
     <div>
-      <span class="sc">Private beta</span>
-      <h2 style="margin-top:14px">Twenty seats. Yours if it fits.</h2>
+      <span class="sc">Private beta · pre-launch</span>
+      <h2 style="margin-top:14px">It isn't launched. That's the point.</h2>
       <p class="lede" style="font-size:15.5px;margin-top:16px">
-        Free for the whole beta, then half price for your first year, locked.
-        Two minutes of questions about what you run and what goes wrong, and if
-        it's a fit you get a workspace.
+        Zonesteward is built and in daily use, but unfinished — no public sign-up, no
+        billing, parts still being reworked. Twenty agencies with real fleets get it free
+        and help finish it. Here's the trade.
       </p>
+      <div class="beta-trade">
+        <div><span class="sc">You get</span><ul>{get.map((t) => <li>{t}</li>)}</ul></div>
+        <div><span class="sc">We ask for</span><ul>{ask.map((t) => <li>{t}</li>)}</ul></div>
+      </div>
+      <p class="beta-more"><a href="/beta">What the beta involves, in full →</a></p>
     </div>
     <a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a>
   </div>

@@ -69,13 +69,7 @@ header{border-bottom:1px solid var(--ink);background:var(--paper)}
 .masthead nav{display:none;gap:24px;font-size:14px;color:var(--ink-2)}
 .masthead nav a:hover{color:var(--accent)}
 .masthead .end{margin-left:auto;display:flex;align-items:center;gap:18px}
-.strap{
-  display:flex;gap:26px;padding:8px 0;border-top:1px solid var(--rule);
-  font-family:"Geist Mono",monospace;font-size:11.5px;color:var(--muted);letter-spacing:.06em;
-}
-.strap span:last-child{margin-left:auto}
 @media(min-width:900px){.masthead nav{display:flex}}
-@media(max-width:600px){.strap span:nth-child(2){display:none}}
 
 /* ── plates: framed product figures ─────────────────────────── */
 .plate{border:1px solid var(--rule-2);background:#fff;padding:10px}

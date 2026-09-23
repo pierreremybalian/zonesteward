@@ -37,7 +37,8 @@ function receiptPage(row) {
     ["Managed by", label("role", row.role)], ["Anthropic key", label("anthropic", row.anthropic)],
   ].filter(([, v]) => v);
   const dl = rows.map(([k, v]) => `<div class="rr"><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("") +
-    (row.today ? `<div class="rr long"><dt>What goes wrong</dt><dd>${esc(row.today)}</dd></div>` : "");
+    (row.today ? `<div class="rr long"><dt>What goes wrong</dt><dd>${esc(row.today)}</dd></div>` : "") +
+    (row.agreed ? `<div class="rr"><dt>The beta trade</dt><dd>Agreed — monthly questions, two calls, honest feedback</dd></div>` : "");
   return new Response(
 `<!doctype html><html lang="en"><meta charset="utf-8"><title>You’re on the list — Zonesteward</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
@@ -125,6 +126,9 @@ export async function onRequestPost(context) {
   if (!TRAFFIC.has(traffic)) return fail("Please give us a rough sense of traffic — 'not sure' is fine.", 400);
 
   const anthropic = clean(form.get("anthropic"), 20);
+  if (clean(form.get("agreed"), 5) !== "yes") {
+    return fail("Please confirm you've read what the beta involves — the checkbox at the end.", 400);
+  }
   const row = {
     email,
     created: Date.now(),
@@ -138,6 +142,7 @@ export async function onRequestPost(context) {
     role: oneOf(clean(form.get("role"), 20), ROLE),
     today: clean(form.get("today"), 1200),
     anthropic: KEY.has(anthropic) ? anthropic : "",
+    agreed: 1,
     colo: (request.cf && request.cf.colo) || "",
     country: (request.cf && request.cf.country) || "",
   };
@@ -147,12 +152,12 @@ export async function onRequestPost(context) {
   try {
     await env.DB.prepare(
       "INSERT INTO beta_applications " +
-        "(email, created, name, company, site, zones, traffic, plans, focus, role, today, anthropic, colo, country) " +
-        "VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14) " +
+        "(email, created, name, company, site, zones, traffic, plans, focus, role, today, anthropic, colo, country, agreed) " +
+        "VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15) " +
         "ON CONFLICT (email) DO UPDATE SET created=?2, name=?3, company=?4, site=?5, zones=?6, " +
-        "traffic=?7, plans=?8, focus=?9, role=?10, today=?11, anthropic=?12"
+        "traffic=?7, plans=?8, focus=?9, role=?10, today=?11, anthropic=?12, agreed=?15"
     ).bind(row.email, row.created, row.name, row.company, row.site, row.zones, row.traffic, row.plans,
-           row.focus, row.role, row.today, row.anthropic, row.colo, row.country).run();
+           row.focus, row.role, row.today, row.anthropic, row.colo, row.country, row.agreed).run();
   } catch {
     return fail("Something broke on our side. Try again, or email us.", 500);
   }
@@ -171,6 +176,7 @@ async function notify(env, row) {
     ["Zones", label("zones", row.zones)], ["Monthly requests", label("traffic", row.traffic)],
     ["Plans", label("plans", row.plans)], ["Time goes on", label("focus", row.focus)],
     ["Managed by", label("role", row.role)], ["Anthropic key", label("anthropic", row.anthropic)],
+    ["Beta trade", row.agreed ? "Agreed" : "NOT agreed"],
     ["What goes wrong", row.today], ["From", [row.colo, row.country].filter(Boolean).join(" · ")],
   ];
   const jobs = [];

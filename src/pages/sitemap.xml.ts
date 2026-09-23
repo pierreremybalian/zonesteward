@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 
-const STATIC = ["", "how-it-works", "use-cases", "security", "features", "pricing", "apply", "about", "docs", "blog", "privacy", "terms"];
+const STATIC = ["", "how-it-works", "use-cases", "security", "features", "pricing", "beta", "apply", "about", "docs", "blog", "privacy", "terms"];
 
 export const GET: APIRoute = async ({ site }) => {
   const base = (site ?? new URL("https://zonesteward.com")).toString().replace(/\/$/, "");

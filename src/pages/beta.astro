@@ -1,0 +1,60 @@
+---
+import Page from "../layouts/Page.astro";
+/* The beta, in plain English: what it is, what you get, what we ask for, how
+   it ends. Every promise here is also made on /pricing and in the application
+   consent; change them together. */
+const get = [
+  ["Free for the whole beta", "No card, no trial clock. Your workspace costs nothing until general availability, and you'll have at least 30 days' notice before that."],
+  ["Half price for a year, locked", "When billing starts, beta testers pay 50% of whatever tier fits for the first year. Nothing is charged until you pick a plan; if you don't, your workspace goes read-only, not deleted."],
+  ["A direct line", "You talk to the person building it. Bugs get fixed in days, not roadmap quarters, and you'll hear what changed and why."],
+  ["A say in what ships", "Twenty workspaces, not twenty thousand. What testers ask for is what gets built next."],
+];
+const ask = [
+  ["Three questions a month", "Once a month, inside the app, we ask everyone in your workspace who used it three short questions. They change with how long you've been testing — setup first, then what you tried and what broke, then what's missing and what it's worth. A minute, tops."],
+  ["Two twenty-minute calls", "One around your first month, when setup pain is fresh and fixable. One around your third, to decide together whether to keep going. That's the whole meeting schedule."],
+  ["Tell us when it's wrong", "A wrong answer, a chart that lies, a change you'd never approve — say so, in the app or by reply. A silent tester is the one thing the beta can't use."],
+  ["An owner who answers", "One person in your workspace is accountable for the feedback loop. Not every seat; just someone we can reach."],
+];
+const accept = [
+  ["It's unfinished", "Things will break and things will change. Surfaces move, wording shifts, a feature you liked may be reworked. It is a product under construction and it will feel like one."],
+  ["No SLA", "It's meant to be up, and we work on it like it is, but nothing is guaranteed and nothing is compensated."],
+  ["You bring your model key", "Answers are generated under your own Anthropic or OpenAI key, billed to you by them at their rates. A busy agency month is typically a few dollars; we never mark it up."],
+  ["We learn from how you use it", "We look at usage and failure signals — what got asked, what the assistant got wrong, where people got stuck — to improve the product. We don't read your Cloudflare data beyond what's needed to fix a problem you report."],
+  ["It can end", "If the beta stops, you get 30 days' notice and your data as JSON. Your Cloudflare tokens are yours to revoke, and you should."],
+];
+const faq = [
+  ["What does 'pre-launch' mean here?", "Zonesteward is built and in daily use, but it hasn't launched: no public sign-up, no billing, and parts of it are still being reworked. The beta is how it gets finished — with real fleets, real incidents and people who tell us what's wrong."],
+  ["Who is it for?", "Agencies and teams responsible for Cloudflare zones they didn't all build themselves — usually ten or more, across client accounts. If you run one site you'll get less from the fleet view, and you'd be filling a seat someone with forty zones needs."],
+  ["What if we stop answering the check-ins?", "We'll ask why. If the tool isn't earning its place, that's useful to know and we'd rather hear it. If a workspace goes quiet for a long stretch with no reply, we'll free the seat for the next applicant — after telling you."],
+  ["Does everyone in the workspace have to agree?", "The owner agrees on the workspace's behalf when applying. The monthly questions go to whoever actually used the tool that month; nobody is chased for not using it."],
+  ["Can we leave?", "Any time. Say so, revoke your Cloudflare tokens, and the workspace is deleted after 30 days along with its encrypted database."],
+];
+---
+<Page
+  title="The beta — Zonesteward"
+  description="A pre-launch private beta: free, unfinished, and looking for testers who will tell us what's wrong. What you get, what we ask for, and what you accept."
+  eyebrow="Private beta · pre-launch"
+  h1="Free, unfinished, and looking for people who'll say what's wrong."
+  lede="Zonesteward isn't launched. The beta is how it gets finished — by agencies running real fleets and telling us where it fails. Here is the trade, in full."
+>
+  <div class="callout"><p><strong>In one line:</strong> you get the product free for the whole beta and half price for a year after; we get three questions a month answered, two twenty-minute calls, and the truth when something's wrong.</p></div>
+
+  <h2>What you get</h2>
+  <ol class="pipe">{get.map(([b, p]) => <li><div><b>{b}</b><p>{p}</p></div></li>)}</ol>
+
+  <h2>What we ask for</h2>
+  <ol class="pipe">{ask.map(([b, p]) => <li><div><b>{b}</b><p>{p}</p></div></li>)}</ol>
+
+  <h2>What you accept</h2>
+  <ol class="pipe">{accept.map(([b, p]) => <li><div><b>{b}</b><p>{p}</p></div></li>)}</ol>
+
+  <h2>Questions</h2>
+  <div class="faq">{faq.map(([q, a]) => <details><summary>{q}</summary><p>{a}</p></details>)}</div>
+
+  <h2>Apply</h2>
+  <p>
+    Two minutes of questions about what you run and what goes wrong. We read every one ourselves and
+    answer within a few days — yes, not yet, and why. The application asks you to confirm you've read this page.
+  </p>
+  <p><a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a></p>
+</Page>
