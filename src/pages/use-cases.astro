@@ -12,10 +12,10 @@ const cases = [
       "The status mix for the last fifteen minutes — served, redirected, rejected, origin errors — by path, with origin response times", // verified: app/lib/schema.ts:30,35 (edgeResponseStatus, originResponseStatus, clientRequestPath, datetimeMinute, quantiles)
       "Whether Cloudflare is still serving cached copies, on plans that expose cache status", // verified: app/lib/schema.ts:37 (cacheStatus plan-gated)
       "Cloudflare's own health checks and notification history for the zone, if you have them, and the global attack picture — whether it is just you", // verified: app/api/chat/route.ts list_edge, list_platform
-      "Origin reachability is watched by the rules you arm, not by the conversation: a monitored zone with an origin-down rule is judged from its own traffic, or, when the site is too quiet to judge, from the product's own probe", // verified: app/lib/monitoring/scheduler.ts:296-311, origin-pinger.ts:20-23
-      "Changes made through Zonesteward are on the zone's Changes tab: who approved each, when, and whether it applied", // verified: app/api/cf/changes/route.ts:15; chat has no audit tool
+      "Whether the origin is currently judged down by the rules you have armed, and on what basis — the zone's own traffic, or the product's own probe when the site is too quiet to judge — plus any open incident and its investigation", // verified: chat tool list_monitoring → app/lib/chat-monitoring-view.ts; scheduler.ts:296-311, origin-pinger.ts:20-23
+      "The audit trail: every change made through Zonesteward in the last hour — who approved it, when, whether it applied, and whether it can be reverted", // verified: chat tool list_recent_changes → app/lib/chat-monitoring-view.ts recentChangesForZone
     ],
-    proposes: "Edge or origin, with the evidence: origin errors and response times against the edge status mix. If it is the server it says so — there is nothing to write to Cloudflare — and it can propose a Cloudflare health check, on some plans, so you are told first next time. If a rule you approved earlier is the cause, an administrator reverts it from the Changes tab; the revert is a card like any other. Paging comes from the alert rules you have armed, never from a conversation.", // verified: route.ts:754 create_health_check (Pro+); api/cf/revert/route.ts:19 admin-only; no notify tool in chat
+    proposes: "Edge or origin, with the evidence: origin errors and response times against the edge status mix. If it is the server it says so — there is nothing to write to Cloudflare — and it can propose a Cloudflare health check, on some plans, so you are told first next time. If a rule you approved earlier is the cause, ask it to undo that change: the revert card appears in the conversation, built from the recorded before-state and linked to the original, for an administrator to approve. Paging comes from the alert rules you have armed, never from a conversation.", // verified: route.ts create_health_check (Pro+); chat tool revert_change → buildRevertProposal, admin-only; no notify tool in chat
   },
   { id: "slow", ask: "Why is the site slow?",
     checks: [
@@ -48,9 +48,9 @@ const cases = [
   { id: "undo", ask: "Did that change take effect? Undo it.",
     checks: [
       "Rules, settings, DNS records, access rules, managed rulesets, health checks and waiting rooms are read back from Cloudflare after every change; \"applied\" means the read-back agreed. Purges are accepted by Cloudflare, not read back — there is nothing to read", // verified: execute-core.ts:1415 read-back, :1109-1114 purge has no verifier
-      "The audit row — who approved it, when, the exact payload and the recorded before-state — on the zone's Changes tab and the audit log", // verified: app/lib/audit.ts:69-73; execute-core.ts:1438 rollback data
+      "The audit row — who approved it, when, what it was, whether it applied and whether it can be reverted — in the conversation, on the zone's Changes tab and in the audit log", // verified: chat tool list_recent_changes; app/lib/audit.ts:69-73; execute-core.ts:1438 rollback data
     ],
-    proposes: "A revert card built from the stored before-state, through the same pipeline as the original — classified, approved, executed, read back — started by an administrator from the Changes tab. Purges, speed tests and zone creation cannot be reverted. Asked to \"undo it\" in the conversation today, it proposes the inverse change as an ordinary card, not linked to the original.", // verified: app/lib/revert.ts:4-5,170-171,251; api/cf/revert/route.ts:19
+    proposes: "A revert card built from the stored before-state, through the same pipeline as the original — classified, approved, executed, read back — from the conversation or the Changes tab, for an administrator to approve; the audit row records which change it undid. Purges, speed tests and zone creation cannot be reverted.", // verified: chat tool revert_change; app/lib/revert.ts:4-5,170-171,251; execute-core.ts revertOf
   },
   { id: "region", ask: "Why is it slow in Germany?",
     checks: [
