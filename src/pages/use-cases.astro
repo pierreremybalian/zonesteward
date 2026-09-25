@@ -83,12 +83,12 @@ const cases = [
     ],
     proposes: "A graph you review and save to your library, pinned if you like; in the dashboard's edit mode, a Custom graph widget shows any saved graph. Those are your clicks — the conversation never touches the dashboard. Saved graphs record the conversation they came from.", // verified: VizPanel.tsx:141-149; viz-store.ts:15,82; CustomGraphWidgets.tsx:79
   },
-  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule, not the chat",
+  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule — or said in the chat, which opens the composer for you",
     checks: [
-      "The composer turns the sentence into a rule — query, threshold, window, and a minimum volume when it judges one is needed — and explains it back in English; the card shows the condition, window and cadence. This one also exists as a preset with window and minimum volume built in", // verified: api/alerts/rules/compose/route.ts:25,88; RulesManager.tsx:296-301; monitoring/presets.ts:69-105
-      "When you arm it, the rule runs once against the zone as it is now and is refused if Cloudflare rejects the query or the rule is malformed", // verified: api/alerts/rules/custom/route.ts:96-97; custom-rule.ts:144-148
+      "The composer turns the sentence into a rule — query, threshold, window and a minimum volume so a quiet site never pages on three requests — and explains it back in English; the card shows the condition, window, cadence and minimum volume. This one also exists as a preset", // verified: api/alerts/rules/compose/route.ts (minVolume always, fallback 20); RulesManager.tsx Min volume cell; monitoring/presets.ts:69-105
+      "When you arm it, the rule runs once against the zone as it is now and is refused if Cloudflare rejects the query, the rule is malformed, or the result does not reduce to a number", // verified: api/alerts/rules/custom/route.ts dry run + evaluateSpecOnData
     ],
-    proposes: "A monitoring rule, shown in plain words on a preview card before it is armed to the channels you pick — email, Slack, Teams, PagerDuty, SMS, webhook. From then on it watches; when it fires you get an incident, with an investigation attached when a model key is configured — read it in the app; email and SMS carry the alert itself.", // verified: RulesManager.tsx:348-355; notify/channels-store.ts:5; incident-manager.ts:142-149; investigator.ts:106-125
+    proposes: "A monitoring rule, shown in plain words on a preview card before it is armed to the channels you pick — email, Slack, Teams, PagerDuty, SMS, webhook. Say it in the conversation instead and it opens the composer with your sentence filled in and the rule designed; arming is still your click. From then on it watches; when it fires you get an incident, with an investigation attached when a model key is configured — read it in the app; email and SMS carry the alert itself.", // verified: RulesManager.tsx Arm rule + ?prompt= hand-off; chat tool draft_alert_rule; notify/channels-store.ts:5; incident-manager.ts:142-149
     link: ["/#tour-alerts", "How alerts are composed →"],
   },
 ];
