@@ -72,7 +72,7 @@ const cases = [
   { id: "digest", ask: "Send me a seven-day digest for client.com.",
     checks: [
       "Traffic, 5xx rate, top countries, paths and hosts over the seven days; top networks on plans that expose them", // verified: app/lib/reports-server.ts:69-87
-      "Firewall activity over the most recent days the plan allows, alerts that fired, and every change made through Zonesteward — from the audit trail", // verified: reports-server.ts:94 (3d / 1d windows), :119 listAuditForZone
+      "Firewall activity over the full seven days, alerts that fired, and every change made through Zonesteward — from the audit trail", // verified: reports-server.ts firewall chunks stitched to the digest window; listAuditForZone
     ],
     proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you would otherwise assemble by hand on a Friday afternoon.", // verified: route.ts:1615 links; reports.ts:165 print; ReportsClient.tsx:7 nine CSV tables
   },
@@ -81,7 +81,7 @@ const cases = [
       "The analytics query behind the chart, run against the zone — cache status on plans that expose it", // verified: Canvas.tsx:31-43 Viz/Table/GraphQL/JSON, :304 query shown
       "Which charts fit the shape of the result — it proposes two to four; ask again for a different one", // verified: viz-proposer.ts:30 MAX_PROPOSALS=4; VizPanel.tsx:179-187
     ],
-    proposes: "A graph you review and save to your library, pinned if you like; in the dashboard's edit mode, a Custom graph widget shows any saved graph. Those are your clicks — the conversation never touches the dashboard. Saved graphs record the conversation they came from.", // verified: VizPanel.tsx:141-149; viz-store.ts:15,82; CustomGraphWidgets.tsx:79
+    proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard in the same click if you want it there. Those are your clicks — the conversation never touches the dashboard. Every saved graph opens the conversation it came from, so you can see why it was built.", // verified: VizPanel.tsx save + addToDashboard (PUT /api/dashboard); SavedLibrary.tsx Open conversation → /?chat=; viz-store.ts:15
   },
   { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule — or said in the chat, which opens the composer for you",
     checks: [
