@@ -64,9 +64,9 @@ const cases = [
     checks: [
       "Which zones are in the group you named, and which token reaches each one", // verified: route.ts:1646-1651 list_zone_groups; execute-core.ts:452-459 resolveTokenForZone
       "That the purge is by URL, so nothing else is touched", // verified: route.ts:220-226 purge_cache kind=files
-      "Today one URL list goes to every zone, so a per-site homepage means one card per site, or a purge by host or tag across the group", // verified: execute-core.ts:1588 same payload per zone
+      "Give it the path — \"/\" — and the card lists the homepage URL for each zone in the group", // verified: app/lib/bulk-purge.ts expandPurgeValuesForZone; execute-core.ts runBulk
     ],
-    proposes: "One bulk card listing every zone, approved by an administrator, with an acknowledgement above ten zones. Each zone is purged and audited on its own and the card reports which zones Cloudflare accepted — a purge cannot be read back. Large fan-outs are spaced out, because purging many caches at once loads the origins.", // verified: PendingAction.tsx:298-306; execute-core.ts:1602; rate-limit.ts:142
+    proposes: "One bulk card listing every zone, approved by an administrator, with an acknowledgement above ten zones or when the change itself is high-impact. Each zone is purged and audited on its own and the card reports which zones Cloudflare accepted — a purge cannot be read back. Large fan-outs are spaced out, because purging many caches at once loads the origins.", // verified: PendingAction.tsx:298-306; execute-core.ts runBulk; chat/route.ts bulk impact; rate-limit.ts:142
   },
   { id: "digest", ask: "Send me a seven-day digest for client.com.",
     checks: [
