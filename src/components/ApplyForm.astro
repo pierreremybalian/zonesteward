@@ -104,13 +104,13 @@ const roles = [
     <legend class="step-title">Is Zonesteward a fit?</legend>
 
     <p class="fld">
-      <label for={`${id}-key`}>Do you have an Anthropic API key?</label>
+      <label for={`${id}-key`}>Do you have an API key for a model provider (Anthropic or OpenAI)?</label>
       <select id={`${id}-key`} name="anthropic">
         <option value="yes">Yes</option>
         <option value="not yet">Not yet, but I can get one</option>
         <option value="what is that">No idea what that is</option>
       </select>
-      <span class="hint">You bring your own key. It's stored encrypted, like your Cloudflare tokens, and used only to call Anthropic on your behalf — so Anthropic bills you directly at cost and we never mark it up.</span>
+      <span class="hint">You bring your own key — Anthropic, OpenAI, or an OpenAI-compatible endpoint you run. It's stored encrypted, like your Cloudflare tokens, and used only for your workspace, so the provider bills you directly at cost and we never mark it up.</span>
     </p>
 
     <p class="fld">

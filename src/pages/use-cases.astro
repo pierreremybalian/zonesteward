@@ -1,90 +1,97 @@
 ---
-/* Every "It checks" line maps to a real read tool or detector in the operator
-   (FEATURES.md §1, §3, §4, §5; app/lib/monitoring/detectors/*). Nothing here
-   is aspirational. */
+/* Every line is checked against the operator's code, not its docs; the
+   citation sits beside each claim. Model judgement is phrased as judgement.
+   When a claim stops being true, the citation is what to re-check. */
 import Page from "../layouts/Page.astro";
 const cases = [
+  // Every line below was checked against the operator's code on 2026-09-25
+  // (claim-by-claim audit; see the operator repo paths in the comments).
+  // A line with no citation is model judgement and is phrased as such.
   { id: "down", ask: "Is client.com down?",
     checks: [
-      "Origin reachability — the product pings your origin itself, it doesn't wait for a complaint",
-      "5xx rate and the full status mix for the last fifteen minutes, by path",
-      "Whether Cloudflare is still serving cached copies while the origin is unreachable",
-      "The audit trail: did anyone change anything on this zone in the last hour",
+      "The status mix for the last fifteen minutes — served, redirected, rejected, origin errors — by path, with origin response times", // verified: app/lib/schema.ts:30,35 (edgeResponseStatus, originResponseStatus, clientRequestPath, datetimeMinute, quantiles)
+      "Whether Cloudflare is still serving cached copies, on plans that expose cache status", // verified: app/lib/schema.ts:37 (cacheStatus plan-gated)
+      "Cloudflare's own health checks and notification history for the zone, if you have them, and the global attack picture — whether it is just you", // verified: app/api/chat/route.ts list_edge, list_platform
+      "Origin reachability is watched by the rules you arm, not by the conversation: a monitored zone with an origin-down rule is judged from its own traffic, or, when the site is too quiet to judge, from the product's own probe", // verified: app/lib/monitoring/scheduler.ts:296-311, origin-pinger.ts:20-23
+      "Changes made through Zonesteward are on the zone's Changes tab: who approved each, when, and whether it applied", // verified: app/api/cf/changes/route.ts:15; chat has no audit tool
     ],
-    proposes: "Edge or origin, with the evidence: origin 5xx and timeouts against edge status, minute by minute. If it's the server it says so plainly — there is nothing to write to Cloudflare — and can propose a Cloudflare health check so you're told first next time. If a rule you approved earlier is what's blocking, you get a revert card. Paging comes from the alert rules you've armed, not from a conversation.",
+    proposes: "Edge or origin, with the evidence: origin errors and response times against the edge status mix. If it is the server it says so — there is nothing to write to Cloudflare — and it can propose a Cloudflare health check, on some plans, so you are told first next time. If a rule you approved earlier is the cause, an administrator reverts it from the Changes tab; the revert is a card like any other. Paging comes from the alert rules you have armed, never from a conversation.", // verified: route.ts:754 create_health_check (Pro+); api/cf/revert/route.ts:19 admin-only; no notify tool in chat
   },
   { id: "slow", ask: "Why is the site slow?",
     checks: [
-      "Origin response time at the median, 95th and 99th percentile, over the last hour against the day before, and whether it's climbing under a flat request rate — the signature of an origin that's saturated, a PHP-FPM pool that's too small. It can't see your pool size; it shows you the shape of one",
-      "Cache status by path: the static resources going to the origin uncached, and the query-string variants that stop them being cached at all",
-      "Path breadth: a filtered or faceted navigation that has become a near-infinite URL space, and the crawlers and bots walking it",
-      "One endpoint being hammered — path × user agent × rate — and whether those requests are being challenged",
-      "Whether it's slow everywhere or from one region",
+      "Origin response time at the median, 95th and 99th percentile, by hour, against the day before, beside the request rate — the shape of a saturated origin, not the cause; it cannot see your server", // verified: schema.ts:30 quantiles P50/P95/P99, :185 count + avg per group
+      "Cache status by path, on plans that expose it: the static resources going to the origin uncached", // verified: schema.ts:184, :37
+      "Path breadth: how many distinct URLs were requested and which user agents are walking them", // verified: schema.ts:21 limit ≤10000, route.ts:1486 60k-char cap
+      "One endpoint being hammered — path, user agent, rate — and whether the firewall already challenged it, over the most recent days the plan allows", // verified: schema.ts:131 firewall dims; zone-limits.ts:29 span 3d paid / 1d free
+      "Whether it is slow everywhere or from one region", // verified: schema.ts:29-35 clientCountryName × latency
     ],
-    proposes: "A cache rule for the static paths going to the origin uncached, with the request count it would affect. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it's the origin — in which case it says so, with the evidence to take to the host.",
+    proposes: "A cache rule for the paths going to the origin uncached, with the number of requests it would have matched in the last 24 hours — all requests on those paths, cached or not. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it is the origin — then it says so, with the evidence to take to the host.", // verified: PendingAction.tsx:37 create_cache_rule previewable; blast-radius.ts counts all matches; route.ts:250,410 managed_challenge actions
   },
   { id: "attack", ask: "Who is attacking us right now?",
     checks: [
-      "Every source classified across nine attack categories with a severity score",
-      "Paths probed versus paths that actually exist and were served — the signature of a scanner",
-      "The same source against every other zone you manage, so a fleet-wide sweep is seen as one",
-      "Sources that look hostile but aren't — crawlers, research scanners, a theme fetching its own assets — listed with the reason they were cleared",
+      "Every source classified across nine attack categories with a severity score", // verified: app/lib/attack-patterns.ts:9-18 (9 categories), :319-328 severity 0-100
+      "In the conversation: what each source is doing, how much the firewall already stopped, its verdict and the paths it hit. On the Security tab: the full status mix and how much was actually served — the signature of a scanner is a source that was served nothing", // verified: route.ts:1578-1591 chat payload; attack-patterns.ts:199 servedPct on the tab
+      "On the Security tab, Investigate checks whether the same source is hitting your other zones and hands the evidence to the conversation", // verified: security-investigate.ts:162,213 (≤12 other zones); SecurityPanel.tsx:425 hand-off
+      "Sources that look hostile but aren't — crawlers, research scanners, a theme fetching its own assets — listed on the Security tab with the reason they were cleared", // verified: security-server.ts:313-317, SecurityPanel.tsx:386
     ],
-    proposes: "A managed-challenge rule for the single source, with the blast-radius count beside it. If the source is hitting several clients, the same rule fanned across the zone group with one acknowledgement.",
+    proposes: "A managed challenge for the single source: one click on the Security tab, with that source's request count and served share beside it; a WAF rule proposed in the conversation shows how many requests it would have matched in the last 24 hours. If the source is hitting several clients, the same rule fanned across the zone group on one card, with an acknowledgement above ten zones.", // verified: SecurityPanel.tsx:176,518; execute-core.ts:1534-1547 BULK_ALLOWED, :1575 ack >10
   },
   { id: "block", ask: "What would this WAF rule actually block?",
     checks: [
-      "The rule's expression translated into analytics filters and run against your real last 24 hours",
-      "The matches broken down by country, ASN, path and user agent",
-      "Whether any of that traffic was served — that is, whether you're about to block customers",
+      "The expression translated into analytics filters and run against your real last 24 hours — a sampled estimate", // verified: app/lib/blast-radius.ts; api/cf/blast-radius/route.ts:38-43
+      "Supported: country, network, IP, host, method, path and user agent, with equals, in, contains and starts-with, joined by and/or. Negation, regular expressions, ranges and other fields show \"preview unavailable\" rather than a wrong number", // verified: blast-radius.ts:60,110-118,217,249
+      "The matches by the top five countries, networks, paths, user agents and addresses — network and address detail on some plans", // verified: blast-radius.ts:360-379, :479-481
+      "Two warnings: a match that also catches a known-good crawler, and a rule that would have matched more than a fifth of all traffic", // verified: blast-radius.ts:431-446, :529-533
     ],
-    proposes: "The rule, with the number it would have matched, or a narrower expression if the count says it's too broad. You decide with the count in front of you, before the rule exists.",
+    proposes: "The rule, with the number it would have matched. If the preview says it is too broad, ask for a narrower expression and preview again. You decide with the count in front of you, before the rule exists.",
   },
   { id: "undo", ask: "Did that change take effect? Undo it.",
     checks: [
-      "The setting read back from Cloudflare right now, not the API's 200 from earlier",
-      "The audit row: who approved it, when, the exact payload, and the before-state that was recorded",
+      "Rules, settings, DNS records, access rules, managed rulesets, health checks and waiting rooms are read back from Cloudflare after every change; \"applied\" means the read-back agreed. Purges are accepted by Cloudflare, not read back — there is nothing to read", // verified: execute-core.ts:1415 read-back, :1109-1114 purge has no verifier
+      "The audit row — who approved it, when, the exact payload and the recorded before-state — on the zone's Changes tab and the audit log", // verified: app/lib/audit.ts:69-73; execute-core.ts:1438 rollback data
     ],
-    proposes: "A revert card built from the stored before-state, through the same pipeline as the original — classified, approved, executed, read back.",
+    proposes: "A revert card built from the stored before-state, through the same pipeline as the original — classified, approved, executed, read back — started by an administrator from the Changes tab. Purges, speed tests and zone creation cannot be reverted. Asked to \"undo it\" in the conversation today, it proposes the inverse change as an ordinary card, not linked to the original.", // verified: app/lib/revert.ts:4-5,170-171,251; api/cf/revert/route.ts:19
   },
   { id: "region", ask: "Why is it slow in Germany?",
     checks: [
-      "Requests and origin latency by country, then by the Cloudflare data centre and network that served them",
-      "Whether that region's traffic is hitting cache or going to the origin",
-      "Whether a rule or a challenge is firing disproportionately on that region",
+      "Requests and origin latency by country, then by the Cloudflare data centre and network that served them, on plans that expose them", // verified: zone-limits.ts:41 coloCode/ASN names stripped on free plans
+      "Whether that region's traffic is hitting cache or going to the origin, on plans that expose cache status", // verified: schema.ts:35,37
+      "Whether a rule or a challenge is firing disproportionately on that region", // verified: schema.ts:131 firewall events × clientCountryName
     ],
-    proposes: "What is different about that region in one paragraph, with the evidence. A cache or origin rule if one would help; a plain answer if the origin is simply far away.",
+    proposes: "What is different about that region, with the evidence. A cache or origin rule if one would help; a plain answer if the origin is simply far away.", // verified: route.ts:311 create_cache_rule, :572-577 create_origin_rule
   },
   { id: "purge", ask: "Purge the cache for the homepage on every client site.",
     checks: [
-      "Which zones are in the group you named, and which token reaches each one",
-      "That the purge is by URL, so nothing else is touched",
+      "Which zones are in the group you named, and which token reaches each one", // verified: route.ts:1646-1651 list_zone_groups; execute-core.ts:452-459 resolveTokenForZone
+      "That the purge is by URL, so nothing else is touched", // verified: route.ts:220-226 purge_cache kind=files
+      "Today one URL list goes to every zone, so a per-site homepage means one card per site, or a purge by host or tag across the group", // verified: execute-core.ts:1588 same payload per zone
     ],
-    proposes: "One bulk purge card listing every zone, with per-zone read-back after execution and a separate acknowledgement because it fans across many zones.",
+    proposes: "One bulk card listing every zone, approved by an administrator, with an acknowledgement above ten zones. Each zone is purged and audited on its own and the card reports which zones Cloudflare accepted — a purge cannot be read back. Large fan-outs are spaced out, because purging many caches at once loads the origins.", // verified: PendingAction.tsx:298-306; execute-core.ts:1602; rate-limit.ts:142
   },
   { id: "digest", ask: "Send me a seven-day digest for client.com.",
     checks: [
-      "Traffic, 5xx rate, top countries, paths and networks over the window",
-      "Firewall activity, alerts that fired, and every change that was made — from the audit trail",
+      "Traffic, 5xx rate, top countries, paths and hosts over the seven days; top networks on plans that expose them", // verified: app/lib/reports-server.ts:69-87
+      "Firewall activity over the most recent days the plan allows, alerts that fired, and every change made through Zonesteward — from the audit trail", // verified: reports-server.ts:94 (3d / 1d windows), :119 listAuditForZone
     ],
-    proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you'd otherwise assemble by hand for a client on Friday afternoon.",
+    proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you would otherwise assemble by hand on a Friday afternoon.", // verified: route.ts:1615 links; reports.ts:165 print; ReportsClient.tsx:7 nine CSV tables
   },
   { id: "graph", ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
     checks: [
-      "The analytics query behind the chart, run against the zone",
-      "Which chart fits the shape of the result — it proposes one, and you can pick another",
+      "The analytics query behind the chart, run against the zone — cache status on plans that expose it", // verified: Canvas.tsx:31-43 Viz/Table/GraphQL/JSON, :304 query shown
+      "Which charts fit the shape of the result — it proposes two to four; ask again for a different one", // verified: viz-proposer.ts:30 MAX_PROPOSALS=4; VizPanel.tsx:179-187
     ],
-    proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard as a widget. Saved graphs keep the conversation they came from, so you can see why you built them.",
+    proposes: "A graph you review and save to your library, pinned if you like; in the dashboard's edit mode, a Custom graph widget shows any saved graph. Those are your clicks — the conversation never touches the dashboard. Saved graphs record the conversation they came from.", // verified: VizPanel.tsx:141-149; viz-store.ts:15,82; CustomGraphWidgets.tsx:79
   },
   { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule, not the chat",
     checks: [
-      "The composer turns the sentence into a rule: query, threshold, window, minimum volume — and explains it back to you in English",
-      "The composer's dry run: the rule executed against the zone right now, refused if it errors or yields no number",
+      "The composer turns the sentence into a rule — query, threshold, window, and a minimum volume when it judges one is needed — and explains it back in English; the card shows the condition, window and cadence. This one also exists as a preset with window and minimum volume built in", // verified: api/alerts/rules/compose/route.ts:25,88; RulesManager.tsx:296-301; monitoring/presets.ts:69-105
+      "When you arm it, the rule runs once against the zone as it is now and is refused if Cloudflare rejects the query or the rule is malformed", // verified: api/alerts/rules/custom/route.ts:96-97; custom-rule.ts:144-148
     ],
-    proposes: "A monitoring rule, shown to you in plain words on a preview card before it's armed to the channels you pick — email, Slack, Teams, PagerDuty, SMS, webhook. From then on it watches, and when it fires you get an incident with the investigation attached.",
+    proposes: "A monitoring rule, shown in plain words on a preview card before it is armed to the channels you pick — email, Slack, Teams, PagerDuty, SMS, webhook. From then on it watches; when it fires you get an incident, with an investigation attached when a model key is configured — read it in the app; email and SMS carry the alert itself.", // verified: RulesManager.tsx:348-355; notify/channels-store.ts:5; incident-manager.ts:142-149; investigator.ts:106-125
     link: ["/#tour-alerts", "How alerts are composed →"],
   },
 ];
+
 ---
 <Page
   title="Use cases — Zonesteward"
