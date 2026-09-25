@@ -40,7 +40,7 @@ export const AUDIENCES: Audience[] = [
     pains: ["Firewall events across many zones, one zone at a time, with no idea whether the same source is hitting the others", "Blocking that might catch customers, with no count in front of you", "Automation you can’t audit"],
     features: [
       { b: "Attackers scored and categorised", p: "Nine categories, a composite severity, country and network, the paths probed against the paths that exist — and the sources that look hostile but aren’t, with the reason they were cleared.", href: "/#tour-security" },
-      { b: "Blast radius before the rule exists", p: "A proposed WAF or access rule is run against the last 24 hours of real traffic, broken down by country, ASN, path and user agent, so you see what it would have blocked.", href: "/#gate" },
+      { b: "Blast radius before the rule exists", p: "A proposed WAF or access rule is run against the last 24 hours of real traffic \u2014 broken down by country, network, path and user agent, with the share that was being served \u2014 so you see what it would have blocked, and whether that was customers.", href: "/#gate" },
       { b: "Structural gate, full audit", p: "The model has no write tool. Every change goes through the execution core after a human decision, is read back from Cloudflare, and lands in the audit trail with its revert.", href: "/how-it-works" },
     ],
     cases: ["attack", "block"], shot: "tour-security", alt: "The security tab with ranked attackers, countries and networks",
@@ -64,10 +64,10 @@ export const AUDIENCES: Audience[] = [
     title: "Cloudflare edge, cache and origin analytics for network engineers — Zonesteward",
     description: "Cache hit ratio, origin response time, points of presence and countries — by zone or across the fleet — as charts you ask for in a sentence. Cache rules and origin settings proposed with the request count they affect.",
     h1: "Edge to origin, in one chart.",
-    lede: "Cache status by path, origin latency by hour, which data centre served which region — asked for in plain language and answered from Cloudflare’s own analytics, with the query in the open beside the chart.",
+    lede: "Cache status by path on plans that expose it, origin latency by hour, which data centre served which region — asked for in plain language and answered from Cloudflare’s own analytics, with the query in the open beside the chart.",
     pains: ["Cache misses you can see in the bill but not on a chart", "“Slow in Germany” with no way to say which PoP or which path", "Edge settings eleven clicks deep, one zone at a time"],
     features: [
-      { b: "Cache and origin, charted", p: "Fourteen chart kinds; cache status, origin response time and status, edge TTFB, by path, by hour, by country or PoP.", href: "/#tour-ask" },
+      { b: "Cache and origin, charted", p: "Eleven chart kinds; origin response time and status, edge TTFB and cache status (on plans that expose it), by path, by hour, by country or data centre (on plans that expose it).", href: "/#tour-ask" },
       { b: "The live globe", p: "Requests by point of presence in real time, arcs for cache misses reaching the origin, one zone or the fleet.", href: "/#tour-see" },
       { b: "Edge settings, read and changed", p: "Tiered Cache, Cache Reserve, Argo, DNSSEC, certificates — read in a sentence; changed only through an approval card with read-back.", href: "/#details" },
     ],
@@ -95,7 +95,7 @@ export const AUDIENCES: Audience[] = [
     lede: "Records and zone settings across every zone in one place. A change is proposed, classified — an apex deletion is high impact and needs an acknowledgement — executed, read back from Cloudflare, and stored with its revert.",
     pains: ["Which zone has which record, across dozens of accounts", "A DNS edit with no record of who made it or what it replaced", "Certificates and DNSSEC state checked by hand"],
     features: [
-      { b: "DNS across the fleet", p: "Records by zone, changes admin-only, apex and bulk changes classified high with an explicit acknowledgement.", href: "/#details" },
+      { b: "DNS across the fleet", p: "Records by zone, changes admin-only; an apex change is classified high and needs an explicit acknowledgement, as does a bulk change above ten zones or a high-impact one on any number.", href: "/#details" },
       { b: "Read-back and revert", p: "“Applied” means Cloudflare was asked what the record is now. Every change stores its before-state and a one-click revert.", href: "/how-it-works" },
       { b: "Certificates, DNSSEC, settings", p: "Edge certificates and expiry, DNSSEC down to the DS record, Universal SSL, zone status and nameservers — a sentence away.", href: "/#details" },
     ],
