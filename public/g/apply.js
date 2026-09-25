@@ -65,9 +65,10 @@
        is hidden until opened, so auto-render would size it wrong). The widget
        writes its token into a hidden cf-turnstile-response input inside the
        form, which FormData picks up. */
-    var tsEl = f.querySelector(".turnstile"), tsId = null;
+    var tsEl = f.querySelector(".turnstile"), tsId = null, tsTries = 0;
     function renderTurnstile() {
-      if (!tsEl || tsId !== null || typeof turnstile === "undefined") return;
+      if (!tsEl || tsId !== null) return;
+      if (typeof turnstile === "undefined") { if (tsTries++ < 50) setTimeout(renderTurnstile, 200); return; } // api.js is async
       tsId = turnstile.render(tsEl, {
         sitekey: tsEl.dataset.sitekey, action: tsEl.dataset.action || "beta-apply",
         appearance: "always", size: "flexible", theme: "light",
@@ -80,9 +81,7 @@
 
     function show(n, opts) {
       i = n;
-      if (n === steps.length - 1) {
-        if (typeof turnstile === "undefined") setTimeout(renderTurnstile, 400); else renderTurnstile();
-      }
+      if (n === steps.length - 1) renderTurnstile();
       if (!(opts && opts.silent)) writeHash(n);
       steps.forEach(function (s, k) { s.hidden = k !== n; });
       tabs.forEach(function (t, k) {
