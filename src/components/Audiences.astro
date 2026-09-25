@@ -1,0 +1,14 @@
+---
+/* Who it's for. Agencies first; every role that touches a zone has a page
+   under /for with its own pains and the features that answer them. */
+import { AUDIENCES } from "../data/audiences";
+---
+<section class="aud" aria-label="Who it is for">
+  <div class="wrap">
+    <span class="sc">Built for</span>
+    <div class="aud-row">
+      {AUDIENCES.map((a) => <a href={`/for/${a.slug}`}>{a.label}</a>)}
+    </div>
+    <p class="cta-note">Agencies first. Every role that touches a zone gets its own view — pick yours.</p>
+  </div>
+</section>

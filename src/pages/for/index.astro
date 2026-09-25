@@ -1,0 +1,22 @@
+---
+import Page from "../../layouts/Page.astro";
+import { AUDIENCES } from "../../data/audiences";
+---
+<Page
+  title="Who Zonesteward is for — agencies, security, ops, network, developers, DNS, leadership, support"
+  description="Zonesteward is built for agencies running many Cloudflare zones, and for every role that touches one: security and SOC, DevOps and SRE, network engineers, developers, DNS and IT admins, leadership and support."
+  eyebrow="Who it’s for"
+  h1="Agencies first. Then everyone who touches a zone."
+  lede="The product was built inside an agency that runs a fleet of client zones. Each role below has its own page: what gets in the way, and what Zonesteward does about it."
+  wide
+>
+  <div class="role-index">
+    {AUDIENCES.map((a) => (
+      <a class="role-card" href={`/for/${a.slug}`}>
+        <span class="sc">{a.label}</span>
+        <h2>{a.h1}</h2>
+        <p>{a.roles}</p>
+      </a>
+    ))}
+  </div>
+</Page>

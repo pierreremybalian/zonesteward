@@ -11,16 +11,17 @@ const cases = [
       "Whether Cloudflare is still serving cached copies while the origin is unreachable",
       "The audit trail: did anyone change anything on this zone in the last hour",
     ],
-    proposes: "If the origin is down there is nothing to write to Cloudflare — it tells you plainly that it's the server, opens an incident, and pages the channel you chose. If a rule you approved earlier is what's blocking, you get a revert card.",
+    proposes: "Edge or origin, with the evidence: origin 5xx and timeouts against edge status, minute by minute. If it's the server it says so plainly — there is nothing to write to Cloudflare — and can propose a Cloudflare health check so you're told first next time. If a rule you approved earlier is what's blocking, you get a revert card. Paging comes from the alert rules you've armed, not from a conversation.",
   },
   { id: "slow", ask: "Why is the site slow?",
     checks: [
-      "Origin response time at the median, 95th and 99th percentile, over the last hour against the day before",
-      "Cache hit ratio, and the paths that are missing cache most",
+      "Origin response time at the median, 95th and 99th percentile, over the last hour against the day before, and whether it's climbing under a flat request rate — the signature of an origin that's saturated, a PHP-FPM pool that's too small. It can't see your pool size; it shows you the shape of one",
+      "Cache status by path: the static resources going to the origin uncached, and the query-string variants that stop them being cached at all",
+      "Path breadth: a filtered or faceted navigation that has become a near-infinite URL space, and the crawlers and bots walking it",
+      "One endpoint being hammered — path × user agent × rate — and whether those requests are being challenged",
       "Whether it's slow everywhere or from one region",
-      "How much of the traffic is bots, and whether they're being challenged",
     ],
-    proposes: "A cache rule for static paths that are going to the origin uncached, with the request count it would affect. Or nothing, if the numbers say it's the origin — in which case it says so.",
+    proposes: "A cache rule for the static paths going to the origin uncached, with the request count it would affect. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it's the origin — in which case it says so, with the evidence to take to the host.",
   },
   { id: "attack", ask: "Who is attacking us right now?",
     checks: [
@@ -75,13 +76,13 @@ const cases = [
     ],
     proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard as a widget. Saved graphs keep the conversation they came from, so you can see why you built them.",
   },
-  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.",
+  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule, not the chat",
     checks: [
-      "This one is typed on the Alerts page, not in the chat — into the rule composer",
+      "The composer turns the sentence into a rule: query, threshold, window, minimum volume — and explains it back to you in English",
       "The composer's dry run: the rule executed against the zone right now, refused if it errors or yields no number",
     ],
-    proposes: "A monitoring rule — query, threshold, window, minimum volume — shown to you in plain words on a preview card before it's armed to the channels you pick. From then on it watches.",
-    link: ["/#alerts", "How alerts are composed →"],
+    proposes: "A monitoring rule, shown to you in plain words on a preview card before it's armed to the channels you pick — email, Slack, Teams, PagerDuty, SMS, webhook. From then on it watches, and when it fires you get an incident with the investigation attached.",
+    link: ["/#tour-alerts", "How alerts are composed →"],
   },
 ];
 ---
@@ -90,7 +91,7 @@ const cases = [
   description="Is the site down? Why is it slow? Who is attacking us? What would this rule block? The questions an agency actually gets, and what Zonesteward does when you type them in."
   eyebrow="Use cases"
   h1="Ask it what you'd ask a colleague."
-  lede="The questions an agency gets at five o'clock, and what happens when you type them in. Every one is a question first, a proposal second, and a change only after you approve it. Nine are asked in the chat; the last is typed into the alert composer."
+  lede="The questions an agency gets at five o'clock, and what happens when you type them in. Every one is a question first, a proposal second, and a change only after you approve it. Nine are asked in the chat; the last is typed into the alert composer. Paging comes from armed rules, never from a conversation."
   wide
 >
   <ol class="cases">
@@ -98,8 +99,9 @@ const cases = [
       <li class="case" id={c.id}>
         <div class="case-n">{String(i + 1).padStart(2, "0")}</div>
         <div class="case-ask">
-          <span class="sc">You ask</span>
+          <span class="sc">{c.where ? "You type" : "You ask"}</span>
           <div class="composer" style="margin-top:10px"><span style="color:var(--muted)">›</span> {c.ask}</div>
+          {c.where && <p class="cta-note" style="margin-top:8px">{c.where}</p>}
         </div>
         <div class="case-checks">
           <span class="sc">It checks</span>

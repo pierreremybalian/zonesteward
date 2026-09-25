@@ -1,0 +1,21 @@
+---
+/* The five things an agency owner asks before anything else, each answered
+   in one line and linked to where the page proves it. Replaces the old proof
+   strip under the globe and the "problem" section. */
+const tiles = [
+  { k: "Money", h: "Your keys, at cost.", p: "Your Cloudflare token and your model key. Usage is billed to you by the provider, never marked up. A busy month is a few dollars.", href: "#tour-keys" },
+  { k: "Time", h: "Answers in a sentence.", p: "“Why is client.com slow in Germany?” comes back as prose and a chart, not an afternoon of GraphQL.", href: "#tour-ask" },
+  { k: "Risk", h: "Nothing writes without you.", p: "Every change is a card: impact class, blast radius against real traffic, read-back, one-click revert.", href: "#gate" },
+  { k: "Clients", h: "Something to send the client.", p: "A share link to their sites, a printable seven-day digest, an incident report.", href: "#tour-clients" },
+  { k: "Trust", h: "Everything on the record.", p: "Every proposal, approval and revert in the audit trail. Sign in with Google, Microsoft, GitHub or an emailed link.", href: "#details" },
+];
+---
+<section class="why" aria-label="Why agencies use it">
+  <div class="wrap">
+    <div class="why-grid">
+      {tiles.map((t) => (
+        <a href={t.href}><span class="k">{t.k}</span><h3>{t.h}</h3><p>{t.p}</p></a>
+      ))}
+    </div>
+  </div>
+</section>

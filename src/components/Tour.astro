@@ -1,0 +1,94 @@
+---
+/* The product tour: six tabs, one per thing an agency does with it, each on
+   a real screenshot (presentation mode: zone names and emails are aliased,
+   every number is real). Order is an agency's day. No-JS: the panels stack;
+   /g/tabs.js turns the nav into a tablist and mirrors the tab in the hash.
+   Every bullet maps to a shipped feature — see the plan's verified list. */
+import { Picture } from "astro:assets";
+import shotAsk from "../assets/shots/tour-ask.png";
+import shotSecurity from "../assets/shots/tour-security.png";
+import shotAlerts from "../assets/shots/tour-alerts.png";
+import shotSee from "../assets/shots/tour-see.png";
+import shotClients from "../assets/shots/tour-clients.png";
+import shotKeys from "../assets/shots/tour-keys.png";
+
+const tabs = [
+  { id: "ask", label: "Ask", plate: "III", caption: "A question, its chart, and the query beside it",
+    h: "Ask the question the client asked you.",
+    bullets: [
+      "“Is it down?”, “Why is it slow?”, “Who is attacking us?” — answered from Cloudflare’s own analytics, as prose with a chart.",
+      "The query sits beside the answer: Viz, Table, GraphQL, JSON. Nothing is hidden behind the summary.",
+      "Save it, and ask it again Monday. Every answer shows what it cost, under the answer.",
+    ],
+    link: ["/use-cases", "Ten questions, and what happens when you ask them →"],
+    shot: shotAsk, alt: "Zonesteward chat: a 24-hour health answer on the left, a firewall activity chart on the right with Viz, Table, GraphQL and JSON tabs" },
+  { id: "security", label: "Attackers", plate: "IV", caption: "The security tab, last 24 hours",
+    h: "Ranked, categorised, one click from a challenge.",
+    bullets: [
+      "Every source scored and sorted into nine categories, with its country and network beside the address.",
+      "Block or challenge is a proposal — it goes through the approval card like everything else, with the blast radius counted.",
+      "Auto-mitigation exists, and is off until you turn it on.",
+    ],
+    shot: shotSecurity, alt: "The security tab: attacker counts, category chips, and ranked sources with country flags, networks, probed paths and Block or Challenge actions" },
+  { id: "alerts", label: "Alerts", plate: "V", caption: "Alert rules, written from a sentence",
+    h: "Describe what would worry you. It writes the rule.",
+    bullets: [
+      "Query, threshold, window and minimum volume, written from one sentence and explained back to you in English.",
+      "Dry-run against live traffic before it’s armed — a rule that errors or yields no number is refused.",
+      "Email, Slack, Microsoft Teams, PagerDuty, SMS and signed webhooks.",
+    ],
+    shot: shotAlerts, alt: "Alert rules page: a prompt box to build a rule with AI, and two rules — site down on 5xx rate, origin unreachable — each explained in plain words with its threshold, window and channels" },
+  { id: "see", label: "Dashboard", plate: "VI", caption: "The dashboard, streaming",
+    h: "A dashboard for the wall. A chart for any question.",
+    bullets: [
+      "Status mix, countries, networks, bandwidth, open incidents and the fleet globe — live, on one screen.",
+      "Fourteen chart kinds. The model proposes one for each answer; you pick another with a click.",
+      "Saved views become widgets. Arrange them once and leave it on a screen.",
+    ],
+    shot: shotSee, alt: "The dashboard: a live globe with request arcs, status code bars, top countries, open incidents, bandwidth and top networks" },
+  { id: "clients", label: "Clients", plate: "VII", caption: "A share link, scoped and revocable",
+    h: "One card for a whole client group. One link per client.",
+    bullets: [
+      "Group zones by client. A purge, a WAF rule or a rate limit goes to the whole group on one approval card, read back per zone.",
+      "A share link per client — viewer or admin, all sites or some, expiring or not — revocable the moment you need it to be.",
+      "A seven-day digest and incident reports, printable, with CSV for every table.",
+    ],
+    shot: shotClients, alt: "Create a share link: scope, label, access level and expiry" },
+  { id: "keys", label: "Your keys", plate: "VIII", caption: "AI usage, itemised",
+    h: "Your token. Your model key. Nothing marked up.",
+    bullets: [
+      "A wizard scopes the Cloudflare token to exactly what you allow. Anthropic, OpenAI or an OpenAI-compatible endpoint for the model. Both stored encrypted.",
+      "Every model call itemised — feature, model, tokens in and out, cost — and the cost shown under each answer.",
+      "Billed to you by the provider, at cost. We don’t sell tokens and we don’t mark them up. A busy month is a few dollars.",
+    ],
+    shot: shotKeys, alt: "AI usage page: cost today, last 7 and 30 days, by feature and by model, and a table of recent calls with their cost" },
+];
+---
+<section class="tour" id="tour">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The tour</span>
+      <h2>Six things an agency does with it, on real screens.</h2>
+      <p>Real workspace, real traffic; only the names are changed.</p>
+    </div>
+    <nav class="tour-nav" aria-label="Product tour">
+      {tabs.map((t) => <a href={`#tour-${t.id}`} data-tab={t.id}>{t.label}</a>)}
+    </nav>
+    {tabs.map((t) => (
+      <section class="tour-panel" id={`tour-${t.id}`} data-panel={t.id}>
+        <div class="tour-text">
+          <h3>{t.h}</h3>
+          <ul class="fit">{t.bullets.map((b) => <li>{b}</li>)}</ul>
+          {t.link && <p class="tour-more"><a href={t.link[0]}>{t.link[1]}</a></p>}
+        </div>
+        <figure class="plate">
+          <div class="plate-in">
+            <Picture src={t.shot} formats={["avif", "webp"]} widths={[720, 1120, 1600]} sizes="(min-width: 980px) 640px, 100vw" alt={t.alt} loading="lazy" decoding="async" />
+          </div>
+          <figcaption><span>Plate {t.plate}</span><span>{t.caption}</span></figcaption>
+        </figure>
+      </section>
+    ))}
+  </div>
+</section>
+<script is:inline src="/g/tabs.js"></script>

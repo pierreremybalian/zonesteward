@@ -3,16 +3,11 @@ import Base from "../layouts/Base.astro";
 import Masthead from "../components/Masthead.astro";
 import Hero from "../components/Hero.astro";
 import Stage from "../components/Stage.astro";
-import Problem from "../components/Problem.astro";
-import AskIt from "../components/AskIt.astro";
+import Why from "../components/Why.astro";
+import Audiences from "../components/Audiences.astro";
 import Gate from "../components/Gate.astro";
-import Ask from "../components/Ask.astro";
-import Alert from "../components/Alert.astro";
-import See from "../components/See.astro";
-import Report from "../components/Report.astro";
-import Fleet from "../components/Fleet.astro";
-import Knows from "../components/Knows.astro";
-import Connect from "../components/Connect.astro";
+import Tour from "../components/Tour.astro";
+import Details from "../components/Details.astro";
 import Pricing from "../components/Pricing.astro";
 import Beta from "../components/Beta.astro";
 import SiteFooter from "../components/SiteFooter.astro";
@@ -25,7 +20,7 @@ const jsonld = {
     {
       "@type": "SoftwareApplication", name: "Zonesteward", applicationCategory: "DeveloperApplication",
       operatingSystem: "Web", url: "https://zonesteward.com",
-      description: "Cloudflare fleet operations for agencies: ask in plain language, see every zone on one globe, approve changes that verify themselves.",
+      description: "Cloudflare fleet operations for agencies: ask in plain language, approve changes that verify themselves, on your own keys with nothing marked up.",
       offers: [
         { "@type": "Offer", name: "Studio", price: "49", priceCurrency: "USD", description: "Up to 25 zones, 3 members. From general availability." },
         { "@type": "Offer", name: "Agency", price: "149", priceCurrency: "USD", description: "Up to 100 zones, 10 members. From general availability." },
@@ -36,23 +31,18 @@ const jsonld = {
 ---
 <Base
   title="Zonesteward — A steward for your Cloudflare fleet"
-  description="Ask your Cloudflare fleet a question in plain language. Approve the fix. Nothing writes without you."
+  description="Cloudflare for agencies running more zones than people. Ask in plain language, approve the fix, read the audit. Runs on your own Cloudflare token and model key — nothing marked up."
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
   <Masthead />
   <main>
     <Hero />
+    <Why />
+    <Audiences />
     <Stage />
-    <Problem />
-    <AskIt />
     <Gate />
-    <Ask />
-    <Alert />
-    <See />
-    <Report />
-    <Fleet />
-    <Knows />
-    <Connect />
+    <Tour />
+    <Details />
     <Pricing />
     <Beta />
   </main>

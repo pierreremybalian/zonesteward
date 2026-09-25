@@ -1,0 +1,62 @@
+---
+import Page from "../../layouts/Page.astro";
+import { Picture } from "astro:assets";
+import { AUDIENCES } from "../../data/audiences";
+import tourSee from "../../assets/shots/tour-see.png";
+import tourSecurity from "../../assets/shots/tour-security.png";
+import tourAlerts from "../../assets/shots/tour-alerts.png";
+import tourAsk from "../../assets/shots/tour-ask.png";
+import gateCard from "../../assets/shots/gate-card.png";
+import roleDns from "../../assets/shots/role-dns.png";
+import roleDev from "../../assets/shots/role-dev.png";
+import roleLive from "../../assets/shots/role-live.png";
+import ucGraph from "../../assets/shots/uc-graph.png";
+
+export function getStaticPaths() {
+  return AUDIENCES.map((a) => ({ params: { slug: a.slug }, props: { a } }));
+}
+const { a } = Astro.props;
+const SHOTS = { "tour-see": tourSee, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "gate-card": gateCard, "role-dns": roleDns, "role-dev": roleDev, "role-live": roleLive, "uc-graph": ucGraph };
+const shot = SHOTS[a.shot];
+const site = "https://zonesteward.com";
+const jsonld = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", name: a.title, description: a.description, url: `${site}/for/${a.slug}`, audience: { "@type": "Audience", audienceType: a.roles } },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Zonesteward", item: site },
+      { "@type": "ListItem", position: 2, name: "Who it’s for", item: `${site}/for` },
+      { "@type": "ListItem", position: 3, name: a.label, item: `${site}/for/${a.slug}` },
+    ] },
+  ],
+};
+const others = AUDIENCES.filter((x) => x.slug !== a.slug);
+---
+<Page title={a.title} description={a.description} eyebrow={`For ${a.label}`} h1={a.h1} lede={a.lede} wide jsonld={jsonld}>
+  <div class="role">
+    <p class="role-who"><span class="sc">Who</span> {a.roles}</p>
+
+    <div class="role-grid">
+      <div>
+        <h2>What gets in the way</h2>
+        <ul class="fit">{a.pains.map((p) => <li>{p}</li>)}</ul>
+        <h2>What Zonesteward does about it</h2>
+        <ol class="ladder">{a.features.map((f) => <li><div><b>{f.b}</b><p>{f.p} <a href={f.href}>See it →</a></p></div></li>)}</ol>
+        <p class="role-cases"><span class="sc">Try asking</span>{" "}
+          {a.cases.map((id, i) => <span>{i > 0 && " · "}<a href={`/use-cases#${id}`}>{id === "next" ? "Warn me if cache hit ratio drops…" : id === "down" ? "Is client.com down?" : id === "slow" ? "Why is the site slow?" : id === "attack" ? "Who is attacking us right now?" : id === "block" ? "What would this WAF rule actually block?" : id === "undo" ? "Did that change take effect? Undo it." : id === "region" ? "Why is it slow in Germany?" : id === "purge" ? "Purge the homepage on every client site." : id === "digest" ? "Send me a seven-day digest." : "Chart cache hit ratio by hour."}</a></span>)}
+        </p>
+      </div>
+      <figure class="plate">
+        <div class="plate-in"><Picture src={shot} formats={["avif", "webp"]} widths={[720, 1120, 1600]} sizes="(min-width: 980px) 560px, 100vw" alt={a.alt} loading="eager" decoding="async" /></div>
+        <figcaption><span>Real workspace</span><span>names aliased, numbers real</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="cta" style="margin-top:56px">
+      <a href="/apply" class="btn btn-primary btn-lg">Apply for beta →</a>
+      <span class="cta-note">Free during the beta. Your own Cloudflare token and model key; nothing marked up.</span>
+    </div>
+
+    <p class="role-others"><span class="sc">Also for</span>{" "}{others.map((o, i) => <span>{i > 0 && " · "}<a href={`/for/${o.slug}`}>{o.label}</a></span>)}</p>
+  </div>
+</Page>

@@ -105,7 +105,7 @@ const jobs = [
 >
   <div class="jobs">
     {jobs.map((j) => (
-      <section class="job">
+      <section class="job" id={j.h.toLowerCase().replace(/[^a-z]+/g, "-")}>
         <div><h2>{j.h}</h2><p class="job-lede">{j.lede}</p></div>
         <ul>{j.items.map(([b, t]) => <li><b>{b}.</b> {t}</li>)}</ul>
       </section>

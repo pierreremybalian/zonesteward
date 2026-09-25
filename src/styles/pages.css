@@ -61,7 +61,7 @@
 .sec-block code{font-family:"Geist Mono",monospace;font-size:.88em;background:var(--paper-2);padding:.1em .35em}
 
 /* pricing faq */
-.faq{display:grid;gap:0;margin-top:40px;border-top:1px solid var(--ink)}
+
 .faq details{border-bottom:1px solid var(--rule)}
 .faq summary{cursor:pointer;padding:18px 0;font-family:Newsreader,serif;font-size:1.15rem;list-style:none;display:flex;justify-content:space-between;gap:20px}
 .faq summary::after{content:"+";font-family:"Geist Mono",monospace;color:var(--accent)}

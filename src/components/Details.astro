@@ -1,0 +1,46 @@
+---
+/* The long lists, folded. Everything here is named in the operator's tool
+   descriptions (app/api/chat/route.ts) or notify adapters; the full lists live
+   on /features. */
+const reads = [
+  ["Edge", ["Edge certificates and expiry", "DNSSEC, down to the DS record", "Universal SSL", "Tiered Cache", "Cache Reserve", "Argo Smart Routing"]],
+  ["Monitoring", ["Health checks and why they failed", "Load balancers with pool and origin health", "Logpush jobs, last push, errors", "Web Analytics (RUM) setup", "Cloudflare’s own notification policies"]],
+  ["Platform", ["Zone status, nameservers, zone hold", "Waiting rooms with live queue", "Observatory results", "Turnstile widgets", "Workers routes", "Access applications", "Email Routing rules"]],
+];
+const changes = [
+  "WAF custom rules, cache rules and rate limits", "DNS records", "Zone settings and features", "IP access rules and lockdowns",
+  "Managed rulesets", "Health checks and waiting rooms", "Cache purge, by URL", "Pausing a zone",
+  "Any of the above across a zone group, on one card",
+];
+const connects = [
+  ["Reads from", ["Cloudflare — any number of tokens, any number of accounts", "Google Analytics 4"]],
+  ["Thinks with", ["Anthropic, OpenAI, or an OpenAI-compatible endpoint you host — your own key, billed to you at cost"]],
+  ["Alerts through", ["Email: Resend, SendGrid, Mailgun or SMTP", "Slack", "Microsoft Teams", "PagerDuty", "SMS via Twilio", "Signed JSON webhooks"]],
+  ["Signs in with", ["Google", "Microsoft", "GitHub", "An emailed link"]],
+];
+---
+<section class="details" id="details">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sc">The rest of it</span>
+      <h2>What it can read, what it can change, what it connects to.</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>What it can read — everything Cloudflare knows about a zone, not just traffic</summary>
+        <div class="d-cols">{reads.map(([h, items]) => <div><span class="sc">{h}</span><ul>{items.map((t) => <li>{t}</li>)}</ul></div>)}</div>
+        <p class="d-more"><a href="/features">The full list, by job →</a></p>
+      </details>
+      <details>
+        <summary>What it can change — always through an approval card, never on its own</summary>
+        <ul class="d-list">{changes.map((t) => <li>{t}</li>)}</ul>
+        <p class="d-more"><a href="/how-it-works">Nine steps between a sentence and a change →</a></p>
+      </details>
+      <details>
+        <summary>What it connects to — your accounts, your keys, your channels</summary>
+        <div class="d-cols four">{connects.map(([h, items]) => <div><span class="sc">{h}</span><ul>{items.map((t) => <li>{t}</li>)}</ul></div>)}</div>
+        <p class="d-more">Every credential is stored encrypted and used only for your workspace. <a href="/security">Security →</a></p>
+      </details>
+    </div>
+  </div>
+</section>

@@ -1,13 +1,15 @@
 ---
+import { Picture } from "astro:assets";
+import gateCard from "../assets/shots/gate-card.png";
 const ladder = [
   { b: "Impact classified before you see it",
-    p: "Low, medium or high. A site-wide lockdown or an apex DNS deletion needs an explicit acknowledgement, not a click." },
+    p: "Low, medium or high, decided on the server. A lockdown or an apex DNS deletion needs an acknowledgement, not a click." },
   { b: "Blast radius against real traffic",
-    p: "The proposed rule is evaluated against your last 24 hours before it exists, so you know what it would have blocked." },
+    p: "The rule is run against your last 24 hours before it exists — paths, networks, countries, user agents — so you see what it would have matched." },
   { b: "Read back from Cloudflare",
-    p: "\"Applied\" means the server asked Cloudflare what the setting is now and received the answer it expected." },
+    p: "“Applied” means the server asked Cloudflare what the setting is now and got the answer it expected." },
   { b: "Reversible, with the payload stored",
-    p: "Every change lands in the audit trail together with the instructions to undo it." },
+    p: "Every change lands in the audit trail with the instructions to undo it. One click." },
 ];
 ---
 <!-- The only dark band in the document. An earlier variant alternated all the
@@ -21,20 +23,12 @@ const ladder = [
   <div class="band-body">
     <div class="band-inner">
       <div>
-        <div class="card">
-          <span class="kick">Proposed · client-a.com</span>
-          <span class="impact">impact · medium</span>
-          <h3>Create IP access rule</h3>
-          <p class="sub">Challenge <code>34.165.86.164</code> — attacker: secrets &amp; config scan</p>
-          <div class="card-foot">
-            <span class="verified">Verified ✓</span>
-            <span class="revert">Revert</span>
-            <span class="sp">
-              <span class="chip-btn">Reject</span>
-              <span class="chip-btn solid">Approve</span>
-            </span>
+        <figure class="plate gate-plate">
+          <div class="plate-in">
+            <Picture src={gateCard} formats={["avif", "webp"]} widths={[640, 960, 1440]} sizes="(min-width: 980px) 430px, 100vw" alt="Approval card: Create WAF rule (managed challenge) on WordPress login and XML-RPC endpoints — would have matched about 115 requests of the last 24 hours, broken down by path, network, country and user agent, with a map, and Approve & run or Reject" loading="lazy" decoding="async" />
           </div>
-        </div>
+          <figcaption><span>Plate II</span><span>an approval card, as it appears</span></figcaption>
+        </figure>
       </div>
       <div>
         <div class="sec-head" style="margin-bottom:30px">
