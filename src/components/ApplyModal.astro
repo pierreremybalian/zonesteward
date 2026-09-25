@@ -37,9 +37,9 @@ import ApplyForm from "./ApplyForm.astro";
 
     function open(push) {
       if (dlg.open) return;
-      // The modal lives at a real path: /apply/1. Reloading it loads the
+      // The modal lives at a real path: /apply/about-you. Reloading it loads the
       // standalone page at the same step; Back returns to where you were.
-      if (push && !onApplyPath()) history.pushState({ apply: true, from: location.pathname + location.search + location.hash }, "", "/apply/1");
+      if (push && !onApplyPath()) history.pushState({ apply: true, from: location.pathname + location.search + location.hash }, "", "/apply/about-you");
       dlg.showModal();
       document.documentElement.classList.add("dlg-open");
       var first = dlg.querySelector("input:not([type=hidden]):not([tabindex='-1']):not([hidden] *)");

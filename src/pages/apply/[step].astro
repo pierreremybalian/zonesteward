@@ -1,10 +1,11 @@
 ---
-/* /apply/1, /apply/2, /apply/3 and /apply/done are the same page as /apply;
+/* /apply/about-you, /apply/your-fleet, /apply/fit and /apply/received are the
+   same page as /apply;
    the step is read from the path by apply.js, so a reload or a shared link
    lands on the right step. Clean paths, no hash. */
 import Base from "../../layouts/Base.astro";
 import ApplyForm from "../../components/ApplyForm.astro";
-export function getStaticPaths() { return ["1", "2", "3", "done"].map((step) => ({ params: { step } })); }
+export function getStaticPaths() { return ["about-you", "your-fleet", "fit", "received"].map((step) => ({ params: { step } })); }
 ---
 <Base
   title="Apply for the Zonesteward beta"

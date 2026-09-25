@@ -12,16 +12,19 @@
     var i = 0;
     var DRAFT = "zs-apply-draft";
 
-    /* /apply/2 means step two. Written on every step change so the URL is
-       always the place you are, and read on load so a link or a reload lands
-       you back there. /apply/<n> are real pages, so the path is always valid. */
+    /* The URL names the step the way the form does: /apply/about-you,
+       /apply/your-fleet, /apply/fit, then /apply/received. Written on every
+       step change so the URL is always the place you are, and read on load so
+       a link or a reload lands you back there. Each is a real page. */
+    var SLUGS = ["about-you", "your-fleet", "fit"];
     function onApplyPath() { return /^\/apply(?:\/|$)/.test(location.pathname); }
     function stepFromHash() {
-      var m = /^\/apply(?:\/(\d))?\/?$/.exec(location.pathname);
-      return m && m[1] ? Math.min(steps.length, Math.max(1, +m[1])) - 1 : null;
+      var m = /^\/apply(?:\/([a-z-]+))?\/?$/.exec(location.pathname);
+      var k = m && m[1] ? SLUGS.indexOf(m[1]) : -1;
+      return k >= 0 ? Math.min(steps.length - 1, k) : null;
     }
     function writeHash(n) {
-      var want = "/apply/" + (n + 1);
+      var want = "/apply/" + (SLUGS[n] || SLUGS[0]);
       if (location.pathname === want) return;
       var st = history.state || {};
       st.apply = true;
@@ -172,7 +175,7 @@
           msg.innerHTML = receipt(rows);
           clearDraft();
           var st = history.state || {}; st.apply = true;
-          history.replaceState(st, "", "/apply/done" + location.search);
+          history.replaceState(st, "", "/apply/received" + location.search);
           var dc = msg.querySelector("[data-done-close]");
           if (dc) dc.addEventListener("click", function () { var d = document.getElementById("apply-dlg"); if (d) d.close(); });
           msg.scrollIntoView({ block: "start" });
