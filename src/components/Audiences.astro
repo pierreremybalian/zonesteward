@@ -1,6 +1,6 @@
 ---
-/* Who it's for. Agencies first; every role that touches a zone has a page
-   under /for with its own pains and the features that answer them. */
+/* Who it's for: one page per role under /for, each with its own pains and
+   the features that answer them. */
 import { AUDIENCES } from "../data/audiences";
 ---
 <section class="aud" aria-label="Who it is for">
@@ -9,6 +9,6 @@ import { AUDIENCES } from "../data/audiences";
     <div class="aud-row">
       {AUDIENCES.map((a) => <a href={`/for/${a.slug}`}>{a.label}</a>)}
     </div>
-    <p class="cta-note">Agencies first. Every role that touches a zone gets its own view — pick yours.</p>
+    <p class="cta-note">Every role that touches a zone has its own page. Pick yours.</p>
   </div>
 </section>

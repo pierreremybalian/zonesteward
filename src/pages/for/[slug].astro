@@ -7,16 +7,14 @@ import tourSecurity from "../../assets/shots/tour-security.png";
 import tourAlerts from "../../assets/shots/tour-alerts.png";
 import tourAsk from "../../assets/shots/tour-ask.png";
 import gateCard from "../../assets/shots/gate-card.png";
-import roleDns from "../../assets/shots/role-dns.png";
 import roleDev from "../../assets/shots/role-dev.png";
-import roleLive from "../../assets/shots/role-live.png";
 import ucGraph from "../../assets/shots/uc-graph.png";
 
 export function getStaticPaths() {
   return AUDIENCES.map((a) => ({ params: { slug: a.slug }, props: { a } }));
 }
 const { a } = Astro.props;
-const SHOTS = { "tour-see": tourSee, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "gate-card": gateCard, "role-dns": roleDns, "role-dev": roleDev, "role-live": roleLive, "uc-graph": ucGraph };
+const SHOTS = { "tour-see": tourSee, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "gate-card": gateCard, "role-dev": roleDev, "uc-graph": ucGraph };
 const shot = SHOTS[a.shot];
 const site = "https://zonesteward.com";
 const jsonld = {
@@ -31,8 +29,12 @@ const jsonld = {
   ],
 };
 const others = AUDIENCES.filter((x) => x.slug !== a.slug);
+const idx = AUDIENCES.findIndex((x) => x.slug === a.slug);
+const prev = AUDIENCES[(idx - 1 + AUDIENCES.length) % AUDIENCES.length];
+const next = AUDIENCES[(idx + 1) % AUDIENCES.length];
+const crumbs: [string, string][] = [["/", "Zonesteward"], ["/for", "Who it’s for"], ["", a.label]];
 ---
-<Page title={a.title} description={a.description} eyebrow={`For ${a.label}`} h1={a.h1} lede={a.lede} wide jsonld={jsonld}>
+<Page title={a.title} description={a.description} eyebrow={`For ${a.label}`} h1={a.h1} lede={a.lede} wide jsonld={jsonld} crumbs={crumbs}>
   <div class="role">
     <p class="role-who"><span class="sc">Who</span> {a.roles}</p>
 
@@ -48,7 +50,7 @@ const others = AUDIENCES.filter((x) => x.slug !== a.slug);
       </div>
       <figure class="plate">
         <div class="plate-in"><Picture src={shot} formats={["avif", "webp"]} widths={[720, 1120, 1600]} sizes="(min-width: 980px) 560px, 100vw" alt={a.alt} loading="eager" decoding="async" /></div>
-        <figcaption><span>Real workspace</span><span>names aliased, numbers real</span></figcaption>
+        <figcaption><span>{a.label}</span><span>click to enlarge</span></figcaption>
       </figure>
     </div>
 
@@ -57,6 +59,10 @@ const others = AUDIENCES.filter((x) => x.slug !== a.slug);
       <span class="cta-note">Free during the beta. Your own Cloudflare token and model key; nothing marked up.</span>
     </div>
 
-    <p class="role-others"><span class="sc">Also for</span>{" "}{others.map((o, i) => <span>{i > 0 && " · "}<a href={`/for/${o.slug}`}>{o.label}</a></span>)}</p>
+    <nav class="pager" aria-label="Other roles">
+      <a class="prev" href={`/for/${prev.slug}`}><span class="sc">← Previous</span><b>{prev.label}</b></a>
+      <a class="next" href={`/for/${next.slug}`}><span class="sc">Next →</span><b>{next.label}</b></a>
+    </nav>
+    <p class="role-others"><span class="sc">All roles</span>{" "}{others.map((o, i) => <span>{i > 0 && " · "}<a href={`/for/${o.slug}`}>{o.label}</a></span>)}</p>
   </div>
 </Page>

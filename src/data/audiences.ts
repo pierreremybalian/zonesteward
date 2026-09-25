@@ -12,7 +12,7 @@ export type Audience = {
   pains: string[];
   features: { b: string; p: string; href: string }[];
   cases: string[];      // ids on /use-cases
-  shot: "tour-see" | "tour-security" | "tour-alerts" | "tour-ask" | "gate-card" | "role-dns" | "role-dev" | "role-live" | "uc-graph";
+  shot: "tour-see" | "tour-security" | "tour-alerts" | "tour-ask" | "gate-card" | "role-dev" | "uc-graph";
   alt: string;
 };
 
@@ -99,7 +99,7 @@ export const AUDIENCES: Audience[] = [
       { b: "Read-back and revert", p: "“Applied” means Cloudflare was asked what the record is now. Every change stores its before-state and a one-click revert.", href: "/how-it-works" },
       { b: "Certificates, DNSSEC, settings", p: "Edge certificates and expiry, DNSSEC down to the DS record, Universal SSL, zone status and nameservers — a sentence away.", href: "/#details" },
     ],
-    cases: ["undo", "down"], shot: "role-dns", alt: "The DNS view for a zone",
+    cases: ["undo", "down"], shot: "gate-card", alt: "An approval card: the change, its impact, what it would have matched, Approve or Reject",
   },
   {
     slug: "leadership", label: "Leadership", roles: "CTOs, VPs of Engineering, solutions architects",

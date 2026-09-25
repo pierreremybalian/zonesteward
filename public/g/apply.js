@@ -12,19 +12,20 @@
     var i = 0;
     var DRAFT = "zs-apply-draft";
 
-    /* #apply/2 means step two. Written on every step change so the URL is
+    /* /apply/2 means step two. Written on every step change so the URL is
        always the place you are, and read on load so a link or a reload lands
-       you back there. */
+       you back there. /apply/<n> are real pages, so the path is always valid. */
+    function onApplyPath() { return /^\/apply(?:\/|$)/.test(location.pathname); }
     function stepFromHash() {
-      var m = /^#apply(?:\/(\d))?$/.exec(location.hash);
+      var m = /^\/apply(?:\/(\d))?\/?$/.exec(location.pathname);
       return m && m[1] ? Math.min(steps.length, Math.max(1, +m[1])) - 1 : null;
     }
     function writeHash(n) {
-      var want = "#apply/" + (n + 1);
-      if (location.hash === want) return;
+      var want = "/apply/" + (n + 1);
+      if (location.pathname === want) return;
       var st = history.state || {};
       st.apply = true;
-      history.replaceState(st, "", location.pathname + location.search + want);
+      history.replaceState(st, "", want + location.search);
     }
 
     /* Draft: every answer, saved as it is typed, restored on the next visit,
@@ -170,7 +171,8 @@
           msg.className = "apply-msg good";
           msg.innerHTML = receipt(rows);
           clearDraft();
-          history.replaceState(null, "", location.pathname + location.search + "#apply/done");
+          var st = history.state || {}; st.apply = true;
+          history.replaceState(st, "", "/apply/done" + location.search);
           var dc = msg.querySelector("[data-done-close]");
           if (dc) dc.addEventListener("click", function () { var d = document.getElementById("apply-dlg"); if (d) d.close(); });
           msg.scrollIntoView({ block: "start" });
@@ -208,10 +210,10 @@
     var fromHash = stepFromHash();
     if (fromHash !== null) landOn(fromHash);
     else if (resumed) { landOn(steps.length - 1); }
-    else show(0, { silent: location.hash.indexOf("#apply") !== 0 });
+    else show(0, { silent: !onApplyPath() });
     if (resumed && note) note.textContent = "Picked up where you left off.";
 
-    addEventListener("hashchange", function () {
+    addEventListener("popstate", function () {
       var n = stepFromHash();
       if (n !== null && n !== i) landOn(n);
     });

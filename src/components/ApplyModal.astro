@@ -33,11 +33,13 @@ import ApplyForm from "./ApplyForm.astro";
   (function () {
     var dlg = document.getElementById("apply-dlg");
     if (!dlg || typeof dlg.showModal !== "function") return;
-    var isApplyHash = function () { return location.hash.indexOf("#apply") === 0; };
+    var onApplyPath = function () { return /^\/apply(?:\/|$)/.test(location.pathname); };
 
     function open(push) {
       if (dlg.open) return;
-      if (push && !isApplyHash()) history.pushState({ apply: true }, "", location.pathname + location.search + "#apply/1");
+      // The modal lives at a real path: /apply/1. Reloading it loads the
+      // standalone page at the same step; Back returns to where you were.
+      if (push && !onApplyPath()) history.pushState({ apply: true, from: location.pathname + location.search + location.hash }, "", "/apply/1");
       dlg.showModal();
       document.documentElement.classList.add("dlg-open");
       var first = dlg.querySelector("input:not([type=hidden]):not([tabindex='-1']):not([hidden] *)");
@@ -52,7 +54,8 @@ import ApplyForm from "./ApplyForm.astro";
     }
     dlg.addEventListener("close", function () {
       document.documentElement.classList.remove("dlg-open");
-      if (isApplyHash()) history.replaceState(null, "", location.pathname + location.search);
+      // Closed without going back (the receipt's own close button): restore the page's URL.
+      if (onApplyPath() && history.state && history.state.apply) history.replaceState(null, "", history.state.from || "/");
     });
     // Escape fires 'cancel' before 'close'; route it through our close so the
     // history entry goes too.
@@ -65,13 +68,8 @@ import ApplyForm from "./ApplyForm.astro";
     dlg.addEventListener("click", function (e) { if (e.target === dlg) close(); });
 
     addEventListener("popstate", function () {
-      if (isApplyHash()) open(false);
+      if (onApplyPath() && history.state && history.state.apply) open(false);
       else if (dlg.open) dlg.close();
     });
-
-    if (isApplyHash()) {
-      history.replaceState({ apply: true }, "", location.href);
-      open(false);
-    }
   })();
 </script>

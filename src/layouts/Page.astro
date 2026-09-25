@@ -10,8 +10,9 @@ import "../styles/pages.css";
 interface Props {
   title: string; description: string; eyebrow?: string; h1: string; lede?: string;
   wide?: boolean; jsonld?: Record<string, unknown>;
+  crumbs?: [string, string][];   // [href, label] pairs, home first; the current page is not a link
 }
-const { title, description, eyebrow, h1, lede, wide = false, jsonld } = Astro.props;
+const { title, description, eyebrow, h1, lede, wide = false, jsonld, crumbs } = Astro.props;
 ---
 <Base title={title} description={description}>
   {jsonld && <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />}
@@ -19,6 +20,11 @@ const { title, description, eyebrow, h1, lede, wide = false, jsonld } = Astro.pr
   <main>
     <header class="page-head">
       <div class="wrap">
+        {crumbs && crumbs.length > 0 && (
+          <nav class="crumbs" aria-label="Breadcrumb">
+            {crumbs.map(([href, label], i) => <>{i > 0 && <span aria-hidden="true">›</span>}{href ? <a href={href}>{label}</a> : <b>{label}</b>}</>)}
+          </nav>
+        )}
         {eyebrow && <span class="sc">{eyebrow}</span>}
         <h1 style={eyebrow ? "margin-top:12px" : ""}>{h1}</h1>
         {lede && <p class="lede">{lede}</p>}
@@ -31,4 +37,5 @@ const { title, description, eyebrow, h1, lede, wide = false, jsonld } = Astro.pr
   <SiteFooter />
   <ApplyModal />
   <script is:inline src="/g/apply.js"></script>
+  <script is:inline src="/g/lightbox.js"></script>
 </Base>
