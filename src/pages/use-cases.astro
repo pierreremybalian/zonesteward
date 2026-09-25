@@ -25,23 +25,24 @@ const cases = [
       "One endpoint being hammered — path, user agent, rate — and whether the firewall already challenged it, over the most recent days the plan allows", // verified: schema.ts:131 firewall dims; zone-limits.ts:29 span 3d paid / 1d free
       "Whether it is slow everywhere or from one region", // verified: schema.ts:29-35 clientCountryName × latency
     ],
-    proposes: "A cache rule for the paths going to the origin uncached, with the number of requests it would have matched in the last 24 hours — all requests on those paths, cached or not. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it is the origin — then it says so, with the evidence to take to the host.", // verified: PendingAction.tsx:37 create_cache_rule previewable; blast-radius.ts counts all matches; route.ts:250,410 managed_challenge actions
+    proposes: "A cache rule for the paths going to the origin uncached, with the number of requests it would have matched in the last 24 hours and how much of that was already served from cache, on plans that expose cache status. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it is the origin — then it says so, with the evidence to take to the host.", // verified: PendingAction.tsx create_cache_rule previewable; blast-radius.ts cache share (cacheStatus selection, dropped on plan denial); route.ts managed_challenge actions
   },
   { id: "attack", ask: "Who is attacking us right now?",
     checks: [
       "Every source classified across nine attack categories with a severity score", // verified: app/lib/attack-patterns.ts:9-18 (9 categories), :319-328 severity 0-100
-      "In the conversation: what each source is doing, how much the firewall already stopped, its verdict and the paths it hit. On the Security tab: the full status mix and how much was actually served — the signature of a scanner is a source that was served nothing", // verified: route.ts:1578-1591 chat payload; attack-patterns.ts:199 servedPct on the tab
+      "What each source is doing, how much the firewall already stopped, its verdict, the paths it hit, its full status mix and how much was actually served — the signature of a scanner is a source that was served nothing", // verified: chat list_attackers payload (served_pct, status_mix); attack-patterns.ts:199
       "On the Security tab, Investigate checks whether the same source is hitting your other zones and hands the evidence to the conversation", // verified: security-investigate.ts:162,213 (≤12 other zones); SecurityPanel.tsx:425 hand-off
-      "Sources that look hostile but aren't — crawlers, research scanners, a theme fetching its own assets — listed on the Security tab with the reason they were cleared", // verified: security-server.ts:313-317, SecurityPanel.tsx:386
+      "Sources that look hostile but aren't — crawlers, research scanners, a theme fetching its own assets — named with the reason they were cleared, in the answer and on the Security tab", // verified: chat list_attackers `cleared`; security-server.ts:313-317; SecurityPanel.tsx:386
     ],
-    proposes: "A managed challenge for the single source: one click on the Security tab, with that source's request count and served share beside it; a WAF rule proposed in the conversation shows how many requests it would have matched in the last 24 hours. If the source is hitting several clients, the same rule fanned across the zone group on one card, with an acknowledgement above ten zones.", // verified: SecurityPanel.tsx:176,518; execute-core.ts:1534-1547 BULK_ALLOWED, :1575 ack >10
+    proposes: "A managed challenge for the single source — one click on the Security tab or a sentence in the conversation — on a card that shows how many requests it would have matched in the last 24 hours and how many of those were served. If the source is hitting several clients, the same rule fanned across the zone group on one card, with an acknowledgement above ten zones or when the change itself is high-impact.", // verified: PendingAction.tsx accessRuleExpression → blast-radius preview; execute-core.ts BULK_ALLOWED; chat/route.ts bulk impact
   },
   { id: "block", ask: "What would this WAF rule actually block?",
     checks: [
       "The expression translated into analytics filters and run against your real last 24 hours — a sampled estimate", // verified: app/lib/blast-radius.ts; api/cf/blast-radius/route.ts:38-43
       "Supported: country, network, IP, host, method, path and user agent, with equals, in, contains and starts-with, joined by and/or. Negation, regular expressions, ranges and other fields show \"preview unavailable\" rather than a wrong number", // verified: blast-radius.ts:60,110-118,217,249
       "The matches by the top five countries, networks, paths, user agents and addresses — network and address detail on some plans", // verified: blast-radius.ts:360-379, :479-481
-      "Two warnings: a match that also catches a known-good crawler, and a rule that would have matched more than a fifth of all traffic", // verified: blast-radius.ts:431-446, :529-533
+      "Of the matched traffic, how much was served, redirected, rejected or failed at the origin — whether you are about to block customers — with a warning when most of it was being served", // verified: blast-radius.ts outcome (edgeResponseStatus selection) + served warning
+      "Two more warnings: a match that also catches a known-good crawler, and a rule that would have matched more than a fifth of all traffic", // verified: blast-radius.ts crawlerNeedleWarnings, >20% warning
     ],
     proposes: "The rule, with the number it would have matched. If the preview says it is too broad, ask for a narrower expression and preview again. You decide with the count in front of you, before the rule exists.",
   },
