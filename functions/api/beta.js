@@ -94,6 +94,32 @@ function page(title, body, status) {
   );
 }
 
+const TURNSTILE_HOSTS = new Set(["zonesteward.com", "www.zonesteward.com", "zonesteward.balian.dev", "localhost", "127.0.0.1"]);
+
+/* Server-side check of the widget's token: single-use, tied to our sitekey,
+   and stamped with the hostname and action the widget was rendered with. */
+async function verifyTurnstile(secret, token, request) {
+  if (!token) return false;
+  try {
+    const body = new FormData();
+    body.set("secret", secret);
+    body.set("response", token);
+    const ip = request.headers.get("CF-Connecting-IP");
+    if (ip) body.set("remoteip", ip);
+    const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", body });
+    const d = await r.json();
+    if (!d.success) { console.warn("turnstile: rejected", d["error-codes"]); return false; }
+    // Cloudflare's testing keys answer with hostname "example.com" and no action; local dev only.
+    if (d.metadata && d.metadata.result_with_testing_key) return true;
+    if (d.action && d.action !== "beta-apply") { console.warn("turnstile: wrong action", d.action); return false; }
+    if (d.hostname && !TURNSTILE_HOSTS.has(d.hostname)) { console.warn("turnstile: wrong hostname", d.hostname); return false; }
+    return true;
+  } catch (e) {
+    console.warn("turnstile: verify failed", e && e.message);
+    return false;
+  }
+}
+
 export async function onRequestPost(context) {
   const { request, env, waitUntil } = context;
   const wantsJson = (request.headers.get("accept") || "").includes("application/json");
@@ -114,6 +140,12 @@ export async function onRequestPost(context) {
   if (clean(form.get("company_url"), 200)) {
     return wantsJson ? Response.json({ ok: true }) : page("Thanks", "We'll be in touch.", 200);
   }
+
+  // Turnstile. Fail closed: no secret configured means the form is shut, not
+  // open — a misconfiguration must never let spam through.
+  if (!env.TURNSTILE_SECRET) return fail("Applications are briefly unavailable. Try again shortly.", 503);
+  const human = await verifyTurnstile(env.TURNSTILE_SECRET, clean(form.get("cf-turnstile-response"), 4096), request);
+  if (!human) return fail("We couldn't verify you're a person. Reload the page and try again.", 400);
 
   const name = clean(form.get("name"), 120);
   const email = clean(form.get("email"), 200).toLowerCase();

@@ -4,6 +4,7 @@
    to without JavaScript. Three steps — who you are, what you run, whether it
    fits — driven by the script at the bottom; with JS off, all three simply
    show at once and the form posts natively. */
+import { TURNSTILE_SITE_KEY } from "../data/site";
 interface Props { id?: string; }
 const { id = "apply" } = Astro.props;
 
@@ -124,6 +125,11 @@ const roles = [
       <label><input type="checkbox" id={`${id}-agreed`} name="agreed" value="yes" required /><span>I've read what the beta involves and I'm in — the monthly questions, the two calls, and honest feedback along the way — and I agree to the <a href="/terms" target="_blank" rel="noopener">Terms of Use</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a> on behalf of my organisation.</span></label>
     </div>
 
+    <!-- Turnstile: rendered by apply.js when this step shows; the widget adds a
+         hidden cf-turnstile-response field that /api/beta verifies. -->
+    <div class="turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-action="beta-apply"></div>
+    <noscript><p class="cta-note">Verifying you're a person needs JavaScript; enable it or email hello@zonesteward.com.</p></noscript>
+
     <!-- honeypot: invisible to people, irresistible to bots -->
     <p class="hp" aria-hidden="true">
       <label for={`${id}-curl`}>Company URL</label>
@@ -139,3 +145,4 @@ const roles = [
   </div>
   <p class="apply-msg" role="status" aria-live="polite" hidden></p>
 </form>
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>

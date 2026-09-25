@@ -61,8 +61,28 @@
     f.addEventListener("input", saveDraft);
     f.addEventListener("change", saveDraft);
 
+    /* Turnstile: rendered once, the first time the last step shows (the modal
+       is hidden until opened, so auto-render would size it wrong). The widget
+       writes its token into a hidden cf-turnstile-response input inside the
+       form, which FormData picks up. */
+    var tsEl = f.querySelector(".turnstile"), tsId = null;
+    function renderTurnstile() {
+      if (!tsEl || tsId !== null || typeof turnstile === "undefined") return;
+      tsId = turnstile.render(tsEl, {
+        sitekey: tsEl.dataset.sitekey, action: tsEl.dataset.action || "beta-apply",
+        appearance: "always", size: "flexible", theme: "light",
+      });
+    }
+    function turnstileToken() {
+      var el = f.querySelector('[name="cf-turnstile-response"]');
+      return el && el.value ? el.value : "";
+    }
+
     function show(n, opts) {
       i = n;
+      if (n === steps.length - 1) {
+        if (typeof turnstile === "undefined") setTimeout(renderTurnstile, 400); else renderTurnstile();
+      }
       if (!(opts && opts.silent)) writeHash(n);
       steps.forEach(function (s, k) { s.hidden = k !== n; });
       tabs.forEach(function (t, k) {
@@ -157,6 +177,12 @@
     f.addEventListener("submit", function (e) {
       for (var k = 0; k < steps.length; k++) { if (!stepValid(k)) { show(k); return e.preventDefault(); } }
       e.preventDefault();
+      if (tsEl && !turnstileToken()) {
+        renderTurnstile();
+        msg.hidden = false; msg.className = "apply-msg bad";
+        msg.textContent = "Complete the check above first \u2014 it takes a second.";
+        return;
+      }
       var rows = answers();
       submit.disabled = true;
       var was = submit.textContent;
@@ -183,6 +209,7 @@
         .catch(function (err) {
           submit.disabled = false;
           submit.textContent = was;
+          if (tsId !== null && typeof turnstile !== "undefined") turnstile.reset(tsId); // tokens are single-use
           msg.hidden = false;
           msg.className = "apply-msg bad";
           msg.textContent = err.message + " You can also just email us.";
