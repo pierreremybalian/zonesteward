@@ -5,11 +5,16 @@
    lands on the right step. Clean paths, no hash. */
 import Base from "../../layouts/Base.astro";
 import ApplyForm from "../../components/ApplyForm.astro";
+const STEPS: Record<string, string> = { "about-you": "About you", "your-fleet": "Your fleet", fit: "Is it a fit?", received: "Application received" };
+// getStaticPaths runs in isolation: it cannot read STEPS above, so the list is repeated.
 export function getStaticPaths() { return ["about-you", "your-fleet", "fit", "received"].map((step) => ({ params: { step } })); }
+const { step } = Astro.params;
 ---
 <Base
-  title="Apply for the Zonesteward beta"
+  title={`${STEPS[step!]} — Apply for the Zonesteward beta`}
   description="Twenty seats, free for the whole beta. Tell us what you run and what goes wrong with it."
+  canonical="/apply"
+  robots="noindex, follow"
 >
   <div class="apply-page">
     <div class="apply-dlg-in">

@@ -22,7 +22,7 @@ const jsonld = {
   mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).toString(),
 };
 ---
-<Base title={post.data.title} description={post.data.description}>
+<Base title={post.data.title} description={post.data.description} type="article">
   <script type="application/ld+json" set:html={JSON.stringify(jsonld)} />
   <Masthead />
   <main>

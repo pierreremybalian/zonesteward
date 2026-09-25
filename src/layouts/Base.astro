@@ -2,9 +2,25 @@
 import "../styles/ledger.css";
 import "../styles/site.css";
 
-interface Props { title: string; description: string; }
-const { title, description } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+interface Props {
+  title: string; description: string;
+  canonical?: string;              // path override, e.g. the step pages of the application all point at /apply
+  robots?: string;                 // per-page override of the robots directive
+  type?: "website" | "article";
+  image?: { src: string; alt: string; width?: number; height?: number };
+}
+const { title, description, canonical: canonicalPath, robots, type = "website", image } = Astro.props;
+/* build.format is "file", so Astro.url carries ".html" — the public URL never does.
+   Canonical is the clean path: no extension, no trailing slash except the root. */
+const clean = (p: string) => {
+  const c = p.replace(/\.html$/, "").replace(/\/index$/, "/").replace(/(.)\/$/, "$1");
+  return c === "" ? "/" : c;
+};
+const canonical = new URL(clean(canonicalPath ?? Astro.url.pathname), Astro.site);
+const og = image ?? { src: "/og.jpg", alt: "Zonesteward: the dashboard, with a live globe of requests across a Cloudflare fleet", width: 1200, height: 630 };
+const ogUrl = new URL(og.src, Astro.site);
+/* PRE-LAUNCH: the default flips to "index, follow" at launch, together with robots.txt and public/_headers. */
+const robotsContent = robots ?? "noindex, nofollow";
 ---
 <!doctype html>
 <html lang="en">
@@ -13,18 +29,25 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
-  {/* PRE-LAUNCH: remove this line, restore robots.txt and public/_headers when the site goes public */}
-  <meta name="robots" content="noindex, nofollow" />
+  <meta name="robots" content={robotsContent} />
   <link rel="canonical" href={canonical} />
+  <meta name="theme-color" content="#faf9f6" />
 
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={type} />
+  <meta property="og:site_name" content="Zonesteward" />
+  <meta property="og:locale" content="en_US" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
-  <meta property="og:image" content={new URL("/og.jpg", Astro.site)} />
-  <meta property="og:site_name" content="Zonesteward" />
+  <meta property="og:image" content={ogUrl} />
+  <meta property="og:image:alt" content={og.alt} />
+  {og.width && <meta property="og:image:width" content={String(og.width)} />}
+  {og.height && <meta property="og:image:height" content={String(og.height)} />}
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content={new URL("/og.jpg", Astro.site)} />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogUrl} />
+  <meta name="twitter:image:alt" content={og.alt} />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
