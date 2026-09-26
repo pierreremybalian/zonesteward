@@ -10,7 +10,7 @@
    One dark band in the whole document, at the gate. */
 
 /* ── hero: headline left, argument right ───────────────────── */
-.hero{padding:70px 0 0}
+.hero{padding:70px 0 52px}
 .hero-split{display:grid;gap:34px;align-items:end}
 @media(min-width:960px){.hero-split{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:58px}}
 .kicker{display:flex;align-items:center;gap:12px;margin-bottom:26px}

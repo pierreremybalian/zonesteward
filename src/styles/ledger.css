@@ -204,6 +204,16 @@ footer{border-top:1px solid var(--rule);padding:44px 0 62px;font-size:13.8px;col
 
 /* ── details / faq (native <details>) — shared by /pricing, /beta and the home page ── */
 .faq{display:grid;gap:0;margin-top:40px;border-top:1px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--rule)}
+.faq summary{cursor:pointer;padding:22px 0;font-family:Newsreader,serif;font-size:1.15rem;line-height:1.35;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:"Geist Mono",monospace;color:var(--accent);flex:0 0 auto}
+.faq details[open] summary::after{content:"\2013"}
+.faq details[open] summary{padding-bottom:12px}
+.faq details p{padding:0 0 26px;font-size:15px;color:var(--ink-2);font-weight:300;max-width:66ch}
+/* Open panels (the home page's lists) breathe: content sits off the summary
+   and clears the rule below it. */
+.faq details>*:not(summary):last-child{padding-bottom:30px}
 
 /* ── why strip ─────────────────────────────────────────────── */
 .why{padding:0 0 54px}
