@@ -19,7 +19,7 @@ h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
 .hero-right .lede{max-width:46ch}
 
 /* ── the stage ──────────────────────────────────────────────── */
-.stage{padding:70px 0 0}
+.stage{padding:70px 0 64px}
 .stage-head{
   display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
   border-top:1px solid var(--ink);padding-top:14px;margin-bottom:8px;
