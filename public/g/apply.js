@@ -24,6 +24,11 @@
       return k >= 0 ? Math.min(steps.length - 1, k) : null;
     }
     function writeHash(n) {
+      // Only while the apply flow owns the URL (the /apply pages, or the modal,
+      // which pushes /apply/about-you when it opens). The form is on every page
+      // inside the closed modal; restoring a saved draft on the home page must
+      // not rewrite the address to /apply/fit.
+      if (!onApplyPath()) return;
       var want = "/apply/" + (SLUGS[n] || SLUGS[0]);
       if (location.pathname === want) return;
       var st = history.state || {};
