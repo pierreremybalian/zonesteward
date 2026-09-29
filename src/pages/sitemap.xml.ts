@@ -5,7 +5,7 @@ import { AUDIENCES } from "../data/audiences";
 const STATIC = ["", "how-it-works", "for", ...AUDIENCES.map((a) => `for/${a.slug}`), "use-cases", "security", "features", "pricing", "beta", "apply", "about", "docs", "blog", "privacy", "terms"];
 
 export const GET: APIRoute = async ({ site }) => {
-  const base = (site ?? new URL("https://zonesteward.com")).toString().replace(/\/$/, "");
+  const base = (site ?? new URL("https://www.zonesteward.com")).toString().replace(/\/$/, "");
   const posts = await getCollection("blog");
   const urls = [
     ...STATIC.map((p) => ({ loc: `${base}/${p}`, mod: null as string | null })),

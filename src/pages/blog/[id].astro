@@ -18,7 +18,7 @@ const jsonld = {
   headline: post.data.title, description: post.data.description,
   datePublished: post.data.date.toISOString(),
   author: { "@type": "Organization", name: "Zonesteward" },
-  publisher: { "@type": "Organization", name: "Zonesteward", logo: { "@type": "ImageObject", url: "https://zonesteward.com/og.jpg" } },
+  publisher: { "@type": "Organization", name: "Zonesteward", logo: { "@type": "ImageObject", url: "https://www.zonesteward.com/og.jpg" } },
   mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).toString(),
 };
 ---

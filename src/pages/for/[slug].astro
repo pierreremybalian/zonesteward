@@ -16,7 +16,7 @@ export function getStaticPaths() {
 const { a } = Astro.props;
 const SHOTS = { "tour-see": tourSee, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "gate-card": gateCard, "role-dev": roleDev, "uc-graph": ucGraph };
 const shot = SHOTS[a.shot];
-const site = "https://zonesteward.com";
+const site = "https://www.zonesteward.com";
 const jsonld = {
   "@context": "https://schema.org",
   "@graph": [

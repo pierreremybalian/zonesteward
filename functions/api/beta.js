@@ -202,7 +202,7 @@ export async function onRequestPost(context) {
 }
 
 async function notify(env, row) {
-  const site = env.SITE_URL || "https://zonesteward.com";
+  const site = env.SITE_URL || "https://www.zonesteward.com";
   const pairs = [
     ["Name", row.name], ["Email", row.email], ["Company", row.company], ["Website", row.site],
     ["Zones", label("zones", row.zones)], ["Monthly requests", label("traffic", row.traffic)],

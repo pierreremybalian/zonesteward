@@ -41,7 +41,7 @@ export async function onRequestGet({ request, env }) {
   const status = d === "approve" ? "approved" : "rejected";
   await env.DB.prepare("UPDATE beta_applications SET status = ?2, decided = ?3 WHERE email = ?1").bind(email, status, Date.now()).run();
 
-  const site = env.SITE_URL || "https://zonesteward.com";
+  const site = env.SITE_URL || "https://www.zonesteward.com";
   const notify = env.NOTIFY_TO;
 
   // the applicant
