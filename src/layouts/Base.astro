@@ -33,6 +33,16 @@ const robotsContent = robots ?? "noindex, nofollow";
   <link rel="canonical" href={canonical} />
   <meta name="theme-color" content="#faf9f6" />
 
+  <!-- Google tag (gtag.js) -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-LE9GVDEFS9"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-LE9GVDEFS9');
+  </script>
+
   <meta property="og:type" content={type} />
   <meta property="og:site_name" content="Zonesteward" />
   <meta property="og:locale" content="en_US" />
