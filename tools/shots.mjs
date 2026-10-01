@@ -21,7 +21,7 @@ const CROPS = {
   "tour-security": ["64-canvas-security.png", [1020, 525, 2830, 1800]],
   "tour-alerts":   ["22-alert-rules.png", [530, 230, 2350, 1520]],
   "tour-see":      ["10-dashboard.png", [0, 100, 2880, 1800]],
-  "tour-clients":  ["40-settings-shares.png", [720, 550, 2160, 1040]],
+  "tour-clients":  ["41-settings-shares-readonly.png", null], // the form as a workspace admin sees it: read-only, expires in ≤ 30 days
   "tour-keys":     ["50-admin-usage.png", [785, 480, 2095, 1800]],
   "uc-attack":     ["64-canvas-security.png", [1020, 890, 2830, 1800]],
   "uc-graph":      ["78-chat-cache-origin.png", [960, 200, 2880, 1400]],

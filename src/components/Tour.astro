@@ -46,14 +46,14 @@ const tabs = [
       "Saved views become widgets. Arrange them once and leave it on a screen.",
     ],
     shot: shotSee, alt: "The dashboard: a live globe with request arcs, status code bars, top countries, open incidents, bandwidth and top networks" },
-  { id: "clients", label: "Clients", plate: "VII", caption: "A share link, scoped and revocable",
+  { id: "clients", label: "Clients", plate: "VII", caption: "A read-only share link, expiring within 30 days",
     h: "One card for a whole client group. One link per client.",
     bullets: [
       "Group zones by client. A purge, a WAF rule or a rate limit goes to the whole group on one approval card, applied and audited zone by zone.",
-      "A share link per client — viewer or admin, all sites or some, expiring or not — revocable the moment you need it to be.",
+      "A share link per client — read-only, all their sites or just one, expiring within 30 days — revocable the moment you need it to be.",
       "A seven-day digest and incident reports, printable, with CSV for every table.",
     ],
-    shot: shotClients, alt: "Create a share link: scope, label, access level and expiry" },
+    shot: shotClients, alt: "Create a share link: scope, label, read-only access, and an expiry of 7 days" },
   { id: "keys", label: "Your keys", plate: "VIII", caption: "AI usage, itemised",
     h: "Your token. Your model key. Nothing marked up.",
     bullets: [

@@ -37,10 +37,10 @@ import Shot from "../components/Shot.astro";
       <ul>
         <li>Sign in with Google, Microsoft or GitHub, or an emailed link. Only provider-verified addresses can create an account — and for Microsoft, only addresses whose domain the tenant has actually verified.</li>
         <li>Roles: owner, admin, user, viewer. Viewers are blocked from every mutating action at more than one layer. DNS and bulk operations are admin-only.</li>
-        <li>Share links are revocable, optionally time-limited, and carry the role of the person who made them, no more.</li>
+        <li>Share links are read-only, expire within 30 days at most, and can be revoked at any time.</li>
         <li>A full audit trail: every change attempt, successful or not, with who, what, the response, and where from.</li>
       </ul>
-      <Shot shot="tour-clients" alt="Create a share link: scope, label, access level and expiry" caption="A share link, scoped and revocable" sizes="(min-width: 900px) 520px, 100vw" />
+      <Shot shot="tour-clients" alt="Create a share link: scope, label, read-only access, and an expiry of 7 days" caption="A read-only share link, expiring within 30 days" sizes="(min-width: 900px) 520px, 100vw" />
     </section>
 
     <section class="sec-block">

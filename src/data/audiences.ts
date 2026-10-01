@@ -26,7 +26,7 @@ export const AUDIENCES: Audience[] = [
     pains: ["Six client accounts, forty dashboard tabs, and a support queue that expects answers in minutes", "A WAF change on a live client site at five o’clock, with no way back", "The Friday report, assembled by hand, for every client"],
     features: [
       { b: "Zone groups and bulk cards", p: "Group zones by client. A purge, a WAF rule or a rate limit goes to the whole group on one approval card, applied and audited zone by zone.", href: "/#tour-clients" },
-      { b: "Share links and reports", p: "A link per client — viewer or admin, scoped, revocable — and a seven-day digest with CSV for every table.", href: "/#tour-clients" },
+      { b: "Share links and reports", p: "A read-only link per client — scoped, expiring within 30 days, revocable — and a seven-day digest with CSV for every table.", href: "/#tour-clients" },
       { b: "Priced by zones, on your keys", p: "Studio, Agency, Fleet — every tier includes everything. Your Cloudflare token and model key; usage billed to you at cost, never marked up.", href: "/pricing" },
     ],
     cases: ["down", "purge"], shot: "fleet-still", alt: "The Fleet view: every client site on one globe, with request arcs, the site list and a 24-hour timeline",
@@ -125,7 +125,7 @@ export const AUDIENCES: Audience[] = [
     features: [
       { b: "Plain answers with evidence", p: "Edge or origin, cached or not, one region or everywhere — with the chart. Proposals go to someone who can approve them.", href: "/#tour-ask" },
       { b: "Viewer role", p: "See every zone, every answer, every incident; change nothing. Safe to hand to a whole team.", href: "/security" },
-      { b: "Share links", p: "A live, scoped, revocable link to the client’s own sites, so the answer can be shown rather than described.", href: "/#tour-clients" },
+      { b: "Share links", p: "A live, read-only, expiring link to the client’s own sites, so the answer can be shown rather than described.", href: "/#tour-clients" },
     ],
     cases: ["down", "region"], shot: "tour-ask", alt: "A chat answer with its chart",
   },
