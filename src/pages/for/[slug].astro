@@ -17,6 +17,17 @@ export function getStaticPaths() {
 const { a } = Astro.props;
 const SHOTS = { "fleet-still": fleetStill, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "tour-keys": tourKeys, "undo-changes": undoChanges, "role-dev": roleDev, "uc-graph": ucGraph };
 const shot = SHOTS[a.shot];
+// What the screenshot shows, as a caption (the zoom cursor says it's clickable).
+const SHOT_CAPTIONS: Record<keyof typeof SHOTS, string> = {
+  "fleet-still": "Every site, one globe",
+  "tour-security": "The security tab, last 24 hours",
+  "tour-alerts": "Alert rules, written from a sentence",
+  "tour-ask": "A question, its chart, and the query beside it",
+  "tour-keys": "AI usage, itemised",
+  "undo-changes": "Every change, with its outcome",
+  "role-dev": "The query behind an answer",
+  "uc-graph": "Cache and origin, from one question",
+};
 const site = "https://www.zonesteward.com";
 const jsonld = {
   "@context": "https://schema.org",
@@ -51,7 +62,7 @@ const crumbs: [string, string][] = [["/", "Zonesteward"], ["/for", "Who it’s f
       </div>
       <figure class="plate">
         <div class="plate-in"><Picture src={shot} formats={["avif", "webp"]} widths={[720, 1120, 1600]} sizes="(min-width: 980px) 560px, 100vw" alt={a.alt} loading="eager" decoding="async" /></div>
-        <figcaption><span>{a.label}</span><span>click to enlarge</span></figcaption>
+        <figcaption><span>{SHOT_CAPTIONS[a.shot]}</span></figcaption>
       </figure>
     </div>
 

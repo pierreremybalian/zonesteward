@@ -114,14 +114,18 @@ header{border-bottom:1px solid var(--ink);background:var(--paper)}
 @media(max-width:359px){.masthead .end .btn{display:none}}
 
 /* ── plates: framed product figures ─────────────────────────── */
-.plate{border:1px solid var(--rule-2);background:#fff;padding:10px}
-.plate-in{background:var(--dark);border-radius:2px;overflow:hidden;position:relative}
+/* The white mat frames the image only; the caption sits below it, outside
+   the frame, so it reads as a caption and never as part of the picture. The
+   mat is drawn with box-shadow so the caption can live outside it. */
+.plate{padding:11px 11px 0}
+.plate-in{background:var(--dark);border-radius:2px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #fff,0 0 0 11px var(--rule-2)}
 figcaption{
-  display:flex;gap:14px;padding:10px 2px 0;font-family:"Geist Mono",monospace;
+  display:flex;gap:14px;padding:23px 0 0;font-family:"Geist Mono",monospace;
   font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;
 }
 figcaption b{color:var(--ink-2);font-weight:500}
-figcaption span:last-child{margin-left:auto}
+figcaption span:last-child:not(:first-child){margin-left:auto}
+.band figcaption{color:var(--dark-dim)}
 .plate-label{
   position:absolute;left:18px;top:16px;font-family:"Geist Mono",monospace;
   font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dark-dim);
@@ -340,4 +344,4 @@ footer{border-top:1px solid var(--rule);padding:44px 0 62px;font-size:13.8px;col
 .shot-phone{max-width:240px}
 .phones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:600px;margin-top:22px}
 .phones .shot-phone{max-width:none}
-.phones figcaption span:first-child{display:none}
+.phones figcaption{padding-top:20px;justify-content:center}
