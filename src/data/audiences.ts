@@ -99,7 +99,7 @@ export const AUDIENCES: Audience[] = [
       { b: "Read-back and revert", p: "“Applied” means Cloudflare was asked what the record is now. Every change stores its before-state and a one-click revert.", href: "/how-it-works" },
       { b: "Certificates, DNSSEC, settings", p: "Edge certificates and expiry, DNSSEC down to the DS record, Universal SSL, zone status and nameservers — a sentence away.", href: "/#details" },
     ],
-    cases: ["undo", "down"], shot: "undo-changes", alt: "The Changes tab: each DNS, WAF and cache change to a site, with who made it, when, and whether it applied",
+    cases: ["undo", "down"], shot: "undo-changes", alt: "The Changes tab: each WAF rule change to a site, with when it was made, who made it, and its outcome",
   },
   {
     slug: "leadership", label: "Leadership", roles: "CTOs, VPs of Engineering, solutions architects",

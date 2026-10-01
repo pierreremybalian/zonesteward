@@ -10,7 +10,7 @@ const steps: [string, string, [string, string, string]?][] = [
   ["Execute", "The server makes the call with a token chosen for that zone — the one with the most rights for the job — and falls through to the next on a 403 instead of giving up."],
   ["Read back", "\"Applied\" is not the API saying OK. The server asks Cloudflare what the setting is now and confirms it matches what you approved."],
   ["Audit", "Every attempt, successful or not, is recorded with actor, payload, Cloudflare's response, IP and user agent — together with the exact instructions to undo it."],
-  ["Revert", "One click, from the recorded before-state, through the same pipeline. A change is never a one-way door.", ["undo-changes", "The Changes tab: each change to the site with when, who, and whether it applied or failed, and a note that Revert proposes the inverse change for approval", "The change history a revert starts from"]],
+  ["Revert", "One click, from the recorded before-state, through the same pipeline. A change is never a one-way door.", ["undo-changes", "The Changes tab: each change to the site with when it was made, who made it, and its outcome", "The change history a revert starts from"]],
 ];
 ---
 <Page

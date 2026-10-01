@@ -35,7 +35,9 @@ const CROPS = {
   // the key's last characters), and Connect's label field (its placeholder
   // carries a real first name) — connect-tiers starts below it.
   "see-live":      ["61-canvas-live.png", [980, 290, 2870, 1775]],
-  "undo-changes":  ["65-canvas-changes.png", [1000, 330, 2830, 1800]],
+  // Header row + the run of six applied changes only — the frame also has
+  // rows that failed for token permissions, which must never be shown.
+  "undo-changes":  ["65-canvas-changes.png", [[1000, 418, 2830, 478], [1000, 763, 2830, 1382]]],
   "ask-library":   ["68-question-library.png", [672, 150, 2208, 1094]],
   "graph-viz":     ["71-canvas-viz.png", [985, 290, 2860, 1320]],
   "connect-tiers": ["40-settings-connect.png", [715, 890, 2165, 1350]],
@@ -48,7 +50,16 @@ for (const [slot, [file, box]] of Object.entries(CROPS)) {
   const src = path.isAbsolute(file) ? file : path.join(SRC, file);
   if (!fs.existsSync(src)) { console.log("skip (missing)", slot, file); continue; }
   let img = sharp(src);
-  if (box) {
+  if (box && Array.isArray(box[0])) {
+    // Several bands of the same frame, stacked top to bottom (same width).
+    const parts = [];
+    for (const [l, t, r, b] of box) parts.push(await sharp(src).extract({ left: l, top: t, width: r - l, height: b - t }).png().toBuffer());
+    const metas = await Promise.all(parts.map((p) => sharp(p).metadata()));
+    const width = metas[0].width, height = metas.reduce((h, m) => h + m.height, 0);
+    let y = 0;
+    const layers = parts.map((input, i) => { const top = y; y += metas[i].height; return { input, top, left: 0 }; });
+    img = sharp({ create: { width, height, channels: 4, background: "#ffffff" } }).composite(layers);
+  } else if (box) {
     const [l, t, r, b] = box;
     const meta = await img.metadata();
     const right = Math.min(r, meta.width), bottom = Math.min(b, meta.height);

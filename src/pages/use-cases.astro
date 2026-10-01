@@ -47,7 +47,7 @@ const cases = [
     ],
     proposes: "The rule, with the number it would have matched. If the preview says it is too broad, ask for a narrower expression and preview again. You decide with the count in front of you, before the rule exists.",
   },
-  { id: "undo", shot: ["undo-changes", "The Changes tab: each change to the site with when, who, and whether it applied or failed, and a note that Revert proposes the inverse change for approval", "The change history, with outcomes"], ask: "Did that change take effect? Undo it.",
+  { id: "undo", shot: ["undo-changes", "The Changes tab: each change to the site with when it was made, who made it, and its outcome", "The change history, with outcomes"], ask: "Did that change take effect? Undo it.",
     checks: [
       "Rules, settings, DNS records, access rules, managed rulesets, health checks and waiting rooms are read back from Cloudflare after every change; \"applied\" means the read-back agreed. Purges are accepted by Cloudflare, not read back — there is nothing to read", // verified: execute-core.ts:1415 read-back, :1109-1114 purge has no verifier
       "The audit row — who approved it, when, what it was, whether it applied and whether it can be reverted — in the conversation, on the zone's Changes tab and in the audit log", // verified: chat tool list_recent_changes; app/lib/audit.ts:69-73; execute-core.ts:1438 rollback data
