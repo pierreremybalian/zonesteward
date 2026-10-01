@@ -11,12 +11,15 @@
 
 /* ── hero: headline left, argument right ───────────────────── */
 .hero{padding:70px 0 52px}
-.hero-split{display:grid;gap:34px;align-items:end}
-@media(min-width:960px){.hero-split{grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:58px}}
+.hero-split{display:grid;gap:34px;align-items:center}
+@media(min-width:960px){.hero-split{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:52px}}
+.hero-left .lede{max-width:46ch;margin-top:26px}
+@media(min-width:960px){.hero-left h1{font-size:clamp(2.8rem,5vw,4.2rem)}}
+.hero-plate{margin:0}
+.plate-in>video{display:block;width:100%;height:auto;aspect-ratio:1600/1042;background:#000}
 .kicker{display:flex;align-items:center;gap:12px;margin-bottom:26px}
 .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto}
 h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
-.hero-right .lede{max-width:46ch}
 
 /* ── the stage ──────────────────────────────────────────────── */
 .stage{padding:70px 0 64px}
@@ -188,6 +191,7 @@ h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
 @media(min-width:960px){.case{grid-template-columns:44px minmax(0,1fr) minmax(0,1.1fr) minmax(0,1fr);gap:34px}}
 .case-n{font-family:"Geist Mono",monospace;font-size:12px;color:var(--accent);padding-top:6px}
 .case .composer{font-size:1.05rem}
+.case-shot{margin-top:18px}
 .case-checks ul{list-style:none;margin-top:12px;display:grid}
 .case-checks li{padding:9px 0 9px 18px;border-bottom:1px solid var(--rule);font-size:14.5px;color:var(--ink-2);font-weight:300;position:relative;line-height:1.55}
 .case-checks li:first-child{border-top:1px solid var(--rule)}

@@ -17,7 +17,7 @@ const clean = (p: string) => {
   return c === "" ? "/" : c;
 };
 const canonical = new URL(clean(canonicalPath ?? Astro.url.pathname), Astro.site);
-const og = image ?? { src: "/og.jpg", alt: "Zonesteward: the dashboard, with a live globe of requests across a Cloudflare fleet", width: 1200, height: 630 };
+const og = image ?? { src: "/og.jpg", alt: "Zonesteward: the Fleet view, a globe of requests across every site in a Cloudflare fleet", width: 1200, height: 630 };
 const ogUrl = new URL(og.src, Astro.site);
 /* PRE-LAUNCH: the default flips to "index, follow" at launch, together with robots.txt and public/_headers. */
 const robotsContent = robots ?? "noindex, nofollow";

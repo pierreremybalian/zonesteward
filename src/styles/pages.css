@@ -38,13 +38,15 @@
 .pipe li::before{content:counter(s,decimal-leading-zero);font-family:"Geist Mono",monospace;font-size:12px;color:var(--accent);padding-top:6px}
 .pipe b{font-family:Newsreader,serif;font-size:1.3rem;font-weight:500;display:block;margin-bottom:6px}
 .pipe p{font-size:15px;color:var(--ink-2);font-weight:300;max-width:62ch}
+.pipe-shot{margin-top:18px;max-width:620px}
 
 /* features: jobs, each a group */
-.jobs{display:grid;gap:56px;margin-top:40px}
-.job{display:grid;gap:22px}
+.jobs{display:grid;gap:72px;margin-top:40px}
+.job{display:grid;gap:22px;padding:0}
 @media(min-width:900px){.job{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:56px}}
-.job h2{font-size:clamp(1.6rem,3vw,2.1rem)}
+.job h2{font-size:clamp(1.6rem,3vw,2.1rem);margin-top:0}
 .job .job-lede{color:var(--ink-2);font-weight:300;margin-top:10px;font-size:15.5px}
+.job-head .shot{margin-top:22px}
 .job ul{list-style:none;display:grid;gap:0}
 .job li{padding:13px 0;border-bottom:1px solid var(--rule);font-size:15px;color:var(--ink-2);font-weight:300}
 .job li:first-child{border-top:1px solid var(--ink)}

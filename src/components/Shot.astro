@@ -1,0 +1,33 @@
+---
+/* One screenshot plate: the figure.plate pattern from Tour/Gate, for any
+   page. `shot` is a file in src/assets/shots (not `slot`: Astro reserves that name
+   and silently drops a component given slot= directly inside a layout) (made by `npm run shots`).
+   Variants: default (column width), "phone" (portrait, narrow).
+   /g/lightbox.js turns every plate with an image into a zoom button. */
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  shot: string;
+  alt: string;
+  caption: string;
+  label?: string;
+  variant?: "default" | "phone";
+  sizes?: string;
+  eager?: boolean;
+  class?: string;
+}
+const { shot, alt, caption, label, variant = "default", sizes, eager = false, class: cls } = Astro.props;
+const all = import.meta.glob<{ default: ImageMetadata }>("../assets/shots/*.png", { eager: true });
+const mod = all[`../assets/shots/${shot}.png`];
+if (!mod) throw new Error(`Shot: no src/assets/shots/${shot}.png — add it to tools/shots.mjs and run npm run shots`);
+const phone = variant === "phone";
+const widths = phone ? [280, 420, 560] : [640, 960, 1280, 1600];
+const sz = sizes ?? (phone ? "200px" : "(min-width: 980px) 640px, 100vw");
+---
+<figure class:list={["plate", "shot", { "shot-phone": phone }, cls]}>
+  <div class="plate-in">
+    <Picture src={mod.default} formats={["avif", "webp"]} widths={widths} sizes={sz} alt={alt} loading={eager ? "eager" : "lazy"} decoding="async" />
+  </div>
+  <figcaption>{label && <span>{label}</span>}<span>{caption}</span></figcaption>
+</figure>

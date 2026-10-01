@@ -3,6 +3,7 @@
    citation sits beside each claim. Model judgement is phrased as judgement.
    When a claim stops being true, the citation is what to re-check. */
 import Page from "../layouts/Page.astro";
+import Shot from "../components/Shot.astro";
 const cases = [
   // Every line below was checked against the operator's code on 2026-09-25
   // (claim-by-claim audit; see the operator repo paths in the comments).
@@ -17,7 +18,7 @@ const cases = [
     ],
     proposes: "Edge or origin, with the evidence: origin errors and response times against the edge status mix. If it is the server it says so — there is nothing to write to Cloudflare — and it can propose a Cloudflare health check, on some plans, so you are told first next time. If a rule you approved earlier is the cause, ask it to undo that change: the revert card appears in the conversation, built from the recorded before-state and linked to the original, for an administrator to approve. Paging comes from the alert rules you have armed, never from a conversation.", // verified: route.ts create_health_check (Pro+); chat tool revert_change → buildRevertProposal, admin-only; no notify tool in chat
   },
-  { id: "slow", ask: "Why is the site slow?",
+  { id: "slow", shot: ["uc-graph", "A chat answer charting cache status and origin load over time, with the query beside it", "Cache and origin, from one question"], ask: "Why is the site slow?",
     checks: [
       "Origin response time at the median, 95th and 99th percentile, by hour, against the day before, beside the request rate — the shape of a saturated origin, not the cause; it cannot see your server", // verified: schema.ts:30 quantiles P50/P95/P99, :185 count + avg per group
       "Cache status by path, on plans that expose it: the static resources going to the origin uncached", // verified: schema.ts:184, :37
@@ -27,7 +28,7 @@ const cases = [
     ],
     proposes: "A cache rule for the paths going to the origin uncached, with the number of requests it would have matched in the last 24 hours and how much of that was already served from cache, on plans that expose cache status. A rate limit or a managed challenge for the crawler path. Or nothing, when the numbers say it is the origin — then it says so, with the evidence to take to the host.", // verified: PendingAction.tsx create_cache_rule previewable; blast-radius.ts cache share (cacheStatus selection, dropped on plan denial); route.ts managed_challenge actions
   },
-  { id: "attack", ask: "Who is attacking us right now?",
+  { id: "attack", shot: ["uc-attack", "The security tab: ranked sources with country flags, networks, probed paths and Block or Challenge actions", "Who is attacking, last 24 hours"], ask: "Who is attacking us right now?",
     checks: [
       "Every source classified across nine attack categories with a severity score", // verified: app/lib/attack-patterns.ts:9-18 (9 categories), :319-328 severity 0-100
       "What each source is doing, how much the firewall already stopped, its verdict, the paths it hit, its full status mix and how much was actually served — the signature of a scanner is a source that was served nothing", // verified: chat list_attackers payload (served_pct, status_mix); attack-patterns.ts:199
@@ -36,7 +37,7 @@ const cases = [
     ],
     proposes: "A managed challenge for the single source — one click on the Security tab or a sentence in the conversation — on a card that shows how many requests it would have matched in the last 24 hours and how many of those were served. If the source is hitting several clients, the same rule fanned across the zone group on one card, with an acknowledgement above ten zones or when the change itself is high-impact.", // verified: PendingAction.tsx accessRuleExpression → blast-radius preview; execute-core.ts BULK_ALLOWED; chat/route.ts bulk impact
   },
-  { id: "block", ask: "What would this WAF rule actually block?",
+  { id: "block", shot: ["gate-card", "Approval card: Create WAF rule (managed challenge) on WordPress login and XML-RPC endpoints — would have matched about 115 requests of the last 24 hours, broken down by path, network, country and user agent, with a map, and Approve & run or Reject", "What the rule would have matched"], ask: "What would this WAF rule actually block?",
     checks: [
       "The expression translated into analytics filters and run against your real last 24 hours — a sampled estimate", // verified: app/lib/blast-radius.ts; api/cf/blast-radius/route.ts:38-43
       "Supported: country, network, IP, host, method, path and user agent, with equals, in, contains and starts-with, joined by and/or. Negation, regular expressions, ranges and other fields show \"preview unavailable\" rather than a wrong number", // verified: blast-radius.ts:60,110-118,217,249
@@ -46,7 +47,7 @@ const cases = [
     ],
     proposes: "The rule, with the number it would have matched. If the preview says it is too broad, ask for a narrower expression and preview again. You decide with the count in front of you, before the rule exists.",
   },
-  { id: "undo", ask: "Did that change take effect? Undo it.",
+  { id: "undo", shot: ["undo-changes", "The Changes tab: each change to the site with when, who, and whether it applied or failed, and a note that Revert proposes the inverse change for approval", "The change history, with outcomes"], ask: "Did that change take effect? Undo it.",
     checks: [
       "Rules, settings, DNS records, access rules, managed rulesets, health checks and waiting rooms are read back from Cloudflare after every change; \"applied\" means the read-back agreed. Purges are accepted by Cloudflare, not read back — there is nothing to read", // verified: execute-core.ts:1415 read-back, :1109-1114 purge has no verifier
       "The audit row — who approved it, when, what it was, whether it applied and whether it can be reverted — in the conversation, on the zone's Changes tab and in the audit log", // verified: chat tool list_recent_changes; app/lib/audit.ts:69-73; execute-core.ts:1438 rollback data
@@ -76,14 +77,14 @@ const cases = [
     ],
     proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you would otherwise assemble by hand on a Friday afternoon.", // verified: route.ts:1615 links; reports.ts:165 print; ReportsClient.tsx:7 nine CSV tables
   },
-  { id: "graph", ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
+  { id: "graph", shot: ["graph-viz", "A chat answer drawn as a stacked bar chart on the canvas, with chart types to switch between and a Save button", "A chart, ready to save"], ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
     checks: [
       "The analytics query behind the chart, run against the zone — cache status on plans that expose it", // verified: Canvas.tsx:31-43 Viz/Table/GraphQL/JSON, :304 query shown
       "Which charts fit the shape of the result — it proposes two to four; ask again for a different one", // verified: viz-proposer.ts:30 MAX_PROPOSALS=4; VizPanel.tsx:179-187
     ],
     proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard in the same click if you want it there. Those are your clicks — the conversation never touches the dashboard. Every saved graph opens the conversation it came from, so you can see why it was built.", // verified: VizPanel.tsx save + addToDashboard (PUT /api/dashboard); SavedLibrary.tsx Open conversation → /?chat=; viz-store.ts:15
   },
-  { id: "next", ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule — or said in the chat, which opens the composer for you",
+  { id: "next", shot: ["tour-alerts", "Alert rules page: a prompt box to build a rule with AI, and two rules — site down on 5xx rate, origin unreachable — each explained in plain words with its threshold, window and channels", "Rules, written from a sentence"], ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule — or said in the chat, which opens the composer for you",
     checks: [
       "The composer turns the sentence into a rule — query, threshold, window and a minimum volume so a quiet site never pages on three requests — and explains it back in English; the card shows the condition, window, cadence and minimum volume. This one also exists as a preset", // verified: api/alerts/rules/compose/route.ts (minVolume always, fallback 20); RulesManager.tsx Min volume cell; monitoring/presets.ts:69-105
       "When you arm it, the rule runs once against the zone as it is now and is refused if Cloudflare rejects the query, the rule is malformed, or the result does not reduce to a number", // verified: api/alerts/rules/custom/route.ts dry run + evaluateSpecOnData
@@ -110,6 +111,7 @@ const cases = [
           <span class="sc">{c.where ? "You type" : "You ask"}</span>
           <div class="composer" style="margin-top:10px"><span style="color:var(--muted)">›</span> {c.ask}</div>
           {c.where && <p class="cta-note" style="margin-top:8px">{c.where}</p>}
+          {c.shot && <Shot shot={c.shot[0]} alt={c.shot[1]} caption={c.shot[2]} class="case-shot" sizes="(min-width: 960px) 340px, 100vw" />}
         </div>
         <div class="case-checks">
           <span class="sc">It checks</span>

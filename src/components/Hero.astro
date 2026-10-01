@@ -1,13 +1,16 @@
+---
+/* Hero: the argument on the left, the product moving on the right — the
+   Fleet view replaying a day of requests across every site in a workspace.
+   The video loops silently; under reduced motion only its poster shows. */
+---
 <section class="hero">
   <div class="wrap hero-split">
-    <div>
+    <div class="hero-left">
       <div class="kicker">
         <i class="dot"></i>
         <span class="sc">For agencies running more zones than people</span>
       </div>
       <h1>A steward for your <i>Cloudflare fleet.</i></h1>
-    </div>
-    <div class="hero-right">
       <p class="lede">
         Forty zones, six clients, one support queue. Ask in plain language,
         approve the fix, read the audit. <b>Nothing writes without you.</b>
@@ -19,5 +22,26 @@
         <span class="cta-note">Pre-launch private beta: free, unfinished, and built on your honest feedback. <a href="/beta">The trade →</a></span>
       </div>
     </div>
+    <figure class="plate hero-plate">
+      <div class="plate-in">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" width="1600" height="1042"
+          poster="/media/fleet-poster.webp"
+          aria-label="The Fleet view: a globe with request arcs from visitors to Cloudflare data centres for every site in the workspace, replaying the last 24 hours">
+          <source src="/media/fleet.webm" type="video/webm" />
+          <source src="/media/fleet.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <figcaption><span>Fleet view</span><span>A day of requests across every site, replayed</span></figcaption>
+    </figure>
   </div>
 </section>
+<script is:inline>
+  (function () {
+    var v = document.querySelector(".hero-video");
+    if (!v || !window.matchMedia) return;
+    var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    function apply() { if (mq.matches) { v.removeAttribute("autoplay"); v.pause(); } else if (v.paused) { v.play().catch(function () {}); } }
+    apply();
+    if (mq.addEventListener) mq.addEventListener("change", apply);
+  })();
+</script>

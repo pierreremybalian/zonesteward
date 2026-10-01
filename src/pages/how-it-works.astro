@@ -1,15 +1,16 @@
 ---
 import Page from "../layouts/Page.astro";
-const steps = [
+import Shot from "../components/Shot.astro";
+const steps: [string, string, [string, string, string]?][] = [
   ["Propose", "You ask in plain language, or the investigator finds something. The model drafts a change — it cannot make one. Every function that can write to Cloudflare lives in the execution core and is reachable only after a human approves."],
   ["Classify impact", "Low, medium or high, decided on the server from the actual payload. A whole-site lockdown, an apex DNS deletion, an SSL downgrade or a change fanned across many zones is high, and high needs an explicit acknowledgement, not a click."],
   ["Preview blast radius", "For a firewall rule, its expression is translated into analytics filters and run against your real last 24 hours, so you see how many requests it would have matched — by country, ASN, path and user agent — before it exists."],
-  ["Approve", "The card shows the zone, the exact change, its impact, and what it would have done. Reject is always beside Approve. Viewers cannot approve; DNS and bulk changes are admin-only, enforced at three separate layers."],
+  ["Approve", "The card shows the zone, the exact change, its impact, and what it would have done. Reject is always beside Approve. Viewers cannot approve; DNS and bulk changes are admin-only, enforced at three separate layers.", ["gate-card", "Approval card: Create WAF rule (managed challenge) on WordPress login and XML-RPC endpoints — would have matched about 115 requests of the last 24 hours, broken down by path, network, country and user agent, with a map, and Approve & run or Reject", "The approval card: the change, its impact, what it would have matched"]],
   ["Drift check", "The value the proposal was written against is re-read from Cloudflare at execution time. If reality moved since you looked, the change is refused rather than applied to a state nobody reviewed."],
   ["Execute", "The server makes the call with a token chosen for that zone — the one with the most rights for the job — and falls through to the next on a 403 instead of giving up."],
   ["Read back", "\"Applied\" is not the API saying OK. The server asks Cloudflare what the setting is now and confirms it matches what you approved."],
   ["Audit", "Every attempt, successful or not, is recorded with actor, payload, Cloudflare's response, IP and user agent — together with the exact instructions to undo it."],
-  ["Revert", "One click, from the recorded before-state, through the same pipeline. A change is never a one-way door."],
+  ["Revert", "One click, from the recorded before-state, through the same pipeline. A change is never a one-way door.", ["undo-changes", "The Changes tab: each change to the site with when, who, and whether it applied or failed, and a note that Revert proposes the inverse change for approval", "The change history a revert starts from"]],
 ];
 ---
 <Page
@@ -20,7 +21,9 @@ const steps = [
   lede="Nine steps between a sentence typed into chat and a change on Cloudflare. The model does the first one. You do the fourth. The server does the rest and proves it."
 >
   <ol class="pipe">
-    {steps.map(([b, p]) => <li><div><b>{b}</b><p>{p}</p></div></li>)}
+    {steps.map(([b, p, shot]) => (
+      <li><div><b>{b}</b><p>{p}</p>{shot && <Shot shot={shot[0]} alt={shot[1]} caption={shot[2]} class="pipe-shot" sizes="(min-width: 760px) 620px, 100vw" />}</div></li>
+    ))}
   </ol>
 
   <h2>Why this is structural, not policy</h2>

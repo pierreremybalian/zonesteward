@@ -2,11 +2,12 @@
 import Page from "../../layouts/Page.astro";
 import { Picture } from "astro:assets";
 import { AUDIENCES } from "../../data/audiences";
-import tourSee from "../../assets/shots/tour-see.png";
+import fleetStill from "../../assets/shots/fleet-still.png";
 import tourSecurity from "../../assets/shots/tour-security.png";
 import tourAlerts from "../../assets/shots/tour-alerts.png";
 import tourAsk from "../../assets/shots/tour-ask.png";
-import gateCard from "../../assets/shots/gate-card.png";
+import tourKeys from "../../assets/shots/tour-keys.png";
+import undoChanges from "../../assets/shots/undo-changes.png";
 import roleDev from "../../assets/shots/role-dev.png";
 import ucGraph from "../../assets/shots/uc-graph.png";
 
@@ -14,7 +15,7 @@ export function getStaticPaths() {
   return AUDIENCES.map((a) => ({ params: { slug: a.slug }, props: { a } }));
 }
 const { a } = Astro.props;
-const SHOTS = { "tour-see": tourSee, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "gate-card": gateCard, "role-dev": roleDev, "uc-graph": ucGraph };
+const SHOTS = { "fleet-still": fleetStill, "tour-security": tourSecurity, "tour-alerts": tourAlerts, "tour-ask": tourAsk, "tour-keys": tourKeys, "undo-changes": undoChanges, "role-dev": roleDev, "uc-graph": ucGraph };
 const shot = SHOTS[a.shot];
 const site = "https://www.zonesteward.com";
 const jsonld = {

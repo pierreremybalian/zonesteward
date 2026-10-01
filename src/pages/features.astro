@@ -1,7 +1,8 @@
 ---
 import Page from "../layouts/Page.astro";
+import Shot from "../components/Shot.astro";
 const jobs = [
-  { h: "Ask", lede: "Questions in plain language, answered against Cloudflare's analytics API directly. The server injects the zone, so a question can never reach one outside your context.",
+  { h: "Ask", shot: ["ask-library", "The question library: preset questions grouped by role, plus your own saved questions", "The question library, by role"], lede: "Questions in plain language, answered against Cloudflare's analytics API directly. The server injects the zone, so a question can never reach one outside your context.",
     items: [
       ["Arbitrary analytics", "traffic, status codes, geography, ASNs, paths, user agents — the model writes the GraphQL, you read the answer"],
       ["Who is attacking this zone", "with severity and a verdict per source"],
@@ -13,7 +14,7 @@ const jobs = [
       ["A guided tour on first sign-in", "two minutes, and it drives the product for you: asks a question, reads the globe, proposes a change, shows the gate"],
       ["Conversations kept indefinitely", "nothing expires"],
     ]},
-  { h: "See", lede: "Requests rendered live on a globe, from the client's geography to the Cloudflare colo that served them. Thirty-minute rolling window, ten-second poll.",
+  { h: "See", shot: ["see-live", "The Live view of one site: request arcs from visitors to Cloudflare data centres, coloured by status, with country, user-agent and path filters", "The Live view of one site"], lede: "Requests rendered live on a globe, from the client's geography to the Cloudflare colo that served them. Thirty-minute rolling window, ten-second poll.",
     items: [
       ["Render modes", "pulse, flow, heat, trace, hex-binned bars"],
       ["All 157 points of presence", "as a layer, scaled against camera distance to stay legible at any zoom"],
@@ -31,7 +32,7 @@ const jobs = [
       ["Reports you can ask for", "\"send me a seven-day digest\" returns traffic, 5xx rate, top countries, paths and networks, firewall activity, alerts that fired and every change made — highlights in prose, a printable page, and CSV for every table"],
       ["Incident reports", "each incident rendered as its own page: what fired, the investigation, the fix, what changed"],
     ]},
-  { h: "Investigate", lede: "Traffic classified into nine attack categories with a composite severity score per source — built to be right about what isn't an attack, not just what is.",
+  { h: "Investigate", shot: ["uc-attack", "The security tab: ranked sources with country flags, networks, probed paths and Block or Challenge actions", "Attackers, last 24 hours"], lede: "Traffic classified into nine attack categories with a composite severity score per source — built to be right about what isn't an attack, not just what is.",
     items: [
       ["Nine categories", "WordPress brute force, CMS and plugin probing, secrets and config scanning, admin panel probing, path traversal, SQLi/XSS, shell and upload probes, credential stuffing, scanner tooling"],
       ["False positives designed out", "static assets, uploads, /cdn-cgi/, well-known files, recognised crawlers including AI crawlers, research scanners like Censys and Shodan, and anything that was requested and served — all excluded, and listed with the reason rather than silently dropped"],
@@ -40,7 +41,7 @@ const jobs = [
       ["Blast radius preview", "a proposed rule is run against your real traffic before it exists — the count by country, network, path and user agent, and a map on the approval card showing where it would bite"],
       ["Automatic mitigation, off by default", "managed challenge only, never block; single IPs only, never a range; requires a corroborating pattern, not just volume; refuses anything the origin served; capped hourly; auto-expiring; every decision logged and revertable — and a dry-run mode that decides and records without touching Cloudflare"],
     ]},
-  { h: "Operate", lede: "Every change through the same nine-step pipeline: propose, classify, preview, approve, drift-check, execute, read back, audit, revert.",
+  { h: "Operate", shot: ["gate-card", "Approval card: Create WAF rule (managed challenge) on WordPress login and XML-RPC endpoints — would have matched about 115 requests of the last 24 hours, broken down by path, network, country and user agent, with a map, and Approve & run or Reject", "A change, waiting for approval"], lede: "Every change through the same nine-step pipeline: propose, classify, preview, approve, drift-check, execute, read back, audit, revert.",
     items: [
       ["DNS", "create, update, delete — admin only, with apex and wildcard detection"],
       ["WAF", "custom rules, skips, rate limiting, managed rulesets, Super Bot Fight Mode"],
@@ -54,7 +55,7 @@ const jobs = [
       ["Bulk apply", "one WAF rule, cache rule, rate limit, cache purge or AI-bot block across a named group of zones or all of them — up to fifty at a time, one approval card with a per-zone result, and a separate acknowledgement once it touches more than ten"],
       ["Guard rails on every write", "impact classified on the server with an explicit acknowledgement for high; drift detection that refuses the change if reality moved since you looked; read-back verification from Cloudflare; rate limits per class of change with an audited break-glass override; one-click revert from the recorded before-state"],
     ]},
-  { h: "Monitor", lede: "If the graph can show it, a sentence can watch it. Any number Cloudflare exposes about your zones can become an alert by describing it — no query language, no threshold maths.",
+  { h: "Monitor", shot: ["tour-alerts", "Alert rules page: a prompt box to build a rule with AI, and two rules — site down on 5xx rate, origin unreachable — each explained in plain words with its threshold, window and channels", "Alert rules"], lede: "If the graph can show it, a sentence can watch it. Any number Cloudflare exposes about your zones can become an alert by describing it — no query language, no threshold maths.",
     items: [
       ["Alerts from any datapoint, in a sentence", "\"Tell me if any client site returns more than 2% 5xx over ten minutes, but only with real traffic.\" The model writes the rule: query, metric expression, comparator, threshold, window, minimum volume"],
       ["Dry-run before it's armed", "the rule is executed against the live zone first; anything that errors or doesn't yield a number is refused, so a rule that can't fire correctly is never saved"],
@@ -65,7 +66,7 @@ const jobs = [
       ["Per rule, per channel", "each detector subscribes to the channels it should reach; a test send from the channel screen; a delivery log showing what went where and whether it arrived"],
       ["Live stream", "alerts pushed to the browser as they happen"],
     ]},
-  { h: "Connect", lede: "Everything Zonesteward reads from, writes to, or talks through. Bring your own accounts for all of it; credentials are stored encrypted and used only for your workspace.",
+  { h: "Connect", shot: ["connect-tiers", "Connecting Cloudflare: three permission tiers for the token, Core, Operate and Extended", "Choosing what the token may do"], lede: "Everything Zonesteward reads from, writes to, or talks through. Bring your own accounts for all of it; credentials are stored encrypted and used only for your workspace.",
     items: [
       ["Cloudflare", "any number of API tokens across any number of Cloudflare accounts; the connection wizard builds the exact token-creation link and tells you what the pasted token can do"],
       ["Your choice of model", "Anthropic, OpenAI, or any OpenAI-compatible endpoint — including one you host, so your data never leaves your infrastructure. Your own key; usage billed to you by the provider, never marked up. A model per job, and a test on save that proves the model can return the structured output the composers need"],
@@ -78,7 +79,7 @@ const jobs = [
       ["Several tokens, one zone", "where more than one token reaches a zone, the most capable one is chosen for each job, and a 403 falls through to the next rather than failing"],
       ["Permissions learned, never assumed", "what a token can do is learned from real responses and introspection; a denial goes stale and is retried, so granting a permission in Cloudflare takes effect without reconnecting"],
     ]},
-  { h: "Govern", lede: "Multiple clients, multiple tokens, multiple people — and a record of every one of them.",
+  { h: "Govern", shot: ["undo-changes", "The Changes tab: every change to a site, who made it, when, whether it applied, and how to revert it", "Every change, with its outcome"], lede: "Multiple clients, multiple tokens, multiple people — and a record of every one of them.",
     items: [
       ["Built for many clients", "one workspace for your agency; a zone group per client; share links scoped to a client's group, so a client sees their sites and nothing else"],
       ["Fleet roster", "every zone across every token, with its plan tier"],
@@ -106,7 +107,17 @@ const jobs = [
   <div class="jobs">
     {jobs.map((j) => (
       <section class="job" id={j.h.toLowerCase().replace(/[^a-z]+/g, "-")}>
-        <div><h2>{j.h}</h2><p class="job-lede">{j.lede}</p></div>
+        <div class="job-head">
+          <h2>{j.h}</h2><p class="job-lede">{j.lede}</p>
+          {j.shot && <Shot shot={j.shot[0]} alt={j.shot[1]} caption={j.shot[2]} sizes="(min-width: 900px) 420px, 100vw" />}
+          {j.h === "See" && (
+            <div class="phones" aria-label="On a phone">
+              <Shot shot="mobile-dash" variant="phone" alt="The dashboard on a phone: status codes and top countries" caption="Dashboard" />
+              <Shot shot="mobile-work" variant="phone" alt="The workspace on a phone: suggested questions and the chat" caption="Workspace" />
+              <Shot shot="mobile-alerts" variant="phone" alt="The alerts inbox on a phone" caption="Alerts" />
+            </div>
+          )}
+        </div>
         <ul>{j.items.map(([b, t]) => <li><b>{b}.</b> {t}</li>)}</ul>
       </section>
     ))}

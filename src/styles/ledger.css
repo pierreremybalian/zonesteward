@@ -333,3 +333,11 @@ footer{border-top:1px solid var(--rule);padding:44px 0 62px;font-size:13.8px;col
 .pager .next{text-align:right}
 .pager .sc{display:block}
 .pager b{display:block;font-family:Newsreader,serif;font-size:1.25rem;font-weight:400;margin-top:6px}
+
+/* ── screenshot plates on content pages (Shot.astro) ── */
+.shot{margin:0}
+.prose .shot{margin-top:1.8em}
+.shot-phone{max-width:240px}
+.phones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:600px;margin-top:22px}
+.phones .shot-phone{max-width:none}
+.phones figcaption span:first-child{display:none}

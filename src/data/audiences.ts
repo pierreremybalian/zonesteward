@@ -12,7 +12,7 @@ export type Audience = {
   pains: string[];
   features: { b: string; p: string; href: string }[];
   cases: string[];      // ids on /use-cases
-  shot: "tour-see" | "tour-security" | "tour-alerts" | "tour-ask" | "gate-card" | "role-dev" | "uc-graph";
+  shot: "fleet-still" | "tour-security" | "tour-alerts" | "tour-ask" | "tour-keys" | "undo-changes" | "role-dev" | "uc-graph";
   alt: string;
 };
 
@@ -29,7 +29,7 @@ export const AUDIENCES: Audience[] = [
       { b: "Share links and reports", p: "A link per client — viewer or admin, scoped, revocable — and a seven-day digest with CSV for every table.", href: "/#tour-clients" },
       { b: "Priced by zones, on your keys", p: "Studio, Agency, Fleet — every tier includes everything. Your Cloudflare token and model key; usage billed to you at cost, never marked up.", href: "/pricing" },
     ],
-    cases: ["down", "purge"], shot: "tour-see", alt: "The dashboard across a fleet of client zones",
+    cases: ["down", "purge"], shot: "fleet-still", alt: "The Fleet view: every client site on one globe, with request arcs, the site list and a 24-hour timeline",
   },
   {
     slug: "security", label: "Security & SOC", roles: "Security engineers, SecOps, SOC analysts, IAM specialists",
@@ -99,7 +99,7 @@ export const AUDIENCES: Audience[] = [
       { b: "Read-back and revert", p: "“Applied” means Cloudflare was asked what the record is now. Every change stores its before-state and a one-click revert.", href: "/how-it-works" },
       { b: "Certificates, DNSSEC, settings", p: "Edge certificates and expiry, DNSSEC down to the DS record, Universal SSL, zone status and nameservers — a sentence away.", href: "/#details" },
     ],
-    cases: ["undo", "down"], shot: "gate-card", alt: "An approval card: the change, its impact, what it would have matched, Approve or Reject",
+    cases: ["undo", "down"], shot: "undo-changes", alt: "The Changes tab: each DNS, WAF and cache change to a site, with who made it, when, and whether it applied",
   },
   {
     slug: "leadership", label: "Leadership", roles: "CTOs, VPs of Engineering, solutions architects",
@@ -113,7 +113,7 @@ export const AUDIENCES: Audience[] = [
       { b: "Audit and access", p: "Every attempt recorded with actor, payload, response and revert. Roles enforced at three layers. Share links scoped per client.", href: "/security" },
       { b: "Cost you can see", p: "Your Cloudflare token, your model key. Every call itemised by feature and model; billed to you by the provider at cost, never marked up.", href: "/#tour-keys" },
     ],
-    cases: ["block", "undo"], shot: "gate-card", alt: "An approval card with impact class and blast radius",
+    cases: ["block", "undo"], shot: "tour-keys", alt: "AI usage page: cost today, last 7 and 30 days, by feature and by model, and a table of recent calls with their cost",
   },
   {
     slug: "support", label: "Support", roles: "Support engineers, account managers",

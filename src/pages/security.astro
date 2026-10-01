@@ -1,5 +1,6 @@
 ---
 import Page from "../layouts/Page.astro";
+import Shot from "../components/Shot.astro";
 ---
 <Page
   title="Security — Zonesteward"
@@ -28,6 +29,7 @@ import Page from "../layouts/Page.astro";
         <li>Write permissions are <strong>never discovered by writing</strong>. What a token can do is learned from observed responses, token introspection and read-only probes. We will not create a test record in your zone to see if we can.</li>
         <li>The connection wizard builds a Cloudflare token-creation link with exactly the permissions needed, in three tiers, then tells you what the token you pasted can and can't do. Start read-only if you like.</li>
       </ul>
+      <Shot shot="connect-tiers" alt="Connecting Cloudflare: the three permission tiers a new token can have — Core (required), Operate and Extended — with what each one allows" caption="The three permission tiers" sizes="(min-width: 900px) 520px, 100vw" />
     </section>
 
     <section class="sec-block">
@@ -38,6 +40,7 @@ import Page from "../layouts/Page.astro";
         <li>Share links are revocable, optionally time-limited, and carry the role of the person who made them, no more.</li>
         <li>A full audit trail: every change attempt, successful or not, with who, what, the response, and where from.</li>
       </ul>
+      <Shot shot="tour-clients" alt="Create a share link: scope, label, access level and expiry" caption="A share link, scoped and revocable" sizes="(min-width: 900px) 520px, 100vw" />
     </section>
 
     <section class="sec-block">

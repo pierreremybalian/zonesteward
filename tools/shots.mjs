@@ -29,10 +29,23 @@ const CROPS = {
   "mobile-dash":   ["90-mobile-dashboard.png", null],
   "mobile-work":   ["91-mobile-workspace.png", null],
   "mobile-alerts": ["92-mobile-alerts.png", null],
+  // Added 2026-09-30. Workspace frames are cropped to the canvas (no chat
+  // column). Skipped on purpose: the audit-log frame (test rows from guard
+  // probes), the users frame (one alias repeated), the AI settings frame (shows
+  // the key's last characters), and Connect's label field (its placeholder
+  // carries a real first name) — connect-tiers starts below it.
+  "see-live":      ["61-canvas-live.png", [980, 290, 2870, 1775]],
+  "undo-changes":  ["65-canvas-changes.png", [1000, 330, 2830, 1800]],
+  "ask-library":   ["68-question-library.png", [672, 150, 2208, 1094]],
+  "graph-viz":     ["71-canvas-viz.png", [985, 290, 2860, 1320]],
+  "connect-tiers": ["40-settings-connect.png", [715, 890, 2165, 1350]],
+  // A frame from the Fleet video (~/Desktop/zonesteward-video, made by the
+  // recording script): the Fleet tab replaying a day across every site.
+  "fleet-still":   [path.join(os.homedir(), "Desktop", "zonesteward-video", "fleet-poster.png"), null],
 };
 
 for (const [slot, [file, box]] of Object.entries(CROPS)) {
-  const src = path.join(SRC, file);
+  const src = path.isAbsolute(file) ? file : path.join(SRC, file);
   if (!fs.existsSync(src)) { console.log("skip (missing)", slot, file); continue; }
   let img = sharp(src);
   if (box) {
@@ -47,9 +60,12 @@ for (const [slot, [file, box]] of Object.entries(CROPS)) {
   console.log(`${slot.padEnd(14)} ${m.width}×${m.height}  ${(fs.statSync(out).size / 1024).toFixed(0)} KB`);
 }
 
-// Social card: the dark dashboard, top band, 1.905:1 → 1200×630.
-const og = path.join(SRC, "82-dark-dashboard.png");
+// Social card: a frame of the Fleet video, 1.905:1 → 1200×630.
+const og = path.join(os.homedir(), "Desktop", "zonesteward-video", "fleet-poster.png");
 if (fs.existsSync(og)) {
-  await sharp(og).extract({ left: 0, top: 0, width: 2880, height: 1512 }).resize(1200, 630).jpeg({ quality: 82, mozjpeg: true }).toFile("public/og.jpg");
+  await sharp(og).extract({ left: 330, top: 150, width: 1270, height: 667 }).resize(1200, 630).jpeg({ quality: 82, mozjpeg: true }).toFile("public/og.jpg");
   console.log("og.jpg", (fs.statSync("public/og.jpg").size / 1024).toFixed(0), "KB");
+  // The hero video's poster, shown before the first frame and under reduced motion.
+  await sharp(og).webp({ quality: 80 }).toFile("public/media/fleet-poster.webp");
+  console.log("fleet-poster.webp", (fs.statSync("public/media/fleet-poster.webp").size / 1024).toFixed(0), "KB");
 }
