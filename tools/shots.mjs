@@ -65,7 +65,4 @@ const og = path.join(os.homedir(), "Desktop", "zonesteward-video", "fleet-poster
 if (fs.existsSync(og)) {
   await sharp(og).extract({ left: 330, top: 150, width: 1270, height: 667 }).resize(1200, 630).jpeg({ quality: 82, mozjpeg: true }).toFile("public/og.jpg");
   console.log("og.jpg", (fs.statSync("public/og.jpg").size / 1024).toFixed(0), "KB");
-  // The hero video's poster, shown before the first frame and under reduced motion.
-  await sharp(og).webp({ quality: 80 }).toFile("public/media/fleet-poster.webp");
-  console.log("fleet-poster.webp", (fs.statSync("public/media/fleet-poster.webp").size / 1024).toFixed(0), "KB");
 }

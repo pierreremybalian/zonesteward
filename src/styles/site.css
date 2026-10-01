@@ -16,7 +16,7 @@
 .hero-left .lede{max-width:46ch;margin-top:26px}
 @media(min-width:960px){.hero-left h1{font-size:clamp(2.8rem,5vw,4.2rem)}}
 .hero-plate{margin:0}
-.plate-in>video{display:block;width:100%;height:auto;aspect-ratio:1600/1042;background:#000}
+.plate-in>video{display:block;width:100%;height:auto;aspect-ratio:1160/1032;background:#000}
 .kicker{display:flex;align-items:center;gap:12px;margin-bottom:26px}
 .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto}
 h1{font-size:clamp(2.6rem,7.4vw,5rem);max-width:14ch}
