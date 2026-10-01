@@ -69,11 +69,49 @@ section{padding:78px 0}
 .cta-note{font-size:13.5px;color:var(--muted)}
 
 header{border-bottom:1px solid var(--ink);background:var(--paper)}
-.masthead{display:flex;align-items:baseline;gap:30px;padding:20px 0 16px}
-.masthead nav{display:none;gap:24px;font-size:14px;color:var(--ink-2)}
-.masthead nav a:hover{color:var(--accent)}
-.masthead .end{margin-left:auto;display:flex;align-items:center;gap:18px}
-@media(min-width:900px){.masthead nav{display:flex}}
+/* ── masthead: desktop menus at 980px+, one MENU disclosure below ── */
+.site-head{position:relative;z-index:20}
+.masthead{display:flex;align-items:center;gap:26px;padding:16px 0}
+.masthead .mark{flex:0 0 auto}
+.masthead .btn{white-space:nowrap}
+.nav-main{display:none;align-items:center;gap:24px;font-size:14px;color:var(--ink-2)}
+.nav-main>a{white-space:nowrap}
+.nav-main>a:hover,.nav-main>a[aria-current]{color:var(--accent)}
+.masthead .end{margin-left:auto;display:flex;align-items:center;gap:16px}
+.masthead .signin{font-size:14px;color:var(--ink-2);display:none;white-space:nowrap}
+.masthead .signin:hover{color:var(--accent)}
+@media(min-width:980px){.nav-main{display:flex}.masthead .signin{display:inline}.mnav{display:none}}
+.pm{position:relative}
+.pm summary,.mnav summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pm summary::-webkit-details-marker,.mnav summary::-webkit-details-marker{display:none}
+.pm summary::after{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);margin-left:2px}
+.pm[open] summary::after{transform:rotate(225deg) translateY(-1px)}
+.pm summary:hover,.pm[open] summary,.pm summary.on{color:var(--accent)}
+.pm-panel{
+  position:absolute;left:-22px;top:calc(100% + 16px);background:var(--paper);
+  border:1px solid var(--ink);box-shadow:0 22px 50px -30px rgba(0,0,0,.45);padding:14px 22px 16px;
+}
+.pm-panel ul{list-style:none;display:grid;gap:2px}
+.pm-panel a{display:block;padding:8px 0;color:var(--ink)}
+.pm-panel a b{display:block;font-weight:500;font-size:14.5px}
+.pm-panel a span{display:block;font-size:13px;color:var(--muted);font-weight:300;margin-top:1px}
+.pm-panel a:hover b,.pm-panel a[aria-current] b{color:var(--accent)}
+.pm-product{width:min(340px,86vw)}
+.pm-who{width:min(440px,86vw)}
+.pm-who ul{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}
+.pm-who .pm-all{margin-top:8px;padding-top:12px;border-top:1px solid var(--rule);font-size:13.5px;color:var(--accent)}
+.mnav summary{font-family:"Geist Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--rule-2);padding:7px 11px;border-radius:2px}
+.mnav[open] summary{border-color:var(--ink)}
+.mnav-panel{position:absolute;left:0;right:0;top:100%;background:var(--paper);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:18px 26px 24px;display:grid;gap:6px;box-shadow:0 30px 50px -40px rgba(0,0,0,.5);max-height:calc(100dvh - 70px);overflow:auto}
+.mnav-panel ul{list-style:none;display:grid;margin-bottom:10px}
+.mnav-panel li a{display:block;padding:9px 0;border-bottom:1px solid var(--rule);font-size:15px;color:var(--ink)}
+.mnav-panel li a[aria-current]{color:var(--accent)}
+.mnav-panel .sc{margin-top:6px}
+.mnav-panel .mnav-who{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px}
+.mnav-panel .mnav-main{margin-top:6px;border-top:1px solid var(--ink)}
+.mnav-panel .btn{justify-content:center;margin-top:6px}
+@media(max-width:979px){.masthead{gap:14px}.masthead .end{gap:12px}}
+@media(max-width:359px){.masthead .end .btn{display:none}}
 
 /* ── plates: framed product figures ─────────────────────────── */
 .plate{border:1px solid var(--rule-2);background:#fff;padding:10px}

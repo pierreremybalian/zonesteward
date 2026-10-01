@@ -1,24 +1,54 @@
 ---
-const nav = [
-  { href: "/how-it-works", label: "How it works" },
-  { href: "/use-cases", label: "Use cases" },
-  { href: "/security", label: "Security" },
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/beta", label: "Beta" },
-  { href: "/docs", label: "Docs" },
-];
-const APP = "https://app.zonesteward.com";
+/* Header. Desktop (980px+): Product and Who-it's-for disclosure menus, three
+   plain links, Sign in, and the Apply button. Below that: the Apply button
+   and one MENU disclosure holding everything. Disclosures are <details>, so
+   they work without JavaScript; /g/menu.js only closes them on an outside
+   click or Escape, and closes one when another opens. */
+import { PRODUCT, WHO, WHO_ALL, MAIN, MORE, APP_URL } from "../data/nav";
+const path = Astro.url.pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
+const cur = (h: string) => (path === h || (h !== "/" && path.startsWith(h + "/")) ? "page" : undefined);
+const inProduct = PRODUCT.some((l) => cur(l.href));
+const inWho = path === "/for" || path.startsWith("/for/");
 ---
-<header>
+<header class="site-head">
   <div class="wrap">
     <div class="masthead">
-      <a href="/" class="mark">Zone<i>steward</i></a>
-      <nav>{nav.map((n) => <a href={n.href}>{n.label}</a>)}</nav>
+      <a href="/" class="mark" aria-label="Zonesteward home">Zone<i>steward</i></a>
+      <nav class="nav-main" aria-label="Main">
+        <details class="pm" data-menu>
+          <summary class:list={[{ on: inProduct }]}>Product</summary>
+          <div class="pm-panel pm-product">
+            <ul>{PRODUCT.map((l) => <li><a href={l.href} aria-current={cur(l.href)}><b>{l.label}</b><span>{l.note}</span></a></li>)}</ul>
+          </div>
+        </details>
+        <details class="pm" data-menu>
+          <summary class:list={[{ on: inWho }]}>Who it’s for</summary>
+          <div class="pm-panel pm-who">
+            <ul>{WHO.map((l) => <li><a href={l.href} aria-current={cur(l.href)}><b>{l.label}</b></a></li>)}</ul>
+            <a class="pm-all" href={WHO_ALL.href} aria-current={path === "/for" ? "page" : undefined}>Every role, side by side →</a>
+          </div>
+        </details>
+        {MAIN.map((l) => <a href={l.href} aria-current={cur(l.href)}>{l.label}</a>)}
+      </nav>
       <div class="end">
-        <a href={APP} class="btn btn-ghost btn-sm" rel="nofollow">Sign in</a>
+        <a href={APP_URL} class="signin" rel="nofollow">Sign in</a>
         <a href="/apply" class="btn btn-primary btn-sm">Apply for beta</a>
       </div>
+      <details class="mnav" data-menu>
+        <summary aria-label="Menu">Menu</summary>
+        <div class="mnav-panel">
+          <span class="sc">Product</span>
+          <ul>{PRODUCT.map((l) => <li><a href={l.href} aria-current={cur(l.href)}>{l.label}</a></li>)}</ul>
+          <span class="sc">Who it’s for</span>
+          <ul class="mnav-who">{WHO.map((l) => <li><a href={l.href} aria-current={cur(l.href)}>{l.label}</a></li>)}</ul>
+          <ul class="mnav-main">
+            {[...MAIN, ...MORE].map((l) => <li><a href={l.href} aria-current={cur(l.href)}>{l.label}</a></li>)}
+            <li><a href={APP_URL} rel="nofollow">Sign in</a></li>
+          </ul>
+          <a href="/apply" class="btn btn-primary">Apply for beta</a>
+        </div>
+      </details>
     </div>
   </div>
 </header>
+<script is:inline src="/g/menu.js" defer></script>
