@@ -8,6 +8,7 @@ export const PRODUCT: Link[] = [
   { href: "/how-it-works", label: "How it works", note: "From a question to an approved change" },
   { href: "/use-cases", label: "Use cases", note: "What teams do with it day to day" },
   { href: "/features", label: "Features", note: "Everything in the beta" },
+  { href: "/charts", label: "Charts", note: "How a question becomes a chart" },
   { href: "/security", label: "Security", note: "How tokens and changes are protected" },
 ];
 
@@ -32,7 +33,7 @@ export const LEGAL: Link[] = [
 
 // Flat list for the footer, same order the site has always shown.
 export const FOOTER: Link[] = [
-  PRODUCT[0], WHO_ALL, PRODUCT[1], PRODUCT[3], PRODUCT[2],
+  PRODUCT[0], WHO_ALL, PRODUCT[1], PRODUCT[4], PRODUCT[2], PRODUCT[3],
   { href: "/pricing", label: "Pricing" }, { href: "/beta", label: "The beta" }, { href: "/docs", label: "Docs" },
   ...MORE, ...LEGAL,
 ];

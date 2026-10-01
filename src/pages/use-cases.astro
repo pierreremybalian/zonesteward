@@ -18,7 +18,7 @@ const cases = [
     ],
     proposes: "Edge or origin, with the evidence: origin errors and response times against the edge status mix. If it is the server it says so — there is nothing to write to Cloudflare — and it can propose a Cloudflare health check, on some plans, so you are told first next time. If a rule you approved earlier is the cause, ask it to undo that change: the revert card appears in the conversation, built from the recorded before-state and linked to the original, for an administrator to approve. Paging comes from the alert rules you have armed, never from a conversation.", // verified: route.ts create_health_check (Pro+); chat tool revert_change → buildRevertProposal, admin-only; no notify tool in chat
   },
-  { id: "slow", shot: ["uc-graph", "A chat answer charting cache status and origin load over time, with the query beside it", "Cache and origin, from one question"], ask: "Why is the site slow?",
+  { id: "slow", ask: "Why is the site slow?",
     checks: [
       "Origin response time at the median, 95th and 99th percentile, by hour, against the day before, beside the request rate — the shape of a saturated origin, not the cause; it cannot see your server", // verified: schema.ts:30 quantiles P50/P95/P99, :185 count + avg per group
       "Cache status by path, on plans that expose it: the static resources going to the origin uncached", // verified: schema.ts:184, :37
@@ -77,12 +77,13 @@ const cases = [
     ],
     proposes: "Nothing to approve. It returns the highlights in the conversation with links to the printable report and CSV exports of each table — the thing you would otherwise assemble by hand on a Friday afternoon.", // verified: route.ts:1615 links; reports.ts:165 print; ReportsClient.tsx:7 nine CSV tables
   },
-  { id: "graph", shot: ["graph-viz", "A chat answer drawn as a stacked bar chart on the canvas, with chart types to switch between and a Save button", "A chart, ready to save"], ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
+  { id: "graph", shot: ["uc-graph", "The Viz tab after a question about cache hit ratio: hit, miss, none, bypass, expired and revalidated request counts by hour drawn as a series, with Stacked area and Heatmap 3D proposed beside it, each marked AI, and Suggest views, Author with AI and Save buttons", "Cache status by hour, with three proposed views"], ask: "Chart cache hit ratio by hour for this week, and put it on the dashboard.",
     checks: [
-      "The analytics query behind the chart, run against the zone — cache status on plans that expose it", // verified: Canvas.tsx:31-43 Viz/Table/GraphQL/JSON, :304 query shown
-      "Which charts fit the shape of the result — it proposes two to four; ask again for a different one", // verified: viz-proposer.ts:30 MAX_PROPOSALS=4; VizPanel.tsx:179-187
+      "The analytics query behind the chart, run against the zone with your own token — cache status on plans that expose it. The exact query and its variables are on the GraphQL tab", // verified: Canvas.tsx TAB_LABELS viz/table/graphql/json; GraphQLView renders query + variables as read-only <pre>
+      "Which charts fit the shape of the result — an instant chart first, then up to four proposed views, each with a one-line reason and offered only if the data fits; Suggest views asks for fresh ones", // verified: VizPanel.tsx activeSpec starts at heuristics[0], suggest() → /api/viz/propose; viz-proposer.ts:30,305 MAX_PROPOSALS=4; viz-spec.ts:212 fit gate (specFitsData)
     ],
-    proposes: "A graph you review and save to your library, pinned if you like, and added to the dashboard in the same click if you want it there. Those are your clicks — the conversation never touches the dashboard. Every saved graph opens the conversation it came from, so you can see why it was built.", // verified: VizPanel.tsx save + addToDashboard (PUT /api/dashboard); SavedLibrary.tsx Open conversation → /?chat=; viz-store.ts:15
+    proposes: "A chart you review and save to your library, pinned if you like, and added to the dashboard in the same click if you want it there. Those are your clicks — the conversation never touches the dashboard. On the dashboard it re-queries every minute. Every saved chart opens the conversation it came from, so you can see why it was built.", // verified: VizPanel.tsx save() + "+ dashboard" (customGraph widget, PUT /api/dashboard); CustomGraphWidgets.tsx:64 60_000 refresh; SavedLibrary.tsx:191 Open conversation; viz-store.ts:82 pinned first
+    link: ["/charts", "How charts work →"],
   },
   { id: "next", shot: ["tour-alerts", "Alert rules page: a prompt box to build a rule with AI, and two rules — site down on 5xx rate, origin unreachable — each explained in plain words with its threshold, window and channels", "Rules, written from a sentence"], ask: "Warn me if cache hit ratio drops below 80% over 15 minutes.", where: "Typed into Alerts → New rule — or said in the chat, which opens the composer for you",
     checks: [

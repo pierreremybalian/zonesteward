@@ -1,0 +1,94 @@
+---
+/* How a question becomes a chart, step by step. Every claim is checked
+   against the operator's code (cloudflare-claude); the citation sits beside
+   each step. Screenshots are only used on the step they actually show. */
+import Page from "../layouts/Page.astro";
+import Shot from "../components/Shot.astro";
+
+const FLAT = ["Number", "Bars", "Line", "Area", "Series", "Table", "Scatter", "Stacked bars (including 100%)", "Grouped bars", "Stacked area", "Pie", "Histogram"]; // verified: app/lib/viz-spec.ts VIZ_RENDERERS_2D (12), :76 stack "expand" = 100%; labels VizPanel.tsx RENDERER_LABELS
+const DEEP = ["Timeline", "Top-N", "Heatmap", "Globe", "Globe bars", "Countries (an extruded map)", "3D bars"]; // verified: viz-spec.ts VIZ_RENDERERS_3D (7); labels visualize.ts VIEW_LABELS
+
+type Step = { b: string; p: string[]; shot?: [string, string, string]; kinds?: boolean };
+const steps: Step[] = [
+  { b: "Ask",
+    p: ["Ask about a zone in plain language: “cache hit ratio by hour this week”, “5xx by path in the last hour”. The model writes the analytics query, the server runs it against your zone with your own Cloudflare token, and the answer comes back as prose with the data on the canvas beside it."],
+    shot: ["tour-ask", "Zonesteward chat: a 24-hour health answer on the left, and on the right the Viz tab with firewall activity by action and source as stacked bars, Pie and Bars proposed beside it, and Viz, Table, GraphQL and JSON tabs above", "An answer on the left, its chart on the right"] },
+  { b: "An instant chart",
+    // verified: VizPanel.tsx activeSpec starts at heuristics[0]; viz-spec.ts heuristicProposals → bignumber/line/bar/table + multiline
+    p: ["The moment the result arrives, the canvas draws a chart chosen from the shape of the data: a single number, a line over time, bars by category, one line per series, or a table. No model is involved in this step, so the chart is there straight away.",
+        "Counts are corrected for Cloudflare’s sampling, so the chart shows the same numbers as the written answer."] }, // verified: visualize.ts readMetric scales count/sum by avg.sampleInterval
+  { b: "Proposed views, with reasons",
+    // verified: viz-proposer.ts profileResult (field names, kinds, cardinality, ≤5 sample values, 3 sample rows), :30 MAX_PROPOSALS=4, falls back to heuristics on failure/6 s timeout; viz-spec.ts:212 fit gate (specFitsData); VizPanel.tsx AI badge + rationale, suggest() → /api/viz/propose
+    p: ["Then a model looks at a short profile of the result — the field names, what kind of field each is, how many distinct values it has, a few samples — rather than the whole result. It proposes up to four views, each marked AI with a one-line reason for choosing it.",
+        "Every proposal is checked against the real data, and a view the data can’t support is never offered. With no model configured, or if it doesn’t answer in time, you get views chosen by rules instead. Suggest views asks for fresh proposals without running the query again."],
+    shot: ["graph-viz", "The Viz tab: firewall events from the last 24 hours by action and source as stacked bars, with Grouped bars, Pie and Table proposed beside it, each marked AI, a one-line reason above the chart, and Suggest views, Author with AI and Save buttons", "Four proposed views, and the reason for the one on screen"] },
+  { b: "Switch views, flat or 3D",
+    // verified: Cinematic.tsx play/scrub (playing, scrubber), hover inspector overlay, viewsForDataset → switch between fitting 3D views
+    p: ["Click any proposal to switch. There are nineteen kinds of chart. The 3D views have a play and scrub control for time and a hover inspector for exact values, and you can move between any 3D views the data fits."],
+    kinds: true,
+    shot: ["uc-graph", "The Viz tab after a question about cache hit ratio: hit, miss, none, bypass, expired and revalidated request counts by hour drawn as a series, with Stacked area and Heatmap 3D proposed beside it, each marked AI", "A flat view and a 3D view proposed for the same result"] },
+  { b: "Four tabs beside every answer",
+    // verified: Canvas.tsx TAB_LABELS viz/table/graphql/json; Table → Export CSV; GraphQLView query + variables as read-only <pre>; ‹ › history navigation
+    p: ["Viz is the chart. Table is the rows, with CSV export. GraphQL is the exact query and its variables as they were run, shown for reading rather than editing. JSON is the raw result. The ‹ and › arrows step between earlier results."],
+    shot: ["role-dev", "The GraphQL tab: a firewall activity query with its filter, limit, ordering and fields, and below it the variables — start and end time and the zone", "The query and variables, exactly as run"] },
+  { b: "Author with AI",
+    // verified: VizPanel.tsx Author with AI → GraphBuilder; api/viz/compose/route.ts:205-227 dry-run then specFitsData; GraphBuilder.tsx explanation, Show the generated query, Refine, Save graph
+    p: ["Want a chart the answer didn’t draw? Author with AI, in the Viz tab, takes a sentence: “scatter of p95 origin latency against requests per path, last 24 hours”. It writes the query, dry-runs it against the live zone, checks the chart fits what actually came back, and only then shows a preview with its explanation and the query.",
+        "Not quite right? Change the sentence and refine. There is no chart definition to edit by hand; the sentence is how you adjust it."] },
+  { b: "Save, pin, and put it on the dashboard",
+    // verified: VizPanel.tsx save() name + conversationId + "+ dashboard"; SavedLibrary.tsx pin/delete/Open conversation; viz-store.ts:82 pinned first; CustomGraphWidgets.tsx 60_000 refresh; api/dashboard/graph-data/route.ts fresh window, multi-zone merge
+    p: ["Save names the chart and keeps the conversation it came from, so Open conversation shows why it exists. Tick + dashboard to add it as a widget in the same click.",
+        "In the Saved library you can pin a chart so it sorts to the top, delete it, open its conversation, or add it to the dashboard. On the dashboard a chart re-queries every minute and rolls its time window forward, so it stays current, and one widget can combine several sites."] },
+  { b: "Safe by design",
+    // verified: viz-spec.ts validateVizSpec (server); renderers draw from the spec, no eval; queries run with the workspace's decrypted token (api/viz/compose getDecryptedToken)
+    p: ["A chart is a JSON description — which query, which field on which axis, which kind of chart — validated on the server before it is drawn. It is never code, so nothing a model writes runs in your browser. Every query runs with your workspace’s own Cloudflare token."] },
+];
+---
+<Page
+  title="How charts work — Zonesteward"
+  description="Ask a question and get a chart the moment the data arrives, then up to four views a model proposes with its reasons. Nineteen chart kinds, flat and 3D, the exact query beside every answer, and saved charts that stay current on the dashboard."
+  eyebrow="Charts"
+  h1="Ask a question. Get the right chart."
+  lede="Every answer that returns data comes with a chart, drawn the moment the result arrives. A model then proposes other views and says why. Here is the path from a sentence to a chart on the dashboard."
+>
+  <figure class="plate charts-plate">
+    <div class="plate-in">
+      <video class="charts-video" autoplay muted loop playsinline preload="metadata" width="1200" height="1018"
+        style="aspect-ratio:1200/1018"
+        poster="/media/charts-flow-poster.webp"
+        aria-label="The chart for one question, requests by HTTP status code per day over seven days: the instant chart, then the views a model proposed (Series, Stacked area and a 3D heatmap, each marked AI with its reason), then the Table tab with CSV export and the GraphQL tab with the exact query">
+        <source src="/media/charts-flow.webm" type="video/webm" />
+        <source src="/media/charts-flow.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <figcaption><span>One question</span><span>The instant chart, the proposed views, the table and the query</span></figcaption>
+  </figure>
+  <script is:inline>
+    (function () {
+      var v = document.querySelector(".charts-video");
+      if (!v || !window.matchMedia) return;
+      var mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      function apply() { if (mq.matches) { v.removeAttribute("autoplay"); v.pause(); } else if (v.paused) { v.play().catch(function () {}); } }
+      apply();
+      if (mq.addEventListener) mq.addEventListener("change", apply);
+    })();
+  </script>
+
+  <ol class="pipe">
+    {steps.map((s) => (
+      <li><div>
+        <b>{s.b}</b>
+        {s.p.map((t) => <p>{t}</p>)}
+        {s.kinds && (
+          <>
+            <p><strong>Flat ({FLAT.length}).</strong> {FLAT.join(", ")}.</p>
+            <p><strong>3D ({DEEP.length}).</strong> {DEEP.join(", ")}.</p>
+          </>
+        )}
+        {s.shot && <Shot shot={s.shot[0]} alt={s.shot[1]} caption={s.shot[2]} class="pipe-shot" sizes="(min-width: 760px) 620px, 100vw" />}
+      </div></li>
+    ))}
+  </ol>
+
+  <p class="callout"><a href="/use-cases#graph">Chart a question and put it on the dashboard</a>, as a use case — what it checks and what you approve.</p>
+</Page>

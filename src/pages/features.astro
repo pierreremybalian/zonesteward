@@ -14,7 +14,7 @@ const jobs = [
       ["A guided tour on first sign-in", "two minutes, and it drives the product for you: asks a question, reads the globe, proposes a change, shows the gate"],
       ["Conversations kept indefinitely", "nothing expires"],
     ]},
-  { h: "See", shot: ["see-live", "The Live view of one site: request arcs from visitors to Cloudflare data centres, coloured by status, with country, user-agent and path filters", "The Live view of one site"], lede: "Requests rendered live on a globe, from the client's geography to the Cloudflare colo that served them. Thirty-minute rolling window, ten-second poll.",
+  { h: "See", shot: ["see-live", "The Live view of one site: request arcs from visitors to Cloudflare data centres, coloured by status, with country, user-agent and path filters", "The Live view of one site"], lede: "Requests rendered live on a globe, from the client's geography to the Cloudflare colo that served them. Thirty-minute rolling window, ten-second poll.", more: ["/charts", "How charts work →"],
     items: [
       ["Render modes", "pulse, flow, heat, trace, hex-binned bars"],
       ["All 157 points of presence", "as a layer, scaled against camera distance to stay legible at any zoom"],
@@ -27,8 +27,9 @@ const jobs = [
       ["Google Analytics beside the edge", "active users right now, top pages, sessions, conversions and sources docked next to the live traffic — the human behaviour Cloudflare can't see"],
       ["Honest status semantics", "2xx served, 3xx redirected, 4xx–5xx rejected. A redirect is never counted as a hit"],
       ["A dashboard built for a wall", "a widget grid you arrange and save, streaming live: status mix, requests, bandwidth, top paths, countries, networks, origin health, open incidents, the fleet globe, Google Analytics, and any graph from your library"],
-      ["Graph builder", "describe the chart, review the query and the proposed visualisation, adjust, save. Line, area, stacked area, bar, multi-bar, bar timeline, multi-line, pie, scatter, histogram, table, big number, choropleth, globe"],
-      ["A saved library", "every graph you keep, pinned or not, tied to the conversation that produced it — and one click puts any of them on the dashboard as a widget"],
+      ["A chart for every answer", "an instant chart from the shape of the result, then up to four views the model proposes, each with a one-line reason and offered only if the data fits. Nineteen kinds: number, bars, line, area, series, table, scatter, stacked bars, grouped bars, stacked area, pie and histogram, and in 3D a timeline, top-N, heatmap, globe, globe bars, an extruded country map and 3D bars"],
+      ["Author with AI", "describe a chart in a sentence; it writes the query, dry-runs it against the live zone, checks the chart fits the real result, then shows a preview with its explanation and the query. Refine the sentence, or save it"],
+      ["A saved library", "every chart you keep, pinned to the top or not, tied to the conversation that produced it — and one click adds any of them to the dashboard, where it re-queries every minute and can combine several sites"],
       ["Reports you can ask for", "\"send me a seven-day digest\" returns traffic, 5xx rate, top countries, paths and networks, firewall activity, alerts that fired and every change made — highlights in prose, a printable page, and CSV for every table"],
       ["Incident reports", "each incident rendered as its own page: what fired, the investigation, the fix, what changed"],
     ]},
@@ -60,7 +61,7 @@ const jobs = [
       ["Alerts from any datapoint, in a sentence", "\"Tell me if any client site returns more than 2% 5xx over ten minutes, but only with real traffic.\" The model writes the rule: query, metric expression, comparator, threshold, window, minimum volume"],
       ["Dry-run before it's armed", "the rule is executed against the live zone first; anything that errors or doesn't yield a number is refused, so a rule that can't fire correctly is never saved"],
       ["Explained in English, permanently", "the preview shows what the rule does in plain words and keeps that explanation beside it, so the rules list never becomes a wall of formulas"],
-      ["Eleven presets to start from", "error-rate spike, traffic spike, traffic drop, 404 surge, origin unreachable, path attack, geographic anomaly, firewall block surge, bot score surge, cache-hit ratio drop, latency — each tunable"],
+      ["Presets to start from", "error-rate spike, traffic spike, traffic drop, 404 surge, origin unreachable, path attack, geographic anomaly, firewall block surge, bot score surge, cache-hit ratio drop, latency — each tunable"],
       ["Incidents, not just alerts", "an alert becomes an incident: deduplicated so a flapping detector is one event, acknowledged, resolved, with an AI investigation of probable cause and a suggested fix attached. The investigator may not propose DNS changes, deletes or WAF skips, so an injected investigation cannot suggest turning protection off"],
       ["Channels, by name", "Email through Resend, SendGrid, Mailgun or any SMTP server · Slack incoming webhooks · Microsoft Teams via Power Automate workflows · PagerDuty events · SMS through Twilio · generic webhooks (JSON, signed) for anything else"],
       ["Per rule, per channel", "each detector subscribes to the channels it should reach; a test send from the channel screen; a delivery log showing what went where and whether it arrived"],
@@ -109,6 +110,7 @@ const jobs = [
       <section class="job" id={j.h.toLowerCase().replace(/[^a-z]+/g, "-")}>
         <div class="job-head">
           <h2>{j.h}</h2><p class="job-lede">{j.lede}</p>
+          {j.more && <p class="job-lede"><a href={j.more[0]}>{j.more[1]}</a></p>}
           {j.shot && <Shot shot={j.shot[0]} alt={j.shot[1]} caption={j.shot[2]} sizes="(min-width: 900px) 420px, 100vw" />}
           {j.h === "See" && (
             <div class="phones" aria-label="On a phone">

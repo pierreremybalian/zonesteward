@@ -13,7 +13,7 @@ import shotClients from "../assets/shots/tour-clients.png";
 import shotKeys from "../assets/shots/tour-keys.png";
 
 const tabs = [
-  { id: "ask", label: "Ask", caption: "A question, its chart, and the query beside it",
+  { id: "ask", label: "Ask", caption: "An answer and its chart, with Viz, Table, GraphQL and JSON tabs",
     h: "Ask the question the client asked you.",
     bullets: [
       "“Is it down?”, “Why is it slow?”, “Who is attacking us?” — answered from Cloudflare’s own analytics, as prose with a chart.",
@@ -42,9 +42,10 @@ const tabs = [
     h: "A dashboard for the wall. A chart for any question.",
     bullets: [
       "Status mix, countries, networks, bandwidth, open incidents and the fleet globe — live, on one screen.",
-      "Eleven chart kinds \u2014 bars, lines, areas, pies, scatter, histograms, tables, big numbers, a globe and a map. The model proposes two to four for each answer; switch with a click, or ask for another.",
-      "Saved views become widgets. Arrange them once and leave it on a screen.",
+      "Nineteen chart kinds \u2014 twelve flat (bars, lines, areas, pies, scatter, histograms, tables, big numbers and more) and seven in 3D, including a globe and a country map. The model proposes up to four for each answer, each with its reason; switch with a click, or ask for fresh ones.",
+      "Saved charts become dashboard widgets that re-query every minute. Arrange them once and leave it on a screen.",
     ],
+    link: ["/charts", "How charts work →"],
     shot: shotSee, alt: "The dashboard: a live globe with request arcs, status code bars, top countries, open incidents, bandwidth and top networks" },
   { id: "clients", label: "Clients", caption: "A read-only share link, expiring within 30 days",
     h: "One card for a whole client group. One link per client.",

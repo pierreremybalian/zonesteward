@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { AUDIENCES } from "../data/audiences";
 
-const STATIC = ["", "how-it-works", "for", ...AUDIENCES.map((a) => `for/${a.slug}`), "use-cases", "security", "features", "pricing", "beta", "apply", "about", "docs", "blog", "privacy", "terms"];
+const STATIC = ["", "how-it-works", "for", ...AUDIENCES.map((a) => `for/${a.slug}`), "use-cases", "security", "features", "charts", "pricing", "beta", "apply", "about", "docs", "blog", "privacy", "terms"];
 
 export const GET: APIRoute = async ({ site }) => {
   const base = (site ?? new URL("https://www.zonesteward.com")).toString().replace(/\/$/, "");

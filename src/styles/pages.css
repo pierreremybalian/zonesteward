@@ -38,6 +38,7 @@
 .pipe li::before{content:counter(s,decimal-leading-zero);font-family:"Geist Mono",monospace;font-size:12px;color:var(--accent);padding-top:6px}
 .pipe b{font-family:Newsreader,serif;font-size:1.3rem;font-weight:500;display:block;margin-bottom:6px}
 .pipe p{font-size:15px;color:var(--ink-2);font-weight:300;max-width:62ch}
+.pipe p+p{margin-top:.7em}
 .pipe-shot{margin-top:18px;max-width:620px}
 
 /* features: jobs, each a group */
@@ -73,3 +74,4 @@
 .post-head{padding:64px 0 38px;border-bottom:1px solid var(--rule)}
 .post-head h1{font-size:clamp(2rem,4.6vw,3.2rem);max-width:24ch}
 .prose .dropcap::first-letter{font-family:Newsreader,serif;font-size:3.6em;float:left;line-height:.85;padding:6px 10px 0 0;color:var(--accent)}
+.charts-plate{margin:40px 0 0}
