@@ -13,7 +13,7 @@ import shotClients from "../assets/shots/tour-clients.png";
 import shotKeys from "../assets/shots/tour-keys.png";
 
 const tabs = [
-  { id: "ask", label: "Ask", plate: "III", caption: "A question, its chart, and the query beside it",
+  { id: "ask", label: "Ask", caption: "A question, its chart, and the query beside it",
     h: "Ask the question the client asked you.",
     bullets: [
       "“Is it down?”, “Why is it slow?”, “Who is attacking us?” — answered from Cloudflare’s own analytics, as prose with a chart.",
@@ -22,7 +22,7 @@ const tabs = [
     ],
     link: ["/use-cases", "Ten questions, and what happens when you ask them →"],
     shot: shotAsk, alt: "Zonesteward chat: a 24-hour health answer on the left, a firewall activity chart on the right with Viz, Table, GraphQL and JSON tabs" },
-  { id: "security", label: "Attackers", plate: "IV", caption: "The security tab, last 24 hours",
+  { id: "security", label: "Attackers", caption: "The security tab, last 24 hours",
     h: "Ranked, categorised, one click from a challenge.",
     bullets: [
       "Every source scored and sorted into nine categories, with its country and network beside the address.",
@@ -30,7 +30,7 @@ const tabs = [
       "Auto-mitigation exists, and is off until you turn it on.",
     ],
     shot: shotSecurity, alt: "The security tab: attacker counts, category chips, and ranked sources with country flags, networks, probed paths and Block or Challenge actions" },
-  { id: "alerts", label: "Alerts", plate: "V", caption: "Alert rules, written from a sentence",
+  { id: "alerts", label: "Alerts", caption: "Alert rules, written from a sentence",
     h: "Describe what would worry you. It writes the rule.",
     bullets: [
       "Query, threshold, window and minimum volume, written from one sentence and explained back to you in English.",
@@ -38,7 +38,7 @@ const tabs = [
       "Email, Slack, Microsoft Teams, PagerDuty, SMS and signed webhooks.",
     ],
     shot: shotAlerts, alt: "Alert rules page: a prompt box to build a rule with AI, and two rules — site down on 5xx rate, origin unreachable — each explained in plain words with its threshold, window and channels" },
-  { id: "see", label: "Dashboard", plate: "VI", caption: "The dashboard, streaming",
+  { id: "see", label: "Dashboard", caption: "The dashboard, streaming",
     h: "A dashboard for the wall. A chart for any question.",
     bullets: [
       "Status mix, countries, networks, bandwidth, open incidents and the fleet globe — live, on one screen.",
@@ -46,7 +46,7 @@ const tabs = [
       "Saved views become widgets. Arrange them once and leave it on a screen.",
     ],
     shot: shotSee, alt: "The dashboard: a live globe with request arcs, status code bars, top countries, open incidents, bandwidth and top networks" },
-  { id: "clients", label: "Clients", plate: "VII", caption: "A read-only share link, expiring within 30 days",
+  { id: "clients", label: "Clients", caption: "A read-only share link, expiring within 30 days",
     h: "One card for a whole client group. One link per client.",
     bullets: [
       "Group zones by client. A purge, a WAF rule or a rate limit goes to the whole group on one approval card, applied and audited zone by zone.",
@@ -54,7 +54,7 @@ const tabs = [
       "A seven-day digest and incident reports, printable, with CSV for every table.",
     ],
     shot: shotClients, alt: "Create a share link: scope, label, read-only access, and an expiry of 7 days" },
-  { id: "keys", label: "Your keys", plate: "VIII", caption: "AI usage, itemised",
+  { id: "keys", label: "Your keys", caption: "AI usage, itemised",
     h: "Your token. Your model key. Nothing marked up.",
     bullets: [
       "A wizard scopes the Cloudflare token to exactly what you allow. Anthropic, OpenAI or an OpenAI-compatible endpoint for the model. Both stored encrypted.",
@@ -85,7 +85,7 @@ const tabs = [
           <div class="plate-in">
             <Picture src={t.shot} formats={["avif", "webp"]} widths={[720, 1120, 1600]} sizes="(min-width: 980px) 640px, 100vw" alt={t.alt} loading="lazy" decoding="async" />
           </div>
-          <figcaption><span>Plate {t.plate}</span><span>{t.caption}</span></figcaption>
+          <figcaption><span>{t.caption}</span></figcaption>
         </figure>
       </section>
     ))}
